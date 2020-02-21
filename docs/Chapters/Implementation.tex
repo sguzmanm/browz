@@ -1,0 +1,143 @@
+% Chapter Template
+
+\chapter{Implementation} % Main chapter title
+
+\label{ChapterX} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
+
+
+\section{Activity/Intents}
+\subsection{ActivityNotDefined - \textcolor{blue}{Text}}
+\begin{lstlisting}[language=XML]
+<activity android:name=".ImportActivity" android:label="@string/title_import" />
+\end{lstlisting}
+ \begin{lstlisting}[language=XML]
+ 
+\end{lstlisting}
+
+
+\subsection{DifferentActivityIntentDefinition - \textcolor{green}{AST}}
+\begin{lstlisting}[language=XML]
+Intent intent = new Intent(main.this, ImportActivity.class);
+\end{lstlisting}
+\begin{lstlisting}[language=XML]
+Intent intent = new Intent(main.this, ExportActivity.class); 
+\end{lstlisting}
+\textcolor{red}{Así se ve en SMALI el código de un Intent}
+\begin{lstlisting}[language=XML]
+new-instance <intentVar>, Landroid/content/Intent
+...
+const-class <destClassVar>, L<android:name>
+invoke-direct {<intentVar>, <context>, <destClassVar>}
+\end{lstlisting}
+\subsection{InvalidActivityName - \textcolor{blue}{Text}}
+\begin{lstlisting}[language=XML]
+<activity android:name=".AboutActivity" android:label="@string/title_about" /> 
+\end{lstlisting}
+
+ \begin{lstlisting}[language=XML]
+<activity android:name=".AbutActivity" android:label="@string/title_about" /> 
+\end{lstlisting}
+\subsection{InvalidKeyIntentPutExtra - \textcolor{green}{AST}}
+\begin{lstlisting}[language=XML]
+intent.putExtra(key, value); 
+\end{lstlisting}
+
+\begin{lstlisting}[language=XML]
+intent.putExtra("ecab6839856b426fbdae3e6e8c46c38c", value);
+\end{lstlisting}
+
+\textcolor{red}{Así se ve en SMALI el código de un Intent}
+\begin{lstlisting}[language=XML]
+sget-object v5, Lio/github/hidroh/materialistic/OfflineWebActivity;->EXTRA_URL:Ljava/lang/String;
+invoke-virtual {v4, v5, p2}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;
+\end{lstlisting}
+\subsection{InvalidLabel - \textcolor{blue}{Text}}
+\begin{lstlisting}[language=XML]
+<activity android:name=".VehicleActivity" android:label="@string/title_vehicle" /> 
+\end{lstlisting}
+
+\begin{lstlisting}[language=XML]
+<activity android:name=".VehicleActivity" android:label="ecab6839856b426fbdae3e6e8c46c38c" /> 
+\end{lstlisting}
+\subsection{NullIntent - \textcolor{green}{AST}}
+\begin{lstlisting}[language=XML]
+Intent intent = new Intent(main.this, ImportActivity.class);
+\end{lstlisting}
+
+ \begin{lstlisting}[language=XML]
+Intent intent = null;
+\end{lstlisting}
+\subsection{NullValueIntentPutExtra - \textcolor{green}{AST}}
+\begin{lstlisting}[language=XML]
+intent.putExtra(key, value);
+\end{lstlisting}
+
+\begin{lstlisting}[language=XML]
+intent.putExtra(key, new Parcelable[0]);
+\end{lstlisting}
+\subsection{WrongMainActivity - \textcolor{blue}{Text}}
+\begin{lstlisting}[language=XML]
+<activity android:name=".Mileage" android:theme="@android:style/Theme.NoTitleBar">
+	<intent-filter>
+		<action android:name="android.intent.action.MAIN" />
+		<category android:name="android.intent.category.LAUNCHER" />
+	</intent-filter>
+</activity> 
+\end{lstlisting}
+
+\begin{lstlisting}[language=XML]
+<activity android:name=".AboutActivity" android:theme="@android:style/Theme.NoTitleBar">
+	<intent-filter>
+		<action android:name="android.intent.action.MAIN" />
+		<category android:name="android.intent.category.LAUNCHER" />
+	</intent-filter>
+</activity>
+\end{lstlisting}
+
+\section{Android Programming}
+\subsection{MissingPermissionManifest - \textcolor{blue}{Text}}
+\subsection{NotParcelable - \textcolor{green}{AST}}
+\subsection{NullGPSLocation - \textcolor{green}{AST}}
+\subsection{SDKVersion - \textcolor{blue}{Text}}
+\subsection{WrongStringResource - \textcolor{blue}{Text}}
+
+\section{Back-End Services}
+\subsection{NullBackEndServiceReturn - \textcolor{green}{AST}}
+
+\section{Connectivity}
+\subsection{BluetoothAdapterAlwaysEnabled - \textcolor{green}{AST}}
+\subsection{NullBluetoothAdapter - \textcolor{green}{AST}}
+
+\section{Data}
+\subsection{InvalidURI - \textcolor{green}{AST}}
+
+\section{Database}
+\subsection{ClosingNullCursor - \textcolor{green}{AST}}
+\subsection{InvalidIndexQueryParameter - \textcolor{green}{AST}}
+\subsection{InvalidSQLQuery - \textcolor{green}{AST}}
+
+\section{General Programming}
+\subsection{InvalidDate - \textcolor{green}{AST}}
+\subsection{InvalidMethodCallArgument* - \textcolor{green}{AST}}
+\subsection{NotSerializable - \textcolor{green}{AST}}
+\subsection{NullMethodCallArgument* - \textcolor{green}{AST}}
+
+\section{GUI}
+\subsection{BuggyGUIListener - \textcolor{green}{AST}}
+\subsection{FindViewByIdReturnsNull - \textcolor{green}{AST}}
+\subsection{InvalidColor - \textcolor{blue}{Text}}
+\subsection{InvalidIDFindView - \textcolor{green}{AST}}
+\subsection{InvalidViewFocus* - \textcolor{green}{AST}}
+\subsection{ViewComponentNotVisible - \textcolor{green}{AST}}
+
+\section{I/O}
+\subsection{InvalidFilePath - \textcolor{green}{AST}}
+\subsection{NullInputStream - \textcolor{green}{AST}}
+\subsection{NullOutputStream - \textcolor{green}{AST}}
+
+\section{Non-Functional Requirements - \textcolor{green}{AST}}
+\subsection{LengthyBackEndService - \textcolor{green}{AST}}
+\subsection{LengthyGUICreation - \textcolor{green}{AST}}
+\subsection{LengthyGUIListener - \textcolor{green}{AST}}
+\subsection{LongConnectionTimeOut - \textcolor{green}{AST}}
+\subsection{OOMLargeImage - \textcolor{green}{AST}}

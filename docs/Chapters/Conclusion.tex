@@ -1,0 +1,11 @@
+% Chapter Template
+
+\chapter{Conclusion} % Main chapter title
+
+\label{ChapterConclusion} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
+
+We presented in this thesis a novel framework to enable automation of software engineering tasks at APK level through a proposed architecture presented in Section \ref{sec:generalApproach}. Additionally, we validate its feasibility by implementing a Mutation Testing tool called MutAPK \cite{MutAPK}. We evaluate the performance of MutAPK by comparing it with MDroid+, a Mutation Testing tool that works over source code. Our results show that MutAPK outperforms MDroid+ in terms of execution time, generating a testeable APK in a 6.28\% of the time took by MDroid+. In terms of mutant generation MutAPK has a similar behavior to MDroid+ for the shared mutation operators generating about 17\% more mutants (\textit{i.e.,} around 30 more mutants per app). Nevertheless, MutAPK has implemented 2 operators not implemented yet by MDroid+, which enable the generation of about  85\% of the mutants created. Therefore, MutAPK using this operators increases the difference to 739\% more mutants (\textit{i.e.,} around 1211 extra mutants per app).
+
+Nevertheless, the mutation process done by MutAPK needs an improvement due to high rate of non-compilable mutants generated. In average, when using only the shared operators, 16\% of the generated mutants by MutAPK are non-compilable and when all operators are used there are 2.36\%. In this metric, MDroid outperforms MutAPK with only around 0.6\% non-compilable mutants for both cases. Therefore, there is room for improvement because MutAPK should generate only compilable mutants, because it works on already compiled code from source code.
+
+Finally, our results of the initial study with mutation testing suggest that in fact software engineering tasks can be enabled at APK level, and in the particular case of mutation testing we showed that working at APK level improves mutation testing times.

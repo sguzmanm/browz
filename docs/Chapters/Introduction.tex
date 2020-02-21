@@ -1,0 +1,80 @@
+% Chapter Template
+
+\chapter{Introduction} % Main chapter title
+
+\label{Chapter1} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
+
+TODO: Do the intro for the project once it is fulfilled
+
+Mobile markets have pushed and promoted the raising of an interesting phenomenon that has permeated not only developers culture, but also human beings’ daily life activities. Mobile devices, apps, and services are helping companies and organizations to make “digital transformation” possible through services and capabilities that are offered ubiquitously and closer to the users. Nowadays, mobile apps and devices are the most common way for accessing those services and capabilities; in addition, apps and devices are indispensable tools for allowing humans to have in their phones, computational capabilities that make life better and easier.
+
+The mobile apps phenomenon has also changed drastically the way how practitioners design, code, and test apps.  Mobile developers and testers face critical challenges on their daily life activities such as (i) continuous pressure from the market for frequent releases of high quality apps, (ii) platform fragmentation at device and OS levels, (iii) rapid platform/library evolution and API instability, and (iv) an evolving market with millions of apps available for being downloaded by ends users \cite{joorabchi2013real,palomba2018crowdsourcing}. Tight release schedules, limited developer and hardware resources, and cross-platform delivery of apps, are common scenarios when developing mobile apps \cite{joorabchi2013real}. Therefore, reducing the time and effort devoted to software engineering tasks while producing high quality mobile software is a ``precious’’ goal.
+
+Both practitioners and researchers, have contributed to achieve that goal, by proposing approaches, mechanisms, best practices, and tools that make the development process more agile. For instance, cross-platform languages and frameworks (e.g., Flutter, Ionic, Xamarin, React Native) contribute to reducing the development time by providing developers with a mechanism for building Android and iOS versions of apps in a write-one-run-anywhere way \cite{joorabchi2013real,fazzini2017automated}. Automated testing approaches help testers to increase the apps' quality and reduce the detection/reporting time \cite{choudhary2015automated,kochhar2015understanding,linares2017continuous}. 
+Automated categorization of reviews also helps developers to select relevant information, issues, features and sentiments, from large volume of review that are posted by users \cite{palomba2018crowdsourcing,villarroel2016release,di2016would}. Moreover, approaches for static analysis, are helping developers to early detect different types of bugs and issues that without the automated support could be time consuming for developers --- when doing the analysis manually \cite{li:IST2017}. 
+Both static and dynamic analyses have been used with the aforementioned approaches, with a special preference for static analysis on source code.  
+
+The developers community is quickly moving towards using cloud-services and crowd-sourced services for software engineering tasks \cite{Leicht2017IEEESoftware, stol2017crowdsourcing}; using those services is becoming a common practice of mobile developers who want to reduce costs and the time devoted for an activity. For example, the Firebase Test Lab platform \cite{firebase} provides automated testing services, in particular, it automatically executes/explores a given app (provided by the developer as an Android APK file), and reports crashes found on a devices matrix that is selected by the user. However, the lack of knowledge of source code internals imposes a limitation on the usefulness and completeness of the results reported back to the users.
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{Problem Statement}
+
+The power and usefulness of a large number of  state-of-the-art approaches for automated software engineering of Android apps rely on the existence of source code for extracting intermediate representations or models that drive the analysis execution or the artifacts generation. For example, Zaeem \textit{et al.}\cite{zaeem2014automated} instrumentates the source code in order to record the view flow followed through a set of instructions in order to validate oracles. However, existing approaches that rely on source code for supporting automated software engineering tasks are untenable in a commercial environment where practitioners  outsource software engineering tasks, but without releasing the source code (i.e., the services work directly on executable files). 
+
+Any type of analysis that relies only on executable files (i.e., dynamic analysis) is known to be limited when compared to static analysis that can be done directly on the code \cite{spathoulas2014assessing}. For example, Firebase Test Lab enables automated tests based on Random GUI input generation. However, this test provides low usage case coverage. Additionally, for different legal and organizational reasons (e.g., source code contains a company's exclusive implementation of an algorithm, source code contains keys/secrets for services, etc.) the app's source code is often not available, making it difficult to enable cloud/crowd-based services that use state-of-the-art approaches.
+
+Furthermore, as it will be shown in the Section 2, decompilation/compilation process is a cumbersome process due to the wide spectrum of developing possibilities that defines how each application is build. Software Engineering approaches that rely on source code modifications/instrumentation, and then require to build/compile the app are expensive; as is the case of mutation testing \cite{appelt2014automated,linares2017enabling,praphamontripong2016experimental,rodriguez2018mutode}.
+
+\section{Thesis  Goals}
+
+Consequently, the goal of this thesis is to \emph{enable automated software engineering (ASE) tasks for Android apps, at APK level (i.e., using intermediate representations instead of source code)}. With this, ASE tasks can be crowd-sourced and delegated to third party services without having to release applications source code. In the particular case of this thesis, we focused on mutation testing. 
+
+In particular, the specific objectives of this master thesis are:
+\begin{itemize}
+	\item Propose a novel framework aimed at enabling automated software engineering tasks for Android apps
+	at APK level (\textit{i.e.,} without the need of source code).
+	\item Validate the feasibility of our proposed approach through implementing it for mutation testing.
+	\item Evaluate the performance of the proposed approach for mutation testing at APK level, when compared to a state-of-the-art tool for mutation testing at source code level.
+\end{itemize}
+
+\section{Thesis contribution}
+
+As a complement to the existent approaches for analysis of APKs, we propose a way for enabling automated software engineering tasks for closed-source Android apps, and in particular, by working at the level of APK files (i.e., android executable packages), similarly to the way how practitioners use third-party services (i.e., delivering only executable files). To this, our primary goal is to automatically extract models directly from APK files and without decompiling the package to the original source code, which is time consuming, prone to decompilation/compilation errors, and could reveal private artifacts included into the code. Then, our second goal is to implement  approaches for automated software engineering tasks on the models extracted from the APKs.
+
+As an initial step and representative example in a long term research agenda, we enabled mutation testing at APK level, by (i) translating the 38 mutant operation rules defined by Linares-Vásquez \textit{et. al.}\cite{linares2017enabling}, (ii) implementing 35 mutation operators for mobile apps using SMALI representation that leads to compilable/installable applications, and (iii) evaluating whether the approach improves generation and building times when compared to a mutation testing tool that works with original source code. The results from our empirical study shows that extracting the models from APK files is feasible without implementing decompilation pipelines that recover the original source code. 
+
+\begin{table}[!ht]
+	\centering
+	\caption{Summary of results when comparing  MutAPK and MDroid+. *Efectivity Rate is measured as the percentage of the total time that correspond to the compiled mutants }
+	\label{tab:bcmamdp}
+	\begin{tabular}{|L{4cm}|c|c|}
+		\hline
+		Metric Name&MutAPK&MDroid+\\
+		\hline \hline
+		Amount of Mutants Generated & 74256 & 8847 \\ \hline
+		Average Mutation Time&144.66ms&4.61s\\ \hline
+		Amount of Compiled Mutants&72362&8797\\ \hline
+		Average Compilation Time &12.42s&3.25min\\ \hline
+		Average Complete Mutant Creation Time & 12.56s& 3.33min\\ \hline
+		Efectivity Rate* & 97,44\%&99,43\%\\
+		\hline
+	\end{tabular}
+\end{table}
+
+Our initial results suggest that in terms of creation/building time and number of mutants, modifying APKs directly outperforms mutants generation at source code level. As it can be seen in Table \ref{tab:bcmamdp}, MutAPK compared with MDroid+\footnote{Data collected from MDroid+ FSE/ESEC replication package. \url{https://www.android-dev-tools.com/s/FSE-Online_Appendix-Data.zip}}, generates 13 times more mutants, reduces (on average)  the time to mutate a copy of the app in a ~96\%, generates 7 times more compiled mutants, and reduces  the time required to compile a mutant in a ~93\%, when compared to MDroid+. However, there is room for improvement in the mutants implementation because there are mutants that generate compilations errors, and its non-compilable mutants rate is larger than MDroid+'s.
+
+Therefore, from the previously presented result we can say that MutAPK improves the state of the mutation testing environment using the 6.36\% of the time (required by MDroid+) to generate 13 times more mutants. At the same time, due to the improvement on the mutant creation time (\textit{i.e.,} mutant generation + mutant compilation), MutAPK also increases the available time that users can invest in running theirs test suites over the mutants; moreover, due to the improvement in the number of generated mutants, we might generate a more comprehensive representation of the search space of possible errors a mobile application can have.
+
+
+As part of the process followed in this thesis we published four issues in the MDroid+ repository and interacted with MDroid+ maintainers. We fixed three of the open issues.
+
+Finally, MutAPK as tool is the first one that performs Mutation Testing for Android Apps at APK level. MutAPK can be downloaded from its public repository \cite{MutAPK}.
+
+
+\section{Document Structure}
+This document is organized as follows: in Chapter 2 we describe some concepts that will help the reader to understand the context of the thesis. Chapter 3 presents the previous work done in terms of Static analysis of Android Apps and Mutation Testing for Android Apps. Chapter 4 explains the proposed novel framework and its implementation using Mutation Testing, along with an explanation of MutAPK functioning. Chapter 5 presents the study designed and performed to understand the impact of generating mutants at APK level by 5 metrics defined around mutant generation. Chapter 6 present the conclusions of our research work and Chapter 7 shows the future work for this research.
+
+
