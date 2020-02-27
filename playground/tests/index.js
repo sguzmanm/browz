@@ -6,6 +6,8 @@ const {startTests}=require('./playwright');
 const app = express()
 const port = 3000
 
+let counter=0
+
 // parse application/json
 app.use(bodyParser.json())
 
@@ -16,6 +18,12 @@ app.use(bodyParser.json())
      },
 	"browserType":"chromium"
 */
+
+app.get('/',(req,res,next)=>{
+    counter++;
+    res.send('Hello World ',counter);
+});
+
 app.post('/', async (req, res) => {
    let config=req.body; 
    if (!config || config ===null){

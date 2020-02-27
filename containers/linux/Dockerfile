@@ -5,14 +5,15 @@ ARG DEBIAN_FRONTEND=noninteractive
 # FROM node:buster
 RUN apt-get update
 RUN apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates
+RUN apt -y install git
 
 # Get node 10
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - 
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get -y install nodejs
 RUN nodejs -v
 
 # Get chromium libs
-RUN apt-get -y install xvfb gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libgbm1 \
+RUN apt-get -y install xvfb gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 \
     libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 \
     libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \
     libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 \
@@ -20,6 +21,7 @@ RUN apt-get -y install xvfb gconf-service libasound2 libatk1.0-0 libc6 libcairo2
     rm -rf /var/lib/apt/lists/*
 
 # Get webkit libs
+RUN apt-get update
 RUN curl -sL https://raw.githubusercontent.com/WebKit/webkit/master/Tools/wpe/install-dependencies >> install-webkit.sh
 RUN chmod 755 ./install-webkit.sh && yes | ./install-webkit.sh
 
@@ -29,20 +31,11 @@ RUN groupadd -r pwuser && useradd -r -g pwuser -G audio,video pwuser \
     && chown -R pwuser:pwuser /home/pwuser
 
 # Run everything after as non-privileged user.
-USER pwuser
-
+# USER pwuser
 WORKDIR /tmp
-# copy main js script
-ARG MAIN_DIR="./main"
-RUN mkdir ${MAIN_DIR}
-
+ARG MAIN_DIR="thesis/playground/tests"
 
 # Copy exec dirs
-COPY ./index.js ${MAIN_DIR}/index.js
-COPY ./package.json ${MAIN_DIR}/package.json
-
-RUN ldd --version
-
-# Run
+RUN git clone https://github.com/sguzmanm/thesis.git
 RUN cd ${MAIN_DIR} && npm install
-CMD [ "nodejs","/tmp/main/index.js","&&","bash" ]
+CMD [ "nodejs","/tmp/thesis/playground/tests/index.js","&&","bash" ]
