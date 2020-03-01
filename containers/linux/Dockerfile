@@ -31,11 +31,11 @@ RUN groupadd -r pwuser && useradd -r -g pwuser -G audio,video pwuser \
     && chown -R pwuser:pwuser /home/pwuser
 
 # Run everything after as non-privileged user.
-# USER pwuser
+USER pwuser
 WORKDIR /tmp
-ARG MAIN_DIR="thesis/playground/tests"
+ARG MAIN_DIR="thesis/playground"
 
 # Copy exec dirs
 RUN git clone https://github.com/sguzmanm/thesis.git
 RUN cd ${MAIN_DIR} && npm install
-CMD [ "nodejs","/tmp/thesis/playground/tests/index.js","&&","bash" ]
+CMD [ "nodejs","/tmp/thesis/playground/playwright-exec.js" ]
