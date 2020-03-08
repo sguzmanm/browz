@@ -1,3 +1,4 @@
+# For now it is here: https://hub.docker.com/repository/docker/sguzmanm/linux_playwright_tests/general
 # specify the node base image with your desired version node:<version>. Also copied from https://github.com/microsoft/playwright/tree/master/.ci/node10
 FROM ubuntu
 ARG DEBIAN_FRONTEND=noninteractive
