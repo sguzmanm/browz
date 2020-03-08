@@ -5,9 +5,10 @@
   "main": "main.js",
   "dependencies": {
     "eslint": "^6.8.0",
-    "node-static": "^0.7.11",
     "imgbb-uploader": "^1.0.3",
-    "playwright": "^0.10.0"
+    "node-static": "^0.7.11",
+    "playwright": "^0.10.0",
+    "resemblejs": "^3.2.4"
   },
   "devDependencies": {},
   "scripts": {

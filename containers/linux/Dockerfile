@@ -31,10 +31,14 @@ RUN groupadd -r pwuser && useradd -r -g pwuser -G audio,video pwuser \
     && mkdir -p /home/pwuser/Downloads \
     && chown -R pwuser:pwuser /home/pwuser
 
+# Resemble
+RUN apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+
 # Run everything after as non-privileged user.
 USER pwuser
 WORKDIR /tmp
 ARG MAIN_DIR="thesis/playground"
+
 
 # Copy exec dirs
 RUN git clone https://github.com/sguzmanm/thesis.git
