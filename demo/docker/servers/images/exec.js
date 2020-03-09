@@ -81,5 +81,5 @@ const compare = async (original, modified) => {
   }_${fileSeparation[fileSeparation.length - 1]}`;
   await writeFile(comparisonPath, data.getBuffer());
 
-  await imgbbUploader("API_KEY", comparisonPath);
+  await imgbbUploader(process.env.IMGBBKEY, comparisonPath);
 };

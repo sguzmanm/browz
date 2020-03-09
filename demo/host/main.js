@@ -25,7 +25,7 @@ const runContainer = () => {
   spawnElement.stderr.on("data", data => {
     console.error(`child stderr:\n${data}`); //TODO: How are we gonna define errors?
     console.error("Ending app now");
-    process.exit(1);
+    //process.exit(1);
   });
 };
 
@@ -41,8 +41,6 @@ const main = async () => {
     ) {
       console.log("Resolved");
       await runContainer();
-      console.log("Run");
-      runContainer();
     }
   });
 

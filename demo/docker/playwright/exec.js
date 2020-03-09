@@ -61,6 +61,14 @@ module.exports.exploreApp = async () => {
       {
         width: 1280,
         height: 720
+      },
+      {
+        width: 300,
+        height: 400
+      },
+      {
+        width: 1500,
+        height: 800
       }
     ];
 

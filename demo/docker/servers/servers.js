@@ -11,8 +11,4 @@ module.exports.getServerExecs = dir => {
       process.exit(1);
     })
   ];
-  /*return[   
-        startCommand('node',[__dirname+'/http/http-server.js',dir],process.exit(1)),
-        startCommand('node',[__dirname+'/images/image-server.js',dir],process.exit(1))
-    ]*/
 };
