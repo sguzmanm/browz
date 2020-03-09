@@ -1,6 +1,7 @@
 const { spawn } = require("child_process");
 const linuxContainer =
   process.env.LINUX_CONTAINER || "sguzmanm/linux_playwright_tests:latest";
+const httpAppDir = process.env.HTTP_APP_DIR || "/app";
 
 const ERR_EMPTY_DIR = new Error("Empty app dir");
 
@@ -11,7 +12,12 @@ if (!dir || dir.trim() === "") {
 }
 
 const runContainer = () => {
-  const spawnElement = spawn("docker", ["run", linuxContainer]);
+  const spawnElement = spawn("docker", [
+    "run",
+    "-v",
+    `${dir}:${httpAppDir}`,
+    linuxContainer
+  ]);
   spawnElement.stdout.on("data", data => {
     console.log(`child stdout:\n${data}`);
   });

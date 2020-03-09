@@ -1,5 +1,5 @@
 # For now it is here: https://hub.docker.com/repository/docker/sguzmanm/linux_playwright_tests/general
-# specify the node base image with your desired version node:<version>. Also copied from https://github.com/microsoft/playwright/tree/master/.ci/node10
+# Also copied from https://github.com/microsoft/playwright/tree/master/.ci/node10
 FROM ubuntu
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -32,15 +32,16 @@ RUN groupadd -r pwuser && useradd -r -g pwuser -G audio,video pwuser \
     && chown -R pwuser:pwuser /home/pwuser
 
 # Resemble
-RUN apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+RUN apt-get update
+RUN apt-get -y install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
 # Run everything after as non-privileged user.
 USER pwuser
 WORKDIR /tmp
-ARG MAIN_DIR="thesis/playground"
+ARG MAIN_DIR="thesis/demo/docker/"
 
 
 # Copy exec dirs
 RUN git clone https://github.com/sguzmanm/thesis.git
 RUN cd ${MAIN_DIR} && npm install
-CMD [ "nodejs","/tmp/thesis/playground/playwright-exec.js" ]
+CMD [ "nodejs","/tmp/thesis/demo/docker/main.js" ]

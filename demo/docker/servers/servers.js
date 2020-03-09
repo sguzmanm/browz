@@ -1,5 +1,3 @@
-const { spawn } = require("child_process");
-
 const HttpServer = require("./http/http-server");
 const ImageServer = require("./images/image-server");
 

@@ -4,11 +4,14 @@ const port = process.env.IMAGE_PORT || "8081";
 
 const ERR_EMPTY_DIR = new Error("Empty app dir");
 const http = require("http");
+let dir = process.env.HTTP_APP_DIR || "/app";
 
-const dir = process.argv[2];
-if (!dir || dir.trim() === "") {
-  console.error(ERR_EMPTY_DIR);
-  return;
+if (!dir) {
+  dir = process.argv[2];
+  if (!dir || dir.trim() === "") {
+    console.error(ERR_EMPTY_DIR);
+    return;
+  }
 }
 
 const startServers = async () => {
