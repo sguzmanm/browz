@@ -1,36 +1,36 @@
-const http = require("http");
-const nStatic = require("node-static");
-const exec = require("./exec");
+const dotenv = require("dotenv");
+dotenv.config();
+
+const express = require("express");
+const app = express();
+const ImageRouter = require("./image-upload/router");
 
 const port = process.env.IMAGE_PORT || "8081";
 
-let count = 0;
+const setupServer = (resolve, errorHandler) => {
+  // Middleware
+  app.use(errorHandler);
 
-module.exports.start = path => {
-  const fileServer = new nStatic.Server(path);
+  //Routes
+  app.use("/", ImageRouter.imageRouter);
 
+  app.listen(port, () => {
+    console.log(`App listening on port ${port}!`);
+    resolve(port);
+  });
+};
+
+module.exports.start = () => {
   return new Promise((resolve, reject) => {
-    const server = http.createServer(async function(req, res) {
-      fileServer.serve(req, res);
-      count++;
-      console.log(count);
-      if (count > 3) {
-        throw new Error("Failed");
+    const errorHandler = (err, req, res, next) => {
+      if (res.headersSent) {
+        return next(err);
       }
+      res.status(500);
+      res.render("error", { error: err });
+      reject(err);
+    };
 
-      let results = await exec.readImages();
-      await exec.compareBrowsers(results);
-      console.log("Status OK");
-    });
-
-    server.on("error", error => {
-      console.error("Error:", error);
-      reject(error);
-    });
-
-    server.listen(port, () => {
-      console.log("Server OK");
-      resolve(port);
-    });
+    setupServer(resolve, errorHandler);
   });
 };
