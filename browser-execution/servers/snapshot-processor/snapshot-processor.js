@@ -12,7 +12,7 @@ const setupServer = (resolve, errorHandler) => {
   app.use(errorHandler);
 
   //Routes
-  app.use("/", ImageRouter.imageRouter);
+  app.use("/", ImageRouter);
 
   app.listen(port, () => {
     console.log(`App listening on port ${port}!`);

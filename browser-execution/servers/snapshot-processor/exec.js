@@ -48,7 +48,6 @@ module.exports.compareBrowsers = async images => {
 };
 
 const compare = async (original, modified) => {
-  console.log(original, modified);
   const options = {
     output: {
       errorColor: {
