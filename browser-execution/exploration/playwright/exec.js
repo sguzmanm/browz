@@ -4,7 +4,7 @@ const util = require("util");
 
 const mkdir = util.promisify(fs.mkdir);
 const port = process.env.HTTP_PORT || "8080";
-const URL = process.env.HTTP_URL || `http://localhost:${port}`;
+const URL = `http://localhost:${port}`;
 
 const root = {
   chromium: true
@@ -16,9 +16,7 @@ const startTests = async config => {
   let browserType = config.browserType;
   console.log("FIRST", browserType);
   try {
-    launchConfig = root[browserType]
-      ? { dumpio: true, args: ["--no-sandbox"] }
-      : { dumpio: true };
+    let launchConfig = root[browserType] ? { args: ["--no-sandbox"] } : {};
     console.log(launchConfig);
     browser = await playwright[browserType].launch(launchConfig);
     context = await browser.newContext();

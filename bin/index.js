@@ -1,62 +1,40 @@
-const { spawn } = require("child_process");
-const linuxContainer =
-  process.env.LINUX_CONTAINER || "sguzmanm/linux_playwright_tests:latest";
-const httpAppDir = process.env.HTTP_APP_DIR || "/app";
+const {
+  setupDocker,
+  runDocker,
+  killDocker
+} = require("../src/docker-manager/docker-manager");
+const { createReport } = require("../src/report-manager/report-manager");
 
-const ERR_EMPTY_DIR = new Error("Empty app dir");
+const EMPTY_DIR_MSG = "Empty dir provided for server:";
 
-const dir = process.argv[2];
-if (!dir || dir.trim() === "") {
-  console.error(ERR_EMPTY_DIR);
+const httpDir = process.argv[2];
+if (!httpDir || httpDir.trim() === "") {
+  // eslint-disable-next-line no-undef
+  console.error(EMPTY_DIR_MSG, "Http");
   return;
 }
 
-const runContainer = () => {
-  const spawnElement = spawn("docker", [
-    "run",
-    "--env",
-    "IMGBBKEY=54bf51261cae0f13aacb6de2dddb367b",
-    "-v",
-    `${dir}:${httpAppDir}`,
-    linuxContainer,
-    "node",
-    "/tmp/thesis/demo/docker/main.js"
-  ]);
-  spawnElement.stdout.on("data", data => {
-    console.log(`child stdout:\n${data}`);
-  });
-
-  spawnElement.stderr.on("data", data => {
-    console.error(`child stderr:\n${data}`); //TODO: How are we gonna define errors?
-    console.error("Ending app now");
-    process.exit(1);
-  });
-};
+const imagesDir = process.argv[3];
+if (!imagesDir || imagesDir.trim() === "") {
+  // eslint-disable-next-line no-undef
+  console.error(EMPTY_DIR_MSG, "Image");
+  return;
+}
 
 const main = async () => {
-  const spawnElement = spawn("docker", ["pull", linuxContainer]);
-  spawnElement.stdout.on("data", async data => {
-    console.log(`child stdout:\n${data}`);
-    if (
-      data
-        .toString()
-        .trim()
-        .includes(linuxContainer)
-    ) {
-      console.log("Resolved");
-      await runContainer();
-    }
-  });
-
-  spawnElement.stderr.on("data", data => {
-    console.error(`child stderr:\n${data}`);
-    console.error("Ending app now");
-    process.exit(1);
-  });
+  console.log("ONE");
+  await setupDocker();
+  console.log("TWO");
+  await runDocker(httpDir);
+  console.log("THREE");
+  await killDocker();
+  console.log("FOUR");
+  await createReport();
 };
 
 try {
   main();
 } catch (error) {
   console.error("ERROR", error);
+  process.exit(1);
 }

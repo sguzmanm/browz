@@ -1,0 +1,25 @@
+{
+  "name": "thesis",
+  "version": "1.0.0",
+  "description": "Official repo to store everything related to thesis\r OverLeaf Preview: https://www.overleaf.com/read/kxycvzwrmyvw",
+  "main": "bin/index.js",
+  "bin": {
+    "thesis": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sguzmanm/thesis.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sguzmanm/thesis/issues"
+  },
+  "homepage": "https://github.com/sguzmanm/thesis#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0"
+  }
+}

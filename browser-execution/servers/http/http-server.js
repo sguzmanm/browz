@@ -3,16 +3,16 @@ const nStatic = require("node-static");
 
 const port = process.env.HTTP_PORT || "8080";
 
-module.exports.start = (path, reject) => {
+module.exports.start = path => {
   const fileServer = new nStatic.Server(path);
 
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const server = http.createServer(function(req, res) {
       fileServer.serve(req, res);
     });
 
     server.on("error", error => {
-      console.log("Error:", error);
+      console.error("Error:", error);
       reject(error);
     });
 
