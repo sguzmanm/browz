@@ -3,7 +3,8 @@ const linuxContainer =
   process.env.LINUX_CONTAINER || "sguzmanm/linux_playwright_tests:latest";
 const httpAppDir = process.env.HTTP_APP_DIR || "/app";
 
-module.exports.setupDocker = () => {
+// Verification of memory and disk of docker and pull
+module.exports.setupDocker = async () => {
   const spawnElement = spawn("docker", ["pull", linuxContainer]);
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on("data", data => {
@@ -26,6 +27,7 @@ module.exports.setupDocker = () => {
   });
 };
 
+// Run docker with volume params
 module.exports.runDocker = dir => {
   const spawnElement = spawn("docker", [
     "run",

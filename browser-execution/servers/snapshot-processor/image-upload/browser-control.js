@@ -22,26 +22,35 @@ responseMap[browsers.WEBKIT] = true;
 let timeoutMap = {};
 let imageMap = {};
 
-module.exports.registerImage = async (imageRequestBody, fileName) => {
-  const browser = imageRequestBody.browser;
-  if (!responseMap[browser]) {
-    console.log("Requesting inactive browser", browser);
-    return { status: "Kill browser" };
-  }
+const getImageKey = imageRequestBody => {
+  return `${imageRequestBody.event}_${imageRequestBody.selector}_${imageRequestBody.id}`;
+};
 
-  // Set waiting timeout for image from browser
-  timeoutMap[browser] = setTimeout(() => {
-    responseMap[browser] = undefined;
-    console.log("Desactivating browser", browser);
-  }, browserWaitingTime);
-
-  let key = `${imageRequestBody.event}_${imageRequestBody.selector}_${imageRequestBody.id}`;
+const checkNewImage = async (imageRequestBody, browser, fileName) => {
+  let key = getImageKey(imageRequestBody);
   if (!imageMap[key]) imageMap[key] = {};
   imageMap[key][browser] = fileName;
 
   if (imageMap[key].length === responseMap.length) {
     await compareBrowsers(imageMap[key]);
   }
+};
+
+module.exports.registerImage = async (imageRequestBody, fileName) => {
+  const browser = imageRequestBody.browser;
+  if (!responseMap[browser]) {
+    console.log("Requesting inactive browser", browser);
+    return false;
+  }
+
+  // Set waiting timeout for image from browser
+  timeoutMap[browser] = setTimeout(async () => {
+    responseMap[browser] = undefined;
+    console.log("Desactivating browser", browser);
+    await checkNewImage(imageRequestBody, browser, fileName);
+  }, browserWaitingTime);
+
+  await checkNewImage(imageRequestBody, browser, fileName);
 };
 
 const compareBrowsers = async screenshotMap => {
