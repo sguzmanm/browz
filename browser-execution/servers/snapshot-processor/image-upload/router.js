@@ -7,7 +7,7 @@ const express = require("express");
 const multer = require("multer");
 
 const { registerImage } = require("./browser-control");
-const imagePath = process.env.IMAGE_APP_DIR || "/screenshots";
+const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || "/screenshots";
 
 const getMimetypeExtension = mimetype => {
   switch (mimetype) {
@@ -22,23 +22,29 @@ const getMimetypeExtension = mimetype => {
   }
 };
 
-const getFileName = imageRequestBody => {
+const getFilename = imageRequestBody => {
   let dirPath = imagePath + path.sep + imageRequestBody.id;
+  if (!fs.existsSync(imagePath)) {
+    fs.mkdirSync(imagePath);
+  }
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath);
   }
-  return `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${imageRequestBody.event}_${imageRequestBody.selector}_${imageRequestBody.id}`; //TODO: Folder based? Name based?
+  return `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${imageRequestBody.event}_${imageRequestBody.selector}_${imageRequestBody.id}`; //FIXME: Folder based? Name based?
 };
 
 let storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, imagePath);
+  destination: function(req, file, resolveDestination) {
+    resolveDestination(null, imagePath);
   },
-  filename: function(req, file, cb) {
+  filename: function(req, file, createFilename) {
     console.log("BODY", req.body);
     let imageRequestBody = req.body;
-    let fileName = getFileName(imageRequestBody);
-    cb(null, `${fileName}-${Date.now()}${getMimetypeExtension(file.mimetype)}`);
+    let fileName = getFilename(imageRequestBody);
+    createFilename(
+      null,
+      `${fileName}-${Date.now()}${getMimetypeExtension(file.mimetype)}`
+    );
   }
 });
 
@@ -48,20 +54,21 @@ const router = express.Router();
 // Post new image. Expected format:
 /*
 {
-    "image":file,
-    "id":int,
-    "event":Stringm
-    timestamp:Long,
+    image:file,
+    id:String,
+    event:String,
     selector:string,
     browser:Enum
 }
 */
 router.post("/", upload.single("image"), async function(req, res, next) {
-  console.log("ANSWER");
-  console.log(req.file);
-  console.log(req.body);
-  await registerImage(req.body, req.file.filename);
-  res.json({ status: "OK" });
+  try {
+    await registerImage(req.body, req.file.filename);
+    res.json({ status: "OK" });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
 });
 
 module.exports = router;

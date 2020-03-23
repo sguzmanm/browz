@@ -1,10 +1,60 @@
 const { spawn } = require("child_process");
+const os = require("os");
+const readline = require("readline");
+
 const linuxContainer =
   process.env.LINUX_CONTAINER || "sguzmanm/linux_playwright_tests:latest";
 const httpAppDir = process.env.HTTP_APP_DIR || "/app";
+const snapshotDir = process.env.SNAPSHOT_DESTINATION_DIR || "/app";
 
-// Verification of memory and disk of docker and pull
-module.exports.setupDocker = async () => {
+const UNIT_MB = "Mi";
+const IMAGE_MEMORY_THRESHOLD = 200 * Math.pow(2, 20); // 200MB
+const checkImageMemoryCmd = `docker --config ./ manifest inspect -v ${linuxContainer} | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | numfmt --to=iec-i`;
+let containerName;
+
+const askQuestion = query => {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  return new Promise(resolve =>
+    rl.question(query, ans => {
+      rl.close();
+      resolve(ans);
+    })
+  );
+};
+
+const checkImageMemory = () => {
+  if (process.platform === "win32") {
+    return "0";
+  }
+
+  const spawnElement = spawn("sh", ["-c", checkImageMemoryCmd]);
+  return new Promise((resolve, reject) => {
+    let dataLine = "";
+    spawnElement.stdout.on("data", data => {
+      dataLine = data.toString().split(UNIT_MB);
+      console.log(dataLine);
+      if (dataLine.length > 1) {
+        console.log("Resolved");
+        resolve(dataLine[0]);
+      }
+    });
+
+    spawnElement.stderr.on("data", data => {
+      console.error(data);
+      reject(`Error checking available memory to pull image: ${data}`);
+    });
+  });
+};
+
+const convertMBtoBytes = mb => {
+  return mb * Math.pow(2, 20);
+};
+
+const pullImage = async () => {
   const spawnElement = spawn("docker", ["pull", linuxContainer]);
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on("data", data => {
@@ -27,18 +77,38 @@ module.exports.setupDocker = async () => {
   });
 };
 
-// Run docker with volume params
-module.exports.runDocker = dir => {
+module.exports.setupDocker = async () => {
+  let compressedImageMem = await checkImageMemory();
+  compressedImageMem = convertMBtoBytes(
+    parseInt(compressedImageMem.split(UNIT_MB)[0], 10)
+  );
+
+  if (compressedImageMem > os.freemem()) {
+    let answer = await askQuestion(
+      `You need ${compressedImageMem -
+        os.freemem()} MB to install our current image. If the process continues the app will probably fail. Do you still want to go on? (y/N)`
+    );
+    if (answer.toLowerCase() !== "y" && answer !== "") {
+      throw new Error(
+        "Pull image process stopped by user, please review necessary requirements"
+      );
+    }
+  }
+
+  await pullImage();
+};
+
+const executeContainer = (containerName, httpSource, imageDestination) => {
   const spawnElement = spawn("docker", [
     "run",
-    "--env",
-    "IMGBBKEY=54bf51261cae0f13aacb6de2dddb367b",
+    "--name",
+    containerName,
     "-v",
-    `${dir}:${httpAppDir}`,
-    linuxContainer,
-    "node",
-    "/tmp/thesis/demo/docker/main.js"
-  ]); // TODO: Edit command for running docker
+    `${httpSource}:${httpAppDir}`,
+    "-v",
+    `${imageDestination}:${snapshotDir}`,
+    linuxContainer
+  ]);
 
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on("data", data => {
@@ -50,6 +120,23 @@ module.exports.runDocker = dir => {
       reject(`Error executing docker container ${data}`);
     });
   });
+};
+
+// Run docker with volume params
+module.exports.runDocker = async (httpSource, imageDestination) => {
+  if (os.freemem() < IMAGE_MEMORY_THRESHOLD) {
+    let answer = await askQuestion(
+      `Your free memory is less than our suggested threshold of ${IMAGE_MEMORY_THRESHOLD} MB for running the docker. Do you still want to go on? (y/N)`
+    );
+    if (answer.toLowerCase() !== "y" && answer !== "") {
+      throw new Error(
+        "Run image process stopped by user, please review necessary requirements"
+      );
+    }
+  }
+
+  containerName = `${linuxContainer}_${httpSource}_${new Date().getTime()}`;
+  await executeContainer(containerName, httpSource, imageDestination);
 };
 
 module.exports.killDocker = () => {

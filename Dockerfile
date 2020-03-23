@@ -3,7 +3,6 @@
 FROM ubuntu
 ARG DEBIAN_FRONTEND=noninteractive
 
-# FROM node:buster
 RUN apt-get update
 RUN apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates
 RUN apt -y install git
@@ -39,10 +38,10 @@ RUN groupadd -r pwuser && useradd -r -g pwuser -G audio,video pwuser \
 # Run everything after as non-privileged user.
 USER pwuser
 WORKDIR /tmp
-ARG MAIN_DIR="thesis/demo/docker/"
+ARG MAIN_DIR="thesis/browser-execution/index.js"
 
 
 # Copy exec dirs
 RUN git clone https://github.com/sguzmanm/thesis.git
 RUN cd ${MAIN_DIR} && npm install
-CMD [ "nodejs","/tmp/thesis/demo/docker/main.js" ]
+CMD [ "nodejs","/tmp/thesis/browser-execution/index.js" ]

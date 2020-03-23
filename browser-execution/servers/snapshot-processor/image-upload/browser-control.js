@@ -7,73 +7,41 @@ const util = require("util");
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 
-const { browsers } = require("../../../shared/browsers");
+const { browsers } = require("../../../../shared/browsers");
 const compareImages = require("resemblejs/compareImages");
 
-const imagePath = process.env.IMAGE_APP_DIR || "/screenshots";
+const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || "/screenshots";
 const baseBrowser = process.env.BASE_BROWSER || "chromium";
 const browserWaitingTime = process.env.BROWSER_RESPONSE_WAITING_TIME || 1000;
 
-let responseMap = {};
-responseMap[browsers.CHROMIUM] = true;
-responseMap[browsers.FIREFOX] = true;
-responseMap[browsers.WEBKIT] = true;
+let activeBrowsers = [browsers.CHROMIUM, browsers.FIREFOX, browsers.WEBKIT];
 
 let timeoutMap = {};
 let imageMap = {};
 
-const getImageKey = imageRequestBody => {
-  return `${imageRequestBody.event}_${imageRequestBody.selector}_${imageRequestBody.id}`;
-};
-
-const checkNewImage = async (imageRequestBody, browser, fileName) => {
-  let key = getImageKey(imageRequestBody);
-  if (!imageMap[key]) imageMap[key] = {};
-  imageMap[key][browser] = fileName;
-
-  if (imageMap[key].length === responseMap.length) {
-    await compareBrowsers(imageMap[key]);
-  }
-};
-
-module.exports.registerImage = async (imageRequestBody, fileName) => {
-  const browser = imageRequestBody.browser;
-  if (!responseMap[browser]) {
-    console.log("Requesting inactive browser", browser);
-    return false;
-  }
-
-  // Set waiting timeout for image from browser
-  timeoutMap[browser] = setTimeout(async () => {
-    responseMap[browser] = undefined;
-    console.log("Desactivating browser", browser);
-    await checkNewImage(imageRequestBody, browser, fileName);
-  }, browserWaitingTime);
-
-  await checkNewImage(imageRequestBody, browser, fileName);
-};
-
+// Browser comparison of snapshots
 const compareBrowsers = async screenshotMap => {
   let baseImage = screenshotMap[baseBrowser];
 
-  let browsers = Object.keys(screenshotMap);
+  let browsers = [...activeBrowsers];
   let spliceIndex = browsers.indexOf(baseBrowser);
   browsers.splice(spliceIndex, 1);
-  console.log(spliceIndex, browsers);
 
   try {
     for (const browser of browsers) {
+      console.log("Compare", baseBrowser, browser);
       compare(
         imagePath + path.sep + baseImage,
         imagePath + path.sep + screenshotMap[browser]
       );
     }
   } catch (error) {
-    throw new Error("Resemble failed", error);
+    throw new Error("Image comparison failed", error);
   }
 };
 
 const compare = async (original, modified) => {
+  // TODO: Configure this by the user
   const options = {
     output: {
       errorColor: {
@@ -90,17 +58,12 @@ const compare = async (original, modified) => {
     ignore: "antialiasing"
   };
 
-  // The parameters can be Node Buffers
-  // data is the same as usual with an additional getBuffer() function
   const data = await compareImages(
     await readFile(original),
     await readFile(modified),
     options
   );
 
-  console.log("DATA", data);
-
-  console.log(modified);
   const fileSeparation = modified.split(path.sep);
   const comparisonPath =
     imagePath +
@@ -108,6 +71,60 @@ const compare = async (original, modified) => {
     baseBrowser +
     "X" +
     fileSeparation[fileSeparation.length - 1];
-  console.log(comparisonPath);
   await writeFile(comparisonPath, data.getBuffer());
+};
+
+const getImageKey = imageRequestBody => {
+  return `${imageRequestBody.event}_${imageRequestBody.selector}_${imageRequestBody.id}`;
+};
+
+const checkNewImage = async key => {
+  if (Object.keys(imageMap[key]).length === activeBrowsers.length) {
+    await compareBrowsers(imageMap[key]);
+    imageMap[key] = {};
+  }
+};
+
+const addNewImage = async (key, browser, fileName) => {
+  if (!imageMap[key]) {
+    return;
+  }
+
+  imageMap[key][browser] = fileName;
+  await checkNewImage(key);
+};
+
+const deactivateBrowser = async browser => {
+  let index = activeBrowsers.indexOf(browser);
+  activeBrowsers.splice(index, 1);
+  console.log("Deactivating browser...", browser);
+  if (browser === baseBrowser) {
+    throw new Error("Base browser deactivated. Nothing more to compare");
+  }
+
+  //Check images sent by remaining browsers if complete
+  for (let key in imageMap) {
+    delete imageMap[key][browser]; // Remove inactive browser
+    await checkNewImage(key);
+  }
+};
+
+module.exports.registerImage = async (imageRequestBody, fileName) => {
+  const browser = imageRequestBody.browser;
+  if (!activeBrowsers.includes(browser)) {
+    console.log(`Inactive browser requested browser ${browser}`);
+    throw new Error(`Inactive browser requested browser ${browser}`);
+  }
+
+  clearTimeout(timeoutMap[browser]);
+
+  // Set waiting timeout for image from browser
+  timeoutMap[browser] = setTimeout(
+    deactivateBrowser(browser),
+    browserWaitingTime
+  );
+
+  let imageKey = getImageKey(imageRequestBody);
+  if (!imageMap[imageKey]) imageMap[imageKey] = {};
+  await addNewImage(imageKey, browser, fileName);
 };

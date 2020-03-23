@@ -7,30 +7,26 @@ const ImageRouter = require("./image-upload/router");
 
 const port = process.env.IMAGE_PORT || "8081";
 
-const setupServer = (resolve, errorHandler) => {
-  // Middleware
-  app.use(errorHandler);
-
-  //Routes
-  app.use("/", ImageRouter);
-
-  app.listen(port, () => {
-    console.log(`App listening on port ${port}!`);
-    resolve(port);
-  });
+const errorHandler = (err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(400);
+  res.json({ error: err.message });
 };
 
 module.exports.start = () => {
-  return new Promise((resolve, reject) => {
-    const errorHandler = (err, req, res, next) => {
-      if (res.headersSent) {
-        return next(err);
-      }
-      res.status(500);
-      res.render("error", { error: err });
-      reject(err);
-    };
+  //Routes
+  app.use("/", ImageRouter);
+  // Middleware
+  app.use(errorHandler);
 
-    setupServer(resolve, errorHandler);
+  // Main action
+  const server = app.listen(port, () => {
+    console.log("Snapshot Server started", port);
+  });
+  server.on("error", err => {
+    console.error("Snapshot Processor Error:", err);
+    throw new Error("Snapshot Processor Error:", err.message);
   });
 };

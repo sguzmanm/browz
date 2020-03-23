@@ -9,6 +9,6 @@ OverLeaf Preview: https://www.overleaf.com/read/kxycvzwrmyvw
 - HTTP_PORT="8080"
 - HTTP_APP_DIR="/app"
 - IMAGE_PORT="8081"
-- IMAGE_APP_DIR="/screenshots"
+- SNAPSHOT_DESTINATION_DIR="/screenshots"
 - BASE_BROWSER="chromium"
 - IMGBBKEY="Key"
