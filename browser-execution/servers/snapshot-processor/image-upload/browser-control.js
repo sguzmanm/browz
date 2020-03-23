@@ -11,10 +11,10 @@ const { browsers } = require("../../../../shared/browsers");
 const compareImages = require("resemblejs/compareImages");
 
 const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || "/screenshots";
-const baseBrowser = process.env.BASE_BROWSER || "chromium";
+const baseBrowser = process.env.BASE_BROWSER || "electron";
 const browserWaitingTime = process.env.BROWSER_RESPONSE_WAITING_TIME || 1000;
 
-let activeBrowsers = [browsers.CHROMIUM, browsers.FIREFOX, browsers.WEBKIT];
+let activeBrowsers = [browsers.ELECTRON, browsers.FIREFOX, browsers.CHROME];
 
 let timeoutMap = {};
 let imageMap = {};
@@ -97,8 +97,9 @@ const addNewImage = async (key, browser, fileName) => {
 const deactivateBrowser = async browser => {
   let index = activeBrowsers.indexOf(browser);
   activeBrowsers.splice(index, 1);
-  console.log("Deactivating browser...", browser);
+  console.log("Deactivating browser...", browser, baseBrowser);
   if (browser === baseBrowser) {
+    console.error("Base browser deactivated. Nothing more to compare");
     throw new Error("Base browser deactivated. Nothing more to compare");
   }
 
@@ -119,10 +120,9 @@ module.exports.registerImage = async (imageRequestBody, fileName) => {
   clearTimeout(timeoutMap[browser]);
 
   // Set waiting timeout for image from browser
-  timeoutMap[browser] = setTimeout(
-    deactivateBrowser(browser),
-    browserWaitingTime
-  );
+  timeoutMap[browser] = setTimeout(() => {
+    deactivateBrowser(browser);
+  }, browserWaitingTime);
 
   let imageKey = getImageKey(imageRequestBody);
   if (!imageMap[imageKey]) imageMap[imageKey] = {};
