@@ -3,9 +3,9 @@
 require('cypress-plugin-tab');
 var faker = require('faker');
 
-const url = Cypress.config('baseUrl') || "https://uniandes.edu.co/";
+const url = Cypress.config('baseUrl') || 'http://www.agustinianosalitre.edu.co/';
 const appName = Cypress.env('appName')|| "your app";
-const events = Cypress.env('events')|| 100;
+const events = Cypress.env('events')|| 50;
 const delay = Cypress.env('delay') || 100;
 const seed = Cypress.env('seed') || 12;
 

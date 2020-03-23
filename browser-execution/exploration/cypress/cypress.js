@@ -1,26 +1,41 @@
 // TBD Make it fking work
 const Cypress = require('cypress');
 
+const config = {
+  integrationFolder: './exploration/cypress',
+  pluginsFile: false,
+  fixturesFolder: false,
+  supportFile: false,
+  screenshotsFolder: './exploration/cypress/screenshots',
+  testFiles: '*.spec.js',
+  video: true,
+  trashAssetsBeforeRuns: false,
+};
+
+const options = {
+  /* browser: 'chrome' | 'firefox' | 'electron' */
+  headless: true,
+  spec: './exploration/cypress/exploration.spec.js',
+  config,
+  configFile: false,
+  record: false,
+};
+
 module.exports.cypressHandler = async () => {
   console.log('Starting cypress...');
 
-  await Cypress.run({
-    browser: 'firefox',
-    headless: true,
-    spec: './exploration/cypress/exploration.spec.js',
-    config: {
-      integrationFolder: './exploration/cypress',
-      pluginsFile: false,
-      fixturesFolder: false,
-      supportFile: false,
-      videosFolder: './exploration/cypress/videos',
-      screenshotsFolder: './exploration/cypress/screenshots',
-      testFiles: '*.spec.js',
-      video: true,
-    },
-    configFile: false,
-    record: false,
-  });
+  const date = new Date();
+  const dateOptopns = {
+    year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric',
+  };
+  const dateString = date.toLocaleDateString('es-CO', dateOptopns);
+
+  const cypressRuns = [
+    Cypress.run({ browser: 'chrome', ...options, config: { videosFolder: `./exploration/cypress/videos/${dateString}/chrome`, ...options.config } }),
+    Cypress.run({ browser: 'firefox', ...options, config: { videosFolder: `./exploration/cypress/videos/${dateString}/firefox`, ...options.config } }),
+  ];
+
+  await Promise.all(cypressRuns);
 
   console.log('Finished :)');
 };
