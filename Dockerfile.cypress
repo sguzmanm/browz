@@ -1,0 +1,46 @@
+# For now it is here: https://hub.docker.com/repository/docker/sguzmanm/linux_playwright_tests/general
+# Also copied from https://github.com/microsoft/playwright/tree/master/.ci/node10
+FROM ubuntu
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update
+RUN apt -y install software-properties-common
+RUN apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates
+RUN apt -y install git
+
+# Get node 10
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get update && apt-get -y install nodejs
+RUN nodejs -v
+
+# Get cypress libs
+RUN apt-get update
+RUN apt-get -y install libgtk2.0-0 libgtk-3-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+
+# Get firefox
+RUN add-apt-repository ppa:ubuntu-mozilla-security/ppa
+RUN apt-get update && apt-get -y install firefox
+
+# Get chrome
+RUN curl -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN apt-get -y install ./google-chrome-stable_current_amd64.deb
+
+# Resemble
+RUN apt-get update
+RUN apt-get -y install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+
+# Add user so we don't need --no-sandbox.
+#RUN groupadd -r pwuser && useradd -r -g pwuser -G audio,video pwuser \
+ #   && mkdir -p /home/pwuser/Downloads \
+  #  && chown -R pwuser:pwuser /home/pwuser
+
+# Run everything after as non-privileged user.
+#USER pwuser
+WORKDIR /tmp
+ARG MAIN_DIR="thesis/browser-execution"
+
+
+# Copy exec dirs
+RUN git clone https://github.com/sguzmanm/thesis.git
+RUN cd ${MAIN_DIR} && npm install
+CMD [ "nodejs","/tmp/thesis/browser-execution/index.js" ]

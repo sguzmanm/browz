@@ -103,6 +103,7 @@ const executeContainer = (containerName, httpSource, imageDestination) => {
     "run",
     "--name",
     containerName,
+    "--shm-size=512m",
     "-v",
     `${httpSource}:${httpAppDir}`,
     "-v",
