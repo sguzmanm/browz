@@ -38,7 +38,7 @@ RUN groupadd -r pwuser && useradd -r -g pwuser -G audio,video pwuser \
 # Run everything after as non-privileged user.
 USER pwuser
 WORKDIR /tmp
-ARG MAIN_DIR="thesis/browser-execution/index.js"
+ARG MAIN_DIR="thesis/browser-execution"
 
 
 # Copy exec dirs

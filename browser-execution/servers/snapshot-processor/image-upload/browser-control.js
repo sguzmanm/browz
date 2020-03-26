@@ -14,6 +14,7 @@ const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || "/screenshots";
 const baseBrowser = process.env.BASE_BROWSER || "electron";
 const browserWaitingTime = process.env.BROWSER_RESPONSE_WAITING_TIME || 1000;
 
+// Modify this var to take into account active browsers
 let activeBrowsers = [browsers.ELECTRON, browsers.FIREFOX, browsers.CHROME];
 
 let timeoutMap = {};
@@ -21,7 +22,7 @@ let imageMap = {};
 
 // Browser comparison of snapshots
 const compareBrowsers = async screenshotMap => {
-  let baseImage = screenshotMap[baseBrowser];
+  let baseImages = screenshotMap[baseBrowser];
 
   let browsers = [...activeBrowsers];
   let spliceIndex = browsers.indexOf(baseBrowser);
@@ -30,10 +31,12 @@ const compareBrowsers = async screenshotMap => {
   try {
     for (const browser of browsers) {
       console.log("Compare", baseBrowser, browser);
-      compare(
-        imagePath + path.sep + baseImage,
-        imagePath + path.sep + screenshotMap[browser]
-      );
+      for (let i = 0; i < baseImages.length; i++) {
+        compare(
+          imagePath + path.sep + baseImages[i],
+          imagePath + path.sep + screenshotMap[browser][i]
+        );
+      }
     }
   } catch (error) {
     throw new Error("Image comparison failed", error);
@@ -85,19 +88,19 @@ const checkNewImage = async key => {
   }
 };
 
-const addNewImage = async (key, browser, fileName) => {
+const addNewImage = async (key, browser, fileNames) => {
   if (!imageMap[key]) {
     return;
   }
 
-  imageMap[key][browser] = fileName;
+  imageMap[key][browser] = fileNames;
   await checkNewImage(key);
 };
 
 const deactivateBrowser = async browser => {
   let index = activeBrowsers.indexOf(browser);
   activeBrowsers.splice(index, 1);
-  console.log("Deactivating browser...", browser, baseBrowser);
+  console.log("Deactivating browser...", browser);
   if (browser === baseBrowser) {
     console.error("Base browser deactivated. Nothing more to compare");
     throw new Error("Base browser deactivated. Nothing more to compare");
@@ -110,7 +113,7 @@ const deactivateBrowser = async browser => {
   }
 };
 
-module.exports.registerImage = async (imageRequestBody, fileName) => {
+module.exports.registerImage = async (imageRequestBody, fileNames) => {
   const browser = imageRequestBody.browser;
   if (!activeBrowsers.includes(browser)) {
     console.log(`Inactive browser requested browser ${browser}`);
@@ -126,5 +129,5 @@ module.exports.registerImage = async (imageRequestBody, fileName) => {
 
   let imageKey = getImageKey(imageRequestBody);
   if (!imageMap[imageKey]) imageMap[imageKey] = {};
-  await addNewImage(imageKey, browser, fileName);
+  await addNewImage(imageKey, browser, fileNames);
 };

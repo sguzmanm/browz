@@ -1,13 +1,14 @@
 const Cypress = require("cypress");
-const path = require("path");
 
 const config = {
-  integrationFolder: ".${path.sep}exploration${path.sep}cypress",
+  baseUrl: "http://www.agustinianosalitre.edu.co/",
+  events: 10,
+  integrationFolder: "./exploration/cypress",
+  chromeWebSecurity: false,
   pluginsFile: false,
   fixturesFolder: false,
   supportFile: false,
-  screenshotsFolder:
-    ".${path.sep}exploration${path.sep}cypress${path.sep}screenshots",
+  screenshotsFolder: "./exploration/cypress/screenshots",
   testFiles: "*.spec.js",
   video: true,
   trashAssetsBeforeRuns: false
@@ -16,7 +17,7 @@ const config = {
 const options = {
   /* browser: 'chrome' | 'firefox' | 'electron' */
   headless: true,
-  spec: `.${path.sep}exploration${path.sep}cypress${path.sep}exploration.spec.js`,
+  spec: `./exploration/cypress/exploration.spec.js`,
   config,
   configFile: false,
   record: false
@@ -40,7 +41,7 @@ module.exports.cypressHandler = async () => {
       browser: "chrome",
       ...options,
       config: {
-        videosFolder: `.${path.sep}exploration${path.sep}cypress${path.sep}videos${path.sep}${dateString}${path.sep}chrome`,
+        videosFolder: `./exploration/cypress/videos/${dateString}/chrome`,
         ...options.config
       }
     }),
@@ -48,7 +49,7 @@ module.exports.cypressHandler = async () => {
       browser: "firefox",
       ...options,
       config: {
-        videosFolder: `.${path.sep}exploration${path.sep}cypress${path.sep}videos${path.sep}${dateString}${path.sep}firefox`,
+        videosFolder: `./exploration/cypress/videos/${dateString}/firefox`,
         ...options.config
       }
     })
