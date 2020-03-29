@@ -7,6 +7,7 @@
     "thesis": "index.js"
   },
   "scripts": {
+    "thesis": "node bin/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
