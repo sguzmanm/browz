@@ -1,7 +1,7 @@
 module.exports.browsers = {
-  CHROME: "chrome",
-  ELECTRON: "electron",
-  CHROMIUM: "chromium",
-  FIREFOX: "firefox",
-  WEBKIT: "webkit"
+  CHROME: 'chrome',
+  ELECTRON: 'electron',
+  CHROMIUM: 'chromium',
+  FIREFOX: 'firefox',
+  WEBKIT: 'webkit',
 };
