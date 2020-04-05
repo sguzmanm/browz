@@ -1,4 +1,5 @@
 const { spawn } = require('child_process');
+const fs = require('fs');
 const os = require('os');
 const readline = require('readline');
 
@@ -7,8 +8,9 @@ const httpAppDir = process.env.HTTP_APP_DIR || '/tmp/app';
 const snapshotDir = process.env.SNAPSHOT_DESTINATION_DIR || '/tmp/screenshots';
 
 const UNIT_MB = 'Mi';
+const ENV_PARAM = 'env';
 const IMAGE_MEMORY_THRESHOLD = 200 * (2 ** 20); // 200MB
-const checkImageMemoryCmd = `docker --config ${__dirname} manifest inspect -v ${linuxContainer} | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | numfmt --to=iec-i`;
+const checkImageMemoryCmd = `docker --config ${`${__dirname}/config`} manifest inspect -v ${linuxContainer} | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | numfmt --to=iec-i`;
 
 const askQuestion = (query) => {
   const rl = readline.createInterface({
@@ -92,7 +94,33 @@ module.exports.setupDocker = async () => {
   await pullImage();
 };
 
+
+const parseFilesAsEnvVariables = () => {
+  const configFiles = {
+    'resemble.json': 'CONFIG_RESEMBLE',
+  };
+
+  const ans = [];
+  let data;
+  Object.keys(configFiles).forEach((file) => {
+    data = fs.readFileSync(`${__dirname}/config/${file}`);
+    data = JSON.parse(data);
+
+    ans.push(ENV_PARAM);
+    ans.push(`${configFiles[file]}=${data}`);
+  });
+
+  return ans;
+};
+
+/*
+* Command example: docker run --shm-size=512 -v /httpDir:/tmp/app /imageDir:/tmp/screenshots
+* --env-file="../.env" sguzmanm/linux_cypress_tests:lite sh -c cd /tmp/thesis && git reset
+* --hard HEAD && git pull origin master && cd browser-execution && node index.js
+*/
 const executeContainer = (httpSource, imageDestination) => {
+  const envFile = '../.env';
+  const fileEnvVariables = parseFilesAsEnvVariables();
   const commands = [
     'run',
     '--shm-size=512m',
@@ -100,11 +128,14 @@ const executeContainer = (httpSource, imageDestination) => {
     `${httpSource}:${httpAppDir}`,
     '-v',
     `${imageDestination}:${snapshotDir}`,
+    `--env-file=${envFile}`,
+    ...fileEnvVariables,
     linuxContainer,
     'sh',
     '-c',
     'cd /tmp/thesis && git reset --hard HEAD && git pull origin master && cd browser-execution && node index.js',
   ];
+
   console.log(commands.join(' '));
   const spawnElement = spawn('docker', commands);
 
@@ -137,7 +168,7 @@ module.exports.runDocker = async (httpSource, imageDestination) => {
 };
 
 module.exports.killDocker = () => {
-  const spawnElement = spawn('docker', ['rm', '--force', linuxContainer]); // TODO: Edit command for running docker
+  const spawnElement = spawn('docker', ['rm', '--force', linuxContainer]);
 
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {

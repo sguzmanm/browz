@@ -21,26 +21,43 @@ const activeBrowsers = [browsers.ELECTRON, browsers.FIREFOX, browsers.CHROME];
 
 const timeoutMap = {};
 const imageMap = {};
+const defaultResembleConfig = {
+  output: {
+    errorColor: {
+      red: 255,
+      green: 0,
+      blue: 255,
+    },
+    errorType: 'movement',
+    transparency: 0.6,
+    largeImageThreshold: 0,
+    outputDiff: true,
+  },
+  scaleToSameSize: true,
+  ignore: 'antialiasing',
+};
+
+let resembleConfig;
+
+const setupResemble = () => {
+  resembleConfig = defaultResembleConfig;
+  if (!process.env.CONFIG_RESEMBLE) {
+    return;
+  }
+
+  resembleConfig = JSON.parse(process.env.CONFIG_RESEMBLE);
+};
 
 const compare = async (original, modified) => {
-  // TODO: Configure this by the user
-  const options = {
-    output: {
-      errorColor: {
-        red: 255,
-        green: 0,
-        blue: 255,
-      },
-      errorType: 'movement',
-      transparency: 0.6,
-      largeImageThreshold: 0,
-      outputDiff: true,
-    },
-    scaleToSameSize: true,
-    ignore: 'antialiasing',
-  };
+  if (!resembleConfig) {
+    setupResemble();
+  }
 
-  const data = await compareImages(await readFile(original), await readFile(modified), options);
+  const data = await compareImages(
+    await readFile(original),
+    await readFile(modified),
+    resembleConfig,
+  );
 
   const fileSeparation = modified.split(path.sep);
   const comparisonPath = `${imagePath + path.sep + baseBrowser}X${fileSeparation[fileSeparation.length - 1]}`;
