@@ -118,7 +118,7 @@ const parseFilesAsEnvVariables = () => {
 /*
  * Command example: docker run --shm-size=512 -v /httpDir:/tmp/app /imageDir:/tmp/screenshots
  * --env-file="../.env" sguzmanm/linux_cypress_tests:lite sh -c cd /tmp/thesis && git reset
- * --hard HEAD && git pull origin master && cd browser-execution && node index.js
+ * --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js
  */
 const executeContainer = (httpSource, imageDestination) => {
   const envFile = `${__dirname}/config/.env`;
@@ -137,7 +137,7 @@ const executeContainer = (httpSource, imageDestination) => {
     linuxContainer,
     'sh',
     '-c',
-    'cd /tmp/thesis && git reset --hard HEAD && git pull origin master && cd browser-execution && node index.js',
+    'cd /tmp/thesis && git reset --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js',
   ];
 
   console.log(commands.join(' '));
@@ -146,7 +146,7 @@ const executeContainer = (httpSource, imageDestination) => {
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
       console.log(`Docker logs >>\n${data}`);
-      if (data.includes('Finished')) {
+      if (data.includes('Finished :)')) {
         console.log('Resolved');
         resolve(data);
       }
