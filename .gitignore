@@ -1,2 +1,3 @@
 node_modules/
+# Ignoring due to dev team working in windows and linux
 package-lock.json
