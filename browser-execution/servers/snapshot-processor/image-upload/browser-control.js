@@ -13,11 +13,11 @@ const compareImages = require('resemblejs/compareImages');
 const { browsers } = require('../../../../shared/browsers');
 
 const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../screenshots');
-const baseBrowser = process.env.BASE_BROWSER || 'electron';
+const baseBrowser = process.env.BASE_BROWSER || 'chrome';
 const browserWaitingTime = process.env.BROWSER_RESPONSE_WAITING_TIME || 4000;
 
 // Modify this var to take into account active browsers
-const activeBrowsers = [browsers.ELECTRON, browsers.FIREFOX, browsers.CHROME];
+const activeBrowsers = [browsers.FIREFOX, browsers.CHROME];
 
 const timeoutMap = {};
 const imageMap = {};

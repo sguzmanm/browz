@@ -6,19 +6,19 @@ var faker = require('faker');
 
 const url = Cypress.config('baseUrl') || "https://uniandes.edu.co/";
 const appName = Cypress.env('appName')|| "your app";
-const events = Cypress.env('events')|| 100;
+const events = Cypress.env('events')|| 30;
 const delay = Cypress.env('delay') || 100;
 var seed = Cypress.env('seed');
 
 const num_categories = 7;
 
-const pct_clicks = Cypress.env('pctClicks') || 12;
-const pct_scrolls = Cypress.env('pctScroll') || 12;
+const pct_clicks = Cypress.env('pctClicks') || 30;
+const pct_scrolls = Cypress.env('pctScroll') || 0;
 const pct_selectors = Cypress.env('pctSelectors') || 12;
 const pct_keys = Cypress.env('pctKeys') || 12;
 const pct_spkeys = Cypress.env('pctSpKeys') || 12;
 const pct_pgnav = Cypress.env('pctPgNav') || 12;
-const pct_browserChaos = Cypress.env('pctBwChaos') || 12;
+const pct_browserChaos = Cypress.env('pctBwChaos') || 6;
 const pct_actions = Cypress.env('pctActions') || 16;
 
 const LOG_FILENAME = "../../../results/smart-monkey-execution.html";
@@ -682,6 +682,7 @@ describe( `${appName} under smarter monkeys`, function() {
             //Add an event for each type of event in order to enter the else statement of randomEvent method
             for(let i = 0; i < events + 7; i++){
                 randomEvent()
+                cy.log(`Finished event ${i}`)
             }
         }
         else cy.task('logPctNo100')

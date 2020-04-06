@@ -49,6 +49,7 @@ const storage = multer.diskStorage({
       return;
     }
 
+    console.log(`[serv] Multer req:\n${JSON.stringify(Object.keys(req))}`);
     console.log(`[serv] Multer "body":\n${JSON.stringify(req.body)}`);
 
 

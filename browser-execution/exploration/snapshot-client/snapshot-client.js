@@ -28,12 +28,12 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
     afterImage = fs.readFileSync(afterPath);
 
     const form = new FormData();
-    form.append('before', beforeImage, { contentType: 'image/png', filename: 'before.png' });
-    form.append('after', afterImage, { contentType: 'image/png', filename: 'after.png' });
-
     form.append('browser', browser);
     form.append('id', id);
     form.append('event', `${eventType}: ${event}`);
+
+    form.append('before', beforeImage, { contentType: 'image/png', filename: 'before.png' });
+    form.append('after', afterImage, { contentType: 'image/png', filename: 'after.png' });
 
     const options = {
       method: 'POST',
