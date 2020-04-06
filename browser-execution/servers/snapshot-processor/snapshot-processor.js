@@ -1,13 +1,9 @@
-const dotenv = require('dotenv');
-
-dotenv.config();
-
+require('dotenv').config(); // Setup variables from .env file
 const express = require('express');
-
-const app = express();
 const ImageRouter = require('./image-upload/router');
 
 const port = process.env.IMAGE_PORT || '8081';
+const app = express();
 
 const errorHandler = (err, req, res, next) => {
   if (res.headersSent) {
@@ -17,6 +13,7 @@ const errorHandler = (err, req, res, next) => {
   const ans = { error: err.message };
   res.status(400);
   res.json(ans);
+
   return ans;
 };
 
@@ -30,6 +27,7 @@ module.exports.start = () => {
   const server = app.listen(port, () => {
     console.log('Snapshot Server started', port);
   });
+
   server.on('error', (err) => {
     console.error('Snapshot Processor Error:', err);
     throw new Error('Snapshot Processor Error:', err.message);

@@ -1,15 +1,12 @@
-const dotenv = require('dotenv');
-
-dotenv.config();
-
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const multer = require('multer');
-
 const { registerImage } = require('./browser-control');
 
-const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || '/screenshots';
+
+const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../screenshots');
 
 const BACK_IMAGE = 'before';
 const AFTER_IMAGE = 'after';
@@ -52,6 +49,9 @@ const storage = multer.diskStorage({
       return;
     }
 
+    console.log(`[serv] Multer "body":\n${JSON.stringify(req.body)}`);
+
+
     const imageRequestBody = req.body;
     const fileName = getFilename(fieldName, imageRequestBody);
     createFilename(
@@ -79,6 +79,8 @@ const getFile = (files, fieldname) => files.find((file) => file.fieldname === fi
 }
 */
 router.post('/', upload.any(), async (req, res, next) => {
+  console.log('[Received post]: \nBody:\n', req.body, '\nFiles:\n', req.files, '-------------------------------------');
+
   try {
     await registerImage(req.body, [
       getFile(req.files, BACK_IMAGE).filename,

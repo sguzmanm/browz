@@ -13,19 +13,23 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
   const { path: beforePath } = beforeSnapshot;
   const { path: afterPath } = afterSnapshot;
 
+  console.log('[client] Before splits');
+
   const [id, eventType, event] = beforePath.split('/')[beforePath.split('/').length - 1].split('.')[0].split('-');
   const browser = getBrowser(beforePath);
 
   let beforeImage;
   let afterImage;
 
+  console.log('[client] After splits');
+
   try {
     beforeImage = fs.readFileSync(beforePath);
     afterImage = fs.readFileSync(afterPath);
 
     const form = new FormData();
-    form.append('before', beforeImage);
-    form.append('after', afterImage);
+    form.append('before', beforeImage, { contentType: 'image/png', filename: 'before.png' });
+    form.append('after', afterImage, { contentType: 'image/png', filename: 'after.png' });
 
     form.append('browser', browser);
     form.append('id', id);
@@ -37,8 +41,10 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
       body: form.getBuffer(),
     };
 
-    const response = await fetch('https://localhost:8081', options);
+    const response = await fetch('http://localhost:8081/', options);
     const text = await response.text();
+
+    console.log('[client] After fetch');
 
     console.log(`Response: (${response.status}) content:\n${text}\n------------`);
   } catch (error) {
