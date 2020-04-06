@@ -44,4 +44,4 @@ ARG MAIN_DIR="thesis/browser-execution"
 # Copy exec dirs
 RUN git clone https://github.com/sguzmanm/thesis.git
 RUN cd ${MAIN_DIR} && npm install
-CMD [ "nodejs","/tmp/thesis/browser-execution/index.js" ]
+CMD ["sh","-c","cd /tmp/thesis && git pull origin master && cd browser-execution && nodejs index.js"]

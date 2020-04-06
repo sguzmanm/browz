@@ -1,3 +1,3 @@
 module.exports.createReport = async () => {
-  console.log("REPORT OK");
+  console.log('REPORT OK');
 };

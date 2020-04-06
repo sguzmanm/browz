@@ -1,7 +1,9 @@
 const Cypress = require('cypress');
 
+const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || '../../screenshots';
+
 const config = {
-  baseUrl: 'http://www.agustinianosalitre.edu.co/',
+  baseUrl: 'http://localhost:8080',
   events: 10,
   integrationFolder: './exploration/cypress',
   chromeWebSecurity: false,
@@ -41,7 +43,7 @@ module.exports.cypressHandler = async () => {
       browser: 'chrome',
       ...options,
       config: {
-        videosFolder: `./exploration/cypress/videos/${dateString}/chrome`,
+        videosFolder: `${imagePath}/${dateString}/chrome`,
         ...options.config,
       },
     }),
