@@ -1,60 +1,60 @@
 const Cypress = require('cypress');
 
-const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || '../../screenshots';
+// const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || '../../screenshots';
+const path = (relativePath) => `${__dirname}/${relativePath}`;
 
-const config = {
+const baseConfig = {
   baseUrl: 'http://localhost:8080',
   events: 10,
-  integrationFolder: './exploration/cypress',
+  integrationFolder: path('.'),
   chromeWebSecurity: false,
-  pluginsFile: false,
+  pluginsFile: path('cypress_plugins.js'),
   fixturesFolder: false,
   supportFile: false,
-  screenshotsFolder: './exploration/cypress/screenshots',
-  testFiles: '*.spec.js',
+  testFiles: path('*.spec.js'),
   video: true,
   trashAssetsBeforeRuns: false,
 };
 
-const options = {
+const baseOptions = {
   /* browser: 'chrome' | 'firefox' | 'electron' */
   headless: true,
-  spec: './exploration/cypress/exploration.spec.js',
-  config,
+  spec: path('./exploration.spec.js'),
   configFile: false,
   record: false,
 };
 
-module.exports.cypressHandler = async () => {
-  console.log('Starting cypress...');
-
+const browserOptions = (browser) => {
   const date = new Date();
-  const dateOptopns = {
+  const dateOptions = {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: 'numeric',
     minute: 'numeric',
   };
-  const dateString = date.toLocaleDateString('es-CO', dateOptopns);
+
+  const dateString = date.toLocaleDateString('es-CO', dateOptions);
+
+  const config = {
+    ...baseConfig,
+    videosFolder: path(`runs/${dateString}/${browser}/videos`),
+    screenshotsFolder: path(`runs/${dateString}/${browser}/screenshots`),
+  };
+
+  return {
+    browser,
+    config,
+    ...baseOptions,
+  };
+};
+
+module.exports.cypressHandler = async () => {
+  console.log('Starting cypress...');
 
   const cypressRuns = [
-    Cypress.run({
-      browser: 'chrome',
-      ...options,
-      config: {
-        videosFolder: `${imagePath}/${dateString}/chrome`,
-        ...options.config,
-      },
-    }),
-    Cypress.run({
-      browser: 'firefox',
-      ...options,
-      config: {
-        videosFolder: `./exploration/cypress/videos/${dateString}/firefox`,
-        ...options.config,
-      },
-    }),
+    Cypress.run(browserOptions('chrome')),
+    Cypress.run(browserOptions('firefox')),
   ];
 
   await Promise.all(cypressRuns);

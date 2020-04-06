@@ -593,16 +593,15 @@ function clearCookies(){
     cy.task("logCommand", {funtype: "Chaos: Clear cookies", info: "Cookies are clear"})
 }
 
-//var screenshotIndex = 0;
+let screenshotIndex = 0;
 
-function randomEvent(setCurrentEventDetails){
+function randomEvent(){
     let typeIndex = getRandomInt(0, pending_events.length);
     if(pending_events[typeIndex] > 0){
         screenshotIndex += 1;
         let fIndex = getRandomInt(0, functions[typeIndex].length-1);
         const event = functions[typeIndex][fIndex]
         const eventType = getEvtType(typeIndex)
-        setCurrentEventDetails(eventType, event, screenshotIndex)
         cy.screenshot(`${screenshotIndex}-${eventType}-${event.name}-before`);
         event();
         pending_events[typeIndex] --;
@@ -623,7 +622,7 @@ function getEvtType(i){
     else if (i===4) return "Special Keypress"
     else if (i===5) return "Page Navigation"
     else if (i===6) return "Browser Chaos"
-    else if (i===7) return "Action/Click"
+    else if (i===7) return "Action or Click"
 }
 
 var pending_events = [,,,,,,,];
@@ -641,31 +640,6 @@ const functions = [
 ];
 
 describe( `${appName} under smarter monkeys`, function() {
-  let preSnapshot = null;
-    let currentEventDetails = null;
-
-    const setCurrentEventDetails = (eventType, event, screenshotIndex) => {
-        currentEventDetails = {
-            index: screenshotIndex,
-            eventType,
-            event: event.name,
-            timestamp: Date.now() // Timestamp before the event is sent
-        }
-    }
-
-    Cypress.Screenshot.defaults({
-        afterScreenshot ($el, props) {
-            if (preSnapshot) {
-                preSnapshot = props
-                return
-            }
-
-            Client.sendSnapshot([preSnapshot, props], currentEventDetails);
-            preSnapshot = null
-            currentEventDetails = null
-        }
-    })
-
     //Listeners
     cy.on('uncaught:exception', (err)=>{
         cy.task('genericLog', {'message':`An exception occurred: ${err}`})
@@ -681,7 +655,7 @@ describe( `${appName} under smarter monkeys`, function() {
         return false;
     });
     it(`visits ${appName} and survives smarter monkeys`, function() {
-        if(!seed) seed = getRandomInt(0, Number.MAX_SAFE_INTEGER);
+        if(!seed) seed = Math.ceil(Math.random()*Number.MAX_SAFE_INTEGER)
 
         cy.task('logStart', {"type":"monkey", "url":url, "seed":seed})
         cy.log(`Seed: ${seed}`)
@@ -707,7 +681,7 @@ describe( `${appName} under smarter monkeys`, function() {
             cy.wait(1000)
             //Add an event for each type of event in order to enter the else statement of randomEvent method
             for(let i = 0; i < events + 7; i++){
-                randomEvent(setCurrentEventDetails)
+                randomEvent()
             }
         }
         else cy.task('logPctNo100')
