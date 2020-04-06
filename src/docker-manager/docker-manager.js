@@ -9,6 +9,7 @@ const snapshotDir = process.env.SNAPSHOT_DESTINATION_DIR || '/tmp/screenshots';
 
 const UNIT_MB = 'Mi';
 const ENV_PARAM = 'env';
+const CONTAINER_NAME = 'thesis';
 const IMAGE_MEMORY_THRESHOLD = 200 * (2 ** 20); // 200MB
 const checkImageMemoryCmd = `docker --config ${`${__dirname}/config`} manifest inspect -v ${linuxContainer} | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | numfmt --to=iec-i`;
 
@@ -104,10 +105,12 @@ const parseFilesAsEnvVariables = () => {
   let data;
   Object.keys(configFiles).forEach((file) => {
     data = fs.readFileSync(`${__dirname}/config/${file}`);
-    data = JSON.parse(data);
+    if (data.byteLength > 0) {
+      data = JSON.parse(data);
 
-    ans.push(ENV_PARAM);
-    ans.push(`${configFiles[file]}=${data}`);
+      ans.push(ENV_PARAM);
+      ans.push(`${configFiles[file]}=${data}`);
+    }
   });
 
   return ans;
@@ -119,7 +122,7 @@ const parseFilesAsEnvVariables = () => {
 * --hard HEAD && git pull origin master && cd browser-execution && node index.js
 */
 const executeContainer = (httpSource, imageDestination) => {
-  const envFile = '../.env';
+  const envFile = `${__dirname}/config/.env`;
   const fileEnvVariables = parseFilesAsEnvVariables();
   const commands = [
     'run',
@@ -130,6 +133,8 @@ const executeContainer = (httpSource, imageDestination) => {
     `${imageDestination}:${snapshotDir}`,
     `--env-file=${envFile}`,
     ...fileEnvVariables,
+    '--name',
+    CONTAINER_NAME,
     linuxContainer,
     'sh',
     '-c',
@@ -141,12 +146,22 @@ const executeContainer = (httpSource, imageDestination) => {
 
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
-      console.log(`child stdout:\n${data}`);
-      resolve(data);
+      console.log(`Docker logs >>\n${data}`);
+      if (data.includes('Finished')) {
+        console.log('Resolved');
+        resolve(data);
+      }
     });
 
     spawnElement.stderr.on('data', (data) => {
-      reject(new Error(`Error executing docker container ${data}`));
+      console.error(`Docker error >>\n${data}`);
+    });
+
+    spawnElement.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+      if (code !== 0) {
+        reject(new Error(`Container execution failed, exit code: ${code}`));
+      }
     });
   });
 };
@@ -168,7 +183,7 @@ module.exports.runDocker = async (httpSource, imageDestination) => {
 };
 
 module.exports.killDocker = () => {
-  const spawnElement = spawn('docker', ['rm', '--force', linuxContainer]);
+  const spawnElement = spawn('docker', ['rm', '--force', CONTAINER_NAME]);
 
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
@@ -177,7 +192,9 @@ module.exports.killDocker = () => {
     });
 
     spawnElement.stderr.on('data', (data) => {
-      reject(new Error(`Error executing docker container ${data}`));
+      if (!data.includes('No such container:')) {
+        reject(new Error(`Error stopping docker container ${data}`));
+      }
     });
   });
 };

@@ -8,8 +8,8 @@ const util = require('util');
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
-
 const compareImages = require('resemblejs/compareImages');
+
 const { browsers } = require('../../../../shared/browsers');
 
 const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || '../../screenshots';
