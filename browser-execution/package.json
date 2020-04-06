@@ -5,13 +5,14 @@
   "main": "main.js",
   "dependencies": {
     "cypress": "^4.2.0",
+    "cypress-plugin-tab": "^1.0.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "faker": "^4.1.0",
     "multer": "^1.4.2",
+    "node-fetch": "^2.6.0",
     "node-static": "^0.7.11",
-    "resemblejs": "^3.2.4",
-    "cypress-plugin-tab": "^1.0.5",
-    "faker": "^4.1.0"
+    "resemblejs": "^3.2.4"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
