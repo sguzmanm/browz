@@ -6,7 +6,7 @@ var faker = require('faker');
 
 const url = Cypress.config('baseUrl') || 'https://uniandes.edu.co/';
 const appName = Cypress.env('appName') || 'your app';
-const events = Cypress.env('events') || 5;
+const events = Cypress.env('events') || 30;
 const delay = Cypress.env('delay') || 100;
 var seed = Cypress.env('seed');
 
@@ -106,7 +106,7 @@ function randClick() {
         cy.get(`#${element.id}`).click();
         info = `${element.tagName} with id: ${element.id}`;
       } else {
-      /*
+        /*
             else if(!!element.className){ //boolean that indicates if the element has a non-empty className
                 let className = element.tagName.splice(0,1)+'.'+element.className.replace(/\s/g, ".")
                 cy.get(`.${className}`).then($candidates => {
@@ -158,7 +158,7 @@ function randDClick() {
         cy.get(`#${element.id}`).dblclick();
         info = `${element.tagName} with id: ${element.id}`;
       } else {
-      /*
+        /*
             else if(!!element.className){ //boolean that indicates if the element has a non-empty className
                 let className = element.tagName.splice(0,1)+'.'+element.className.replace(/\s/g, ".")
                 cy.get(`.${className}`).then($candidates => {
@@ -210,7 +210,7 @@ function randRClick() {
         cy.get(`#${element.id}`).rightclick();
         info = `${element.tagName} with id: ${element.id}`;
       } else {
-      /*else if(!!element.className){ //boolean that indicates if the element has a non-empty className
+        /*else if(!!element.className){ //boolean that indicates if the element has a non-empty className
                 let className = element.tagName.splice(0,1)+'.'+element.className.replace(/\s/g, ".")
                 cy.get(`.${className}`).then($candidates => {
                     //rightclick the first visible candidate
@@ -260,7 +260,7 @@ function randHover() {
           cy.get(`#${element.id}`).trigger('mouseover');
           info = `${element.tagName} with id: ${element.id}`;
         } else {
-        /*else if(!!element.className){ //boolean that indicates if the element has a non-empty className
+          /*else if(!!element.className){ //boolean that indicates if the element has a non-empty className
                     cy.get(`.${element.className}`).then($candidates => {
                         //rightclick the first visible candidate
                         for(let i = 0 i < $candidates.length i++){
