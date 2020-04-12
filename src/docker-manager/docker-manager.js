@@ -3,8 +3,7 @@ const fs = require('fs');
 const os = require('os');
 const readline = require('readline');
 
-const linuxContainer =
-  process.env.LINUX_CONTAINER || 'sguzmanm/linux_cypress_tests:lite';
+const linuxContainer = process.env.LINUX_CONTAINER || 'sguzmanm/linux_cypress_tests:lite';
 const httpAppDir = process.env.HTTP_APP_DIR || '/tmp/app';
 const snapshotDir = process.env.SNAPSHOT_DESTINATION_DIR || '/tmp/screenshots';
 
@@ -20,12 +19,10 @@ const askQuestion = (query) => {
     output: process.stdout,
   });
 
-  return new Promise((resolve) =>
-    rl.question(query, (ans) => {
-      rl.close();
-      resolve(ans);
-    })
-  );
+  return new Promise((resolve) => rl.question(query, (ans) => {
+    rl.close();
+    resolve(ans);
+  }));
 };
 
 const checkImageMemory = () => {
@@ -48,7 +45,7 @@ const checkImageMemory = () => {
     spawnElement.stderr.on('data', (data) => {
       console.error(data);
       reject(
-        new Error(`Error checking available memory to pull image: ${data}`)
+        new Error(`Error checking available memory to pull image: ${data}`),
       );
     });
   });
@@ -77,18 +74,17 @@ const pullImage = async () => {
 module.exports.setupDocker = async () => {
   let compressedImageMem = await checkImageMemory();
   compressedImageMem = convertMBtoBytes(
-    parseInt(compressedImageMem.split(UNIT_MB)[0], 10)
+    parseInt(compressedImageMem.split(UNIT_MB)[0], 10),
   );
 
   if (compressedImageMem > os.freemem()) {
+    const requiredMemory = compressedImageMem - os.freemem();
     const answer = await askQuestion(
-      `You need ${
-        compressedImageMem - os.freemem()
-      } MB to install our current image. If the process continues the app will probably fail. Do you still want to go on? (y/N)`
+      `You need ${requiredMemory} MB to install our current image. If the process continues the app will probably fail. Do you still want to go on? (y/N)`,
     );
     if (answer.toLowerCase() !== 'y' && answer !== '') {
       throw new Error(
-        'Pull image process stopped by user, please review necessary requirements'
+        'Pull image process stopped by user, please review necessary requirements',
       );
     }
   }
@@ -169,11 +165,11 @@ const executeContainer = (httpSource, imageDestination) => {
 module.exports.runDocker = async (httpSource, imageDestination) => {
   if (os.freemem() < IMAGE_MEMORY_THRESHOLD) {
     const answer = await askQuestion(
-      `Your free memory is less than our suggested threshold of ${IMAGE_MEMORY_THRESHOLD} MB for running the docker. Do you still want to go on? (y/N)`
+      `Your free memory is less than our suggested threshold of ${IMAGE_MEMORY_THRESHOLD} MB for running the docker. Do you still want to go on? (y/N)`,
     );
     if (answer.toLowerCase() !== 'y' && answer !== '') {
       throw new Error(
-        'Run image process stopped by user, please review necessary requirements'
+        'Run image process stopped by user, please review necessary requirements',
       );
     }
   }

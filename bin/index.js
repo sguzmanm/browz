@@ -1,10 +1,6 @@
 // Two main params, http source and image destination
 
-const {
-  setupDocker,
-  runDocker,
-  killDocker,
-} = require('../src/docker-manager/docker-manager');
+const { setupDocker, runDocker, killDocker } = require('../src/docker-manager/docker-manager');
 const { createReport } = require('../src/report-manager/report-manager');
 
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';

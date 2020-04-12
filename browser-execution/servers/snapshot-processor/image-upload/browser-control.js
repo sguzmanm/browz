@@ -12,12 +12,9 @@ const compareImages = require('resemblejs/compareImages');
 
 const { browsers } = require('../../../../shared/browsers');
 
-const imagePath =
-  process.env.SNAPSHOT_DESTINATION_DIR ||
-  path.join(__dirname, '../../../screenshots');
+const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../screenshots');
 const baseBrowser = process.env.BASE_BROWSER || 'chrome';
-const browserWaitingTime =
-  parseInt(process.env.BROWSER_RESPONSE_WAITING_TIME, 10) || 4000;
+const browserWaitingTime = parseInt(process.env.BROWSER_RESPONSE_WAITING_TIME, 10) || 4000;
 
 // Modify this var to take into account active browsers
 const activeBrowsers = [browsers.FIREFOX, browsers.CHROME];
@@ -59,13 +56,11 @@ const compare = async (original, modified) => {
   const data = await compareImages(
     await readFile(original),
     await readFile(modified),
-    resembleConfig
+    resembleConfig,
   );
 
   const fileSeparation = modified.split(path.sep);
-  const comparisonPath = `${imagePath + path.sep + baseBrowser}X${
-    fileSeparation[fileSeparation.length - 1]
-  }`;
+  const comparisonPath = `${imagePath}${path.sep}${baseBrowser}X${fileSeparation[fileSeparation.length - 1]}`;
   await writeFile(comparisonPath, data.getBuffer());
 };
 
@@ -83,7 +78,7 @@ const compareBrowsers = async (screenshotMap) => {
       for (let i = 0; i < baseImages.length; i += 1) {
         compare(
           imagePath + path.sep + baseImages[i],
-          imagePath + path.sep + screenshotMap[browser][i]
+          imagePath + path.sep + screenshotMap[browser][i],
         );
       }
     });
@@ -92,8 +87,7 @@ const compareBrowsers = async (screenshotMap) => {
   }
 };
 
-const getImageKey = (imageRequestBody) =>
-  `${imageRequestBody.event}_${imageRequestBody.selector}_${imageRequestBody.id}`;
+const getImageKey = (imageRequestBody) => `${imageRequestBody.event}_${imageRequestBody.selector}_${imageRequestBody.id}`;
 
 const checkNewImage = async (key) => {
   if (Object.keys(imageMap[key]).length === activeBrowsers.length) {
