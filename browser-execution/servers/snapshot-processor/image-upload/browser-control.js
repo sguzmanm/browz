@@ -48,10 +48,16 @@ const setupResemble = () => {
   resembleConfig = JSON.parse(process.env.CONFIG_RESEMBLE);
 };
 
+/*
+  misMatchPercentage : 100, // %
+  isSameDimensions: true, // or false
+  getImageDataUrl: function(){}
+*/
 const compare = async (original, modified) => {
   if (!resembleConfig) {
     setupResemble();
   }
+
 
   const data = await compareImages(
     await readFile(original),

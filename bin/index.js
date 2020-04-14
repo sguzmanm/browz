@@ -1,5 +1,7 @@
-// Two main params, http source and image destination
+const path = require('path');
+const fs = require('fs');
 
+// Two main params, http source and image destination
 const { setupDocker, runDocker, killDocker } = require('../src/docker-manager/docker-manager');
 const { createReport } = require('../src/report-manager/report-manager');
 
@@ -9,13 +11,16 @@ const httpSource = process.argv[2];
 if (!httpSource || httpSource.trim() === '') {
   // eslint-disable-next-line no-undef
   console.error(EMPTY_DIR_MSG, 'Http');
+  process.exit(1);
 }
 
-const imagesDestination = process.argv[3];
+let imagesDestination = process.argv[3];
 if (!imagesDestination || imagesDestination.trim() === '') {
-  // eslint-disable-next-line no-undef
-  console.error(EMPTY_DIR_MSG, 'Image');
+  imagesDestination = path.join(__dirname, '../runs');
+  fs.mkdirSync(imagesDestination);
 }
+
+process.exit(1);
 
 const finishProcess = async (success) => {
   await killDocker();

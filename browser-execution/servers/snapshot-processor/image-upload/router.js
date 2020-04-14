@@ -6,7 +6,7 @@ const multer = require('multer');
 const { registerImage } = require('./browser-control');
 
 
-const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../screenshots');
+const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../runs');
 
 const BACK_IMAGE = 'before';
 const AFTER_IMAGE = 'after';
