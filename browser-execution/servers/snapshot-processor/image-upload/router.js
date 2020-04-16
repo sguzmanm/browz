@@ -5,11 +5,38 @@ const express = require('express');
 const multer = require('multer');
 const { registerImage } = require('./browser-control');
 
-
 const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../runs');
+let dateString;
 
-const BACK_IMAGE = 'before';
+const BEFORE_IMAGE = 'before';
 const AFTER_IMAGE = 'after';
+
+const calculateDateString = () => {
+  const date = new Date();
+  const dateOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  };
+
+  dateString = date.toLocaleDateString('es-CO', dateOptions).replace(':', '');
+};
+
+const mkdirRecursive = (fullPath) => {
+  let currentArg = 0;
+  const pathArgs = fullPath.split(path.sep);
+  let currentPath = pathArgs[currentArg];
+
+  while (currentArg !== pathArgs.length) {
+    if (!fs.existsSync(currentPath)) {
+      fs.mkdirSync(currentPath);
+    }
+    currentPath += path.sep + pathArgs[currentArg += 1];
+  }
+};
+
 
 const getMimetypeExtension = (mimetype) => {
   switch (mimetype) {
@@ -25,40 +52,42 @@ const getMimetypeExtension = (mimetype) => {
 };
 
 const getFilename = (fieldName, imageRequestBody) => {
-  const dirPath = imagePath + path.sep + imageRequestBody.id;
+  const dirPath = `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${imageRequestBody.id}`;
+  console.log(dirPath);
 
-  if (!fs.existsSync(imagePath)) {
-    fs.mkdirSync(imagePath);
-  }
+  mkdirRecursive(dirPath);
 
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath);
-  }
-
-  return `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${fieldName}_${imageRequestBody.event}_${imageRequestBody.selector}_${imageRequestBody.id}`; // FIXME: Folder based? Name based?
+  console.log('[Filename]', `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${fieldName}`);
+  return `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${fieldName}`;
 };
 
 const storage = multer.diskStorage({
   destination(req, file, resolveDestination) {
-    resolveDestination(null, imagePath);
+    if (!dateString) {
+      calculateDateString();
+    }
+
+    const destination = `${imagePath}${path.sep}${dateString}${path.sep}snapshots`;
+    console.log('DESTINATION', destination);
+    resolveDestination(null, destination);
   },
   filename(req, file, createFilename) {
+    console.log('FILENAME', file.fieldname);
     const fieldName = file.fieldname;
-    if (fieldName !== BACK_IMAGE && fieldName !== AFTER_IMAGE) {
+    if (fieldName !== BEFORE_IMAGE && fieldName !== AFTER_IMAGE) {
       console.error('Invalid file passed during request');
       return;
     }
 
-    console.log(`[serv] Multer req:\n${JSON.stringify(Object.keys(req))}`);
-    console.log(`[serv] Multer "body":\n${JSON.stringify(req.body)}`);
-
-
     const imageRequestBody = req.body;
+    console.log(imageRequestBody);
     const fileName = getFilename(fieldName, imageRequestBody);
+    console.log(fileName);
     createFilename(
       null,
-      `${fileName}-${Date.now()}${getMimetypeExtension(file.mimetype)}`,
+      `${fileName}${getMimetypeExtension(file.mimetype)}`,
     );
+    console.log('After create');
   },
 });
 
@@ -80,13 +109,16 @@ const getFile = (files, fieldname) => files.find((file) => file.fieldname === fi
 }
 */
 router.post('/', upload.any(), async (req, res, next) => {
-  console.log('[Received post]: \nBody:\n', req.body, '\nFiles:\n', req.files, '-------------------------------------');
-
+  console.log('POST');
+  console.log(getFile(req.files, AFTER_IMAGE).filename);
   try {
-    await registerImage(req.body, [
-      getFile(req.files, BACK_IMAGE).filename,
-      getFile(req.files, AFTER_IMAGE).filename,
-    ]);
+    await registerImage(req.body, {
+      dateString,
+      fileNames: [
+        getFile(req.files, BEFORE_IMAGE).filename,
+        getFile(req.files, AFTER_IMAGE).filename,
+      ],
+    });
     res.json({ status: 'OK' });
   } catch (err) {
     console.log(err);

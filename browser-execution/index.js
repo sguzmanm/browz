@@ -8,12 +8,12 @@ const { exploreApp } = require('./exploration/exploration');
 const main = async () => {
   try {
     await startServers();
-    await exploreApp();
+    // await exploreApp();
   } catch (error) {
     console.error('ERROR', error);
   }
 
-  process.exit(1);
+  // process.exit(1);
 };
 
 main();

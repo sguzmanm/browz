@@ -12,9 +12,9 @@ const compareImages = require('resemblejs/compareImages');
 
 const { browsers } = require('../../../../shared/browsers');
 
-const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../screenshots');
+const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../runs');
 const baseBrowser = process.env.BASE_BROWSER || 'chrome';
-const browserWaitingTime = parseInt(process.env.BROWSER_RESPONSE_WAITING_TIME, 10) || 4000;
+const browserWaitingTime = parseInt(process.env.BROWSER_RESPONSE_WAITING_TIME, 10) || 30000;
 
 // Modify this var to take into account active browsers
 const activeBrowsers = [browsers.FIREFOX, browsers.CHROME];
@@ -53,12 +53,13 @@ const setupResemble = () => {
   isSameDimensions: true, // or false
   getImageDataUrl: function(){}
 */
-const compare = async (original, modified) => {
+const compare = async (original, modified, dateString) => {
   if (!resembleConfig) {
     setupResemble();
   }
 
 
+  console.log(original, modified, dateString);
   const data = await compareImages(
     await readFile(original),
     await readFile(modified),
@@ -66,54 +67,60 @@ const compare = async (original, modified) => {
   );
 
   const fileSeparation = modified.split(path.sep);
-  const comparisonPath = `${imagePath}${path.sep}${baseBrowser}X${fileSeparation[fileSeparation.length - 1]}`;
+
+  console.log(fileSeparation);
+  const comparisonPath = `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${fileSeparation[fileSeparation.length - 2]}${path.sep}comparison_${baseBrowser}_vs_${fileSeparation[fileSeparation.length - 1]}`;
   await writeFile(comparisonPath, data.getBuffer());
 };
 
 // Browser comparison of snapshots
-const compareBrowsers = async (screenshotMap) => {
+const compareBrowsers = async (screenshotMap, dateString) => {
+  console.log('Compare browsers');
   const baseImages = screenshotMap[baseBrowser];
 
   const comparableBrowsers = [...activeBrowsers];
   const spliceIndex = comparableBrowsers.indexOf(baseBrowser);
   comparableBrowsers.splice(spliceIndex, 1);
 
+  console.log(baseImages, screenshotMap);
   try {
     comparableBrowsers.forEach((browser) => {
       console.log('Compare', baseBrowser, browser);
       for (let i = 0; i < baseImages.length; i += 1) {
+        console.log(baseImages[i], screenshotMap[browser][i]);
+        console.log(`${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}`);
+
         compare(
-          imagePath + path.sep + baseImages[i],
-          imagePath + path.sep + screenshotMap[browser][i],
+          `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]}`,
+          `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${screenshotMap[browser][i]}`,
+          dateString,
         );
       }
     });
   } catch (error) {
-    throw new Error('Image comparison failed', error);
+    throw new Error('Image comparison failed!!! ', error.message, error);
   }
 };
 
-const getImageKey = (imageRequestBody) => `${imageRequestBody.event}_${imageRequestBody.selector}_${imageRequestBody.id}`;
-
-const checkNewImage = async (key) => {
+const checkNewImage = async (key, dateString) => {
+  console.log('Image Map', imageMap, Object.keys(imageMap[key]).length);
   if (Object.keys(imageMap[key]).length === activeBrowsers.length) {
-    await compareBrowsers(imageMap[key]);
+    await compareBrowsers(imageMap[key], dateString);
     imageMap[key] = {};
   }
 };
 
-const addNewImage = async (key, browser, fileNames) => {
-  console.log('[debug]: ', key, fileNames);
-
+const addNewImage = async (key, browser, requestData) => {
+  console.log('RequestData', requestData);
   if (!imageMap[key]) {
     return;
   }
 
-  imageMap[key][browser] = fileNames;
-  await checkNewImage(key);
+  imageMap[key][browser] = requestData.fileNames;
+  await checkNewImage(key, requestData.dateString);
 };
 
-const deactivateBrowser = async (browser) => {
+const deactivateBrowser = async (browser, requestData) => {
   const index = activeBrowsers.indexOf(browser);
   activeBrowsers.splice(index, 1);
   console.log('Deactivating browser...', browser);
@@ -127,13 +134,14 @@ const deactivateBrowser = async (browser) => {
   const results = [];
   for (let i = 0; i < keys.length; i += 1) {
     delete imageMap[keys[i]][browser]; // Remove inactive browser
-    results.push(checkNewImage(keys[i]));
+    results.push(checkNewImage(keys[i], requestData.dateString));
   }
 
   await Promise.all(results);
 };
 
-module.exports.registerImage = async (imageRequestBody, fileNames) => {
+module.exports.registerImage = async (imageRequestBody, requestData) => {
+  console.log('DATA', imageRequestBody, requestData);
   const { browser } = imageRequestBody;
   if (!activeBrowsers.includes(browser)) {
     console.log(`Inactive browser requested browser ${browser}`);
@@ -145,12 +153,13 @@ module.exports.registerImage = async (imageRequestBody, fileNames) => {
 
   // Set waiting timeout for image from browser
   timeoutMap[browser] = setTimeout(() => {
-    deactivateBrowser(browser);
+    deactivateBrowser(browser, requestData);
   }, browserWaitingTime);
 
-  const imageKey = getImageKey(imageRequestBody);
+  const imageKey = imageRequestBody.id;
+  console.log('Image key');
   if (!imageMap[imageKey]) {
     imageMap[imageKey] = {};
   }
-  await addNewImage(imageKey, browser, fileNames);
+  await addNewImage(imageKey, browser, requestData);
 };
