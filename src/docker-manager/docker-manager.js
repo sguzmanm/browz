@@ -5,7 +5,7 @@ const readline = require('readline');
 
 const linuxContainer = process.env.LINUX_CONTAINER || 'sguzmanm/linux_cypress_tests:lite';
 const httpAppDir = process.env.HTTP_APP_DIR || '/tmp/app';
-const snapshotDir = process.env.SNAPSHOT_DESTINATION_DIR || '/tmp/screenshots';
+const snapshotDir = process.env.SNAPSHOT_DESTINATION_DIR || '/tmp/runs';
 
 const UNIT_MB = 'Mi';
 const ENV_PARAM = '--env';
@@ -35,9 +35,8 @@ const checkImageMemory = () => {
     let dataLine = '';
     spawnElement.stdout.on('data', (data) => {
       dataLine = data.toString().split(UNIT_MB);
-      console.log(dataLine);
       if (dataLine.length > 1) {
-        console.log('Resolved');
+        console.log(`Image memory retrieved ${dataLine[0]}`);
         resolve(dataLine[0]);
       }
     });
@@ -59,7 +58,7 @@ const pullImage = async () => {
     spawnElement.stdout.on('data', (data) => {
       console.log(`child stdout:\n${data}`);
       if (data.toString().trim().includes(linuxContainer)) {
-        console.log('Resolved');
+        console.log('Image successfully pulled');
         resolve(data);
       }
     });
@@ -142,10 +141,6 @@ const executeContainer = (httpSource, imageDestination) => {
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
       console.log(`Docker logs >>\n${data}`);
-      if (data.includes('Finished :)')) {
-        console.log('Resolved');
-        resolve(data);
-      }
     });
 
     spawnElement.stderr.on('data', (data) => {
@@ -153,10 +148,22 @@ const executeContainer = (httpSource, imageDestination) => {
     });
 
     spawnElement.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
       if (code !== 0) {
-        reject(new Error(`Container execution failed, exit code: ${code}`));
+        reject(new Error(`Container execution failed with exit code: ${code}`));
       }
+    });
+
+    spawnElement.on('exit', (code, signal) => {
+      if (!code && signal) {
+        reject(new Error(`Container execution finished with error signal: ${signal}`));
+      }
+
+      if (code !== 0) {
+        reject(new Error(`Container execution finished with exit code: ${code}`));
+      }
+
+      console.log('Container execution finished');
+      resolve(code);
     });
   });
 };

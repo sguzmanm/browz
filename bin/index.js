@@ -17,10 +17,10 @@ if (!httpSource || httpSource.trim() === '') {
 let imagesDestination = process.argv[3];
 if (!imagesDestination || imagesDestination.trim() === '') {
   imagesDestination = path.join(__dirname, '../runs');
-  fs.mkdirSync(imagesDestination);
+  if (!fs.existsSync(imagesDestination)) {
+    fs.mkdirSync(imagesDestination);
+  }
 }
-
-process.exit(1);
 
 const finishProcess = async (success) => {
   await killDocker();

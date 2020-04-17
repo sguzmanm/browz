@@ -7,13 +7,15 @@ const { exploreApp } = require('./exploration/exploration');
 
 const main = async () => {
   try {
+    console.log('------------Start Servers -------------');
     await startServers();
-    // await exploreApp();
+    console.log('------------Explore App -------------');
+    await exploreApp();
   } catch (error) {
     console.error('ERROR', error);
   }
 
-  // process.exit(1);
+  process.exit(0);
 };
 
 main();

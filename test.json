@@ -1,0 +1,446 @@
+[
+    {
+npu: '00004015620128170510',
+classeCNJ: { id: null, codigo: null, descricao: 'Cumprimento de sentença'
+        },
+valorDeclarado: null,
+natureza: null,
+comarca: null,
+partes: [
+            {
+nome: 'Antonio Carlos Silva dos Santos e outros', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null,
+documento: null,
+            },
+            {
+nome: 'Antônio Belarmino de Santana', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Antonia Correia da Solidade Costa', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Antonio Manoel de Souza', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Amélia Dulce Ferreira', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Ana Maria Oliveira da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Edivane Maria Bezerra Nascimento', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Edivaldo Felipe de Sousa', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Eliane Vicente Ferreira', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Francileide Vanderlei da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Hotimar Oliveira do Rego', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Iveraldo Laurentino Ferrer Martim', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Ivete Francisca da Silva Lira', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Josefa Verônica Batista Pontes', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'João Ferreira Gomes', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Josefa Rodrigues de Oliveira', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Josefa Benedita da silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'José de Barros Lima', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Lindalva Maria Ramos', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Luciano Francisco da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Luiz Joventino da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria Antonia da Silva Andrade', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria Cláudia Loyo da Fonseca', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria Dalva da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Lindalva Batista de Pontes', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Lindalva Sousa da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria Dulcinete Lucena da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria Enedina de Lucena da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria Gomes de Albuquerque Leitão', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria Helena Pereira da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria Helena da Silva Ferreira', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Eltomy Paulo Ribeiro Maia', tipo: 'Advogado', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria José Carvalho da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'JESUALDO DE ALBUQUERQUE CAMPOS JUNIOR', tipo: 'Advogado', numeroCPF: null, numeroCNPJ: null, poloParte: null,
+documento: null,
+            },
+            {
+nome: 'Maria Leonor da Conceição', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria Raquel de Lucena da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria Rita da Silva', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Maria Teresa Andrade da Rocha Souza', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null,
+documento: null,
+            },
+            {
+nome: 'Mauricélia Correia de Oliveira', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Marilene Maria Sousa de Sales', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Marconi Bezerra dos Santos', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Manuel Ricardo de Sousa', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Nadja Cristina Maria dos Santos', tipo: 'Autor', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Neide Maria da Silva', tipo: 'Exequente', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Nerivaldo Pereira de Sousa', tipo: 'Exequente', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Neusa Maria da Conceição', tipo: 'Exequente', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Ozinete Oliveira Barros Silva', tipo: 'Exequente', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Rogério Pereira de Sousa', tipo: 'Exequente', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Severina Estevão da Silva', tipo: 'Exequente', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Severina Lima de Sousa', tipo: 'Exequente', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Severino Ramos de Freitas', tipo: 'Exequente', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'Saira Farias Cavalcanti da Silva', tipo: 'Exequente', numeroCPF: null, numeroCNPJ: null, poloParte: null,
+documento: null,
+            },
+            {
+nome: 'Vandevaldo Pereira de Sousa', tipo: 'Exequente', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            },
+            {
+nome: 'MUNICIPIO DO CONDADO', tipo: 'Executado', numeroCPF: null, numeroCNPJ: null, poloParte: null, documento: null,
+            }
+        ],
+caracteristicas: { grauJurisdicao: '1GRAU', meioTramitacao: 'FISICO'
+        },
+unidadeCartoraria: null,
+numeroProcessoReferencia: null,
+numeroExecucaoPenal: null,
+numeroAntigo: null,
+unidadeOrigem: 'Vara Única da Comarca de Condado',
+movimentacoes: [
+            {
+texto: null, complemento: 'Advogado do Acionante', dataHora: '2019-05-30T12: 28: 00.000+0000', fase: 'Autos entregues em
+carga ao Advogado do Acionante',
+            },
+            {
+texto: null, complemento: 'Petição', dataHora: '2019-05-30T12: 25: 00.000+0000', fase: 'Juntada de Petição -
+20190196082303 - Petição (outras)',
+            },
+            {
+texto: null, complemento: 'Protocolo Geral do Fórum do Recife', dataHora: '2019-05-28T18: 33: 00.000+0000', fase: 'Remessa
+Interna Apresentação de Petição: 20190196082303',
+            },
+            {
+texto: 'PODER JUDICIÁRIO DO ESTADO DE PERNAMBUCO\r\nJuízo de Direito da Vara Única da Comarca de Condado\r\n\r\nNPU
+0000401-56.2012.8.17.0510\r\n\r\n \r\nDECISÃO\r\n\r\n \r\n Indefiro o pedido de fls. 136/137 (apócrifo), pois, de acordo
+com o art. 524, §2º, do CPC1, a realização dos cálculos judiciais deve ser realizada de forma subsidiária.\r\n Fixo
+prazo de 60 (sessenta) dias, a fim de que a parte exequente apresente memorial de cálculo atualizado. Intime-a.\r\n Em
+seguida, intime-se a parte executada para, em 15 dias, apresentar manifestação.\r\n Condado,
+                29 de abril de
+2019.\r\n\r\nÍCARO NOBRE FONSECA \r\nJuiz de Direito\r\n1Art. 524, § 2o, do CPC. Para a verificação dos cálculos, o juiz
+poderá valer-se de contabilista do juízo, que terá o prazo máximo de 30 (trinta) dias para efetuá-la, exceto se outro
+lhe for
+determinado\r\n---------------\r\n\r\n------------------------------------------------------------\r\n\r\n---------------\r\n\r\n------------------------------------------------------------\r\n\r\n1',
+complemento: null, dataHora: '2019-05-06T12: 17: 00.000+0000', fase: 'Indeferimento de pedidos (alvará, inspeção,
+notificação, perícia, guarda, etc.',
+            },
+            {
+texto: null, complemento: 'Despacho', dataHora: '2019-04-29T11: 30: 00.000+0000', fase: 'Conclusos para despacho',
+            },
+            {
+texto: null, complemento: 'Petição', dataHora: '2019-04-29T11: 27: 00.000+0000', fase: 'Juntada de Petição -
+20190196063841 - Petição (outras)',
+            },
+            {
+texto: null, complemento: 'Protocolo Geral do Fórum do Recife', dataHora: '2019-04-26T18: 25: 00.000+0000', fase: 'Remessa
+Interna Apresentação de Petição: 20190196063841',
+            },
+            {
+texto: 'PODER JUDICIÁRIO DO ESTADO DE PERNAMBUCO\r\nJuízo de Direito da Vara Única da Comarca de Condado\r\n\r\nNPU
+0000401-56.2012.8.17.0510\r\n\r\n\r\n \r\nDESPACHO\r\n\r\n \r\n Intime-se a parte exequente, por meio do Dje, para
+cumprir o despacho de fl. 124.\r\n Condado,
+                12 de abril de 2019.\r\n\r\nCARLOS ANTÔNIO SOBREIRA LOPES\r\nJuiz de
+Direito\r\n1', complemento: null, dataHora: '2019-04-12T12: 37: 00.000+0000', fase: 'Determinação de citação e intimação
+de partes e advogados',
+            },
+            {
+texto: null, complemento: 'Despacho', dataHora: '2019-02-05T16: 59: 00.000+0000', fase: 'Conclusos para despacho',
+            },
+            {
+texto: 'PODER JUDICIÁRIO DO ESTADO DE PERNAMBUCO\r\nJuízo de Direito da Vara Única da Comarca de Condado\r\n\r\nNPU
+0000401-56.2012.8.17.0510\r\n\r\n\r\nDESPACHO\r\n\r\n \r\n Certifique-se se a parte exequente manifestou-se acerca do
+despacho de fl. 124. \r\n Condado,
+                25 de janeiro de 2019.\r\n \r\nÍCARO NOBRE FONSECA\r\nJuiz de Direito \r\n1',
+complemento: null, dataHora: '2019-01-29T12: 54: 00.000+0000', fase: 'Determinação de cumprimento de atos processuais pela
+Secretaria',
+            },
+            {
+texto: null, complemento: 'Despacho', dataHora: '2019-01-24T13: 10: 00.000+0000', fase: 'Conclusos para despacho',
+            },
+            {
+texto: null, complemento: 'Acionado', dataHora: '2018-12-04T16: 51: 00.000+0000', fase: 'Recebidos os autos Acionado',
+            },
+            {
+texto: null, complemento: 'Acionado', dataHora: '2018-11-26T17: 50: 00.000+0000', fase: 'Autos entregues em carga ao
+Acionado',
+            },
+            {
+texto: null, complemento: 'Mandado Cumprido', dataHora: '2018-11-26T12: 39: 00.000+0000', fase: 'Juntada de
+Mandados-20180112002201 - Mandado',
+            },
+            {
+texto: null, complemento: 'Mandados', dataHora: '2018-11-20T12: 23: 00.000+0000', fase: 'Expedição de Mandado',
+            },
+            {
+texto: null, complemento: 'Vara Unica da Comarca de Condado', dataHora: '2018-10-18T17: 52: 00.000+0000', fase:
+'Recebimento',
+            },
+            {
+texto: null, complemento: 'Vara Unica da Comarca de Condado', dataHora: '2018-10-18T14: 30: 00.000+0000', fase: 'Remessa',
+            },
+            {
+texto: null, complemento: 'Distribuidor/Avaliador/Contador de Condado', dataHora: '2018-10-18T14: 25: 00.000+0000', fase:
+'Recebimento',
+            },
+            {
+texto: null, complemento: 'Distribuidor/Avaliador/Contador de Condado', dataHora: '2018-10-16T17: 08: 00.000+0000', fase:
+'Remessa',
+            },
+            {
+texto: 'PODER JUDICIÁRIO DO ESTADO DE PERNAMBUCO\r\nJuízo de Direito da Vara Única da Comarca de Condado\r\n\r\nNPU
+0000401-56.2012.8.17.0510\r\n\r\n\r\nDESPACHO\r\n\r\n\r\n Altere-se a classe judicial para cumprimento de sentença
+contra fazenda pública, alterando-se a capa.\r\n Intime-se a parte exequente para, em 15 dias, atualizar o débito
+exequendo. \r\n Em seguida, intime-se a parte executada para se manifestar, no mesmo prazo. \r\n \r\n Condado,
+                9 de
+outubro de 2018.\r\n \r\nÍCARO NOBRE FONSECA\r\nJuiz de Direito \r\n1', complemento: null, dataHora:
+'2018-10-15T15: 37: 00.000+0000', fase: 'Determinação de citação e intimação de partes e advogados',
+            },
+            {
+texto: null, complemento: 'Despacho', dataHora: '2018-07-27T15: 06: 00.000+0000', fase: 'Conclusos para despacho',
+            },
+            {
+texto: null, complemento: 'Petição', dataHora: '2018-07-27T15: 03: 00.000+0000', fase: 'Juntada de Petição -
+20180112000215 - Petição (outras)',
+            },
+            {
+texto: null, complemento: 'Advogado do Acionante', dataHora: '2018-07-26T19: 33: 00.000+0000', fase: 'Recebidos os autos
+Advogado do Acionante',
+            },
+            {
+texto: null, complemento: 'Advogado do Acionante', dataHora: '2018-07-23T11: 58: 00.000+0000', fase: 'Autos entregues em
+carga ao Advogado do Acionante',
+            },
+            {
+texto: 'PODER JUDICIÁRIO DO ESTADO DE PERNAMBUCO\r\nJuízo de Direito da Vara Única da Comarca de Condado\r\n\r\nNPU
+0000401-56.2012.8.17.0510\r\n\r\n \r\nDESPACHO\r\n\r\n Intime-se a parte exequente para, em 10 (dez) dias, juntar cópia
+do acórdão referido na certidão retro, requerendo o cumprimento da sentença, caso não tenha havido cumprimento
+voluntário pela parte requerida.\r\n \r\n Condado,
+                3 de julho de 2018.\r\n\r\nGABRIEL ARAÚJO PIMENTEL\r\nJuiz de
+Direito\r\n1', complemento: null, dataHora: '2018-07-13T18: 15: 00.000+0000', fase: 'Determinação de citação e intimação
+de partes e advogados',
+            },
+            {
+texto: null, complemento: 'Despacho', dataHora: '2018-06-19T16: 36: 00.000+0000', fase: 'Conclusos para despacho',
+            },
+            {
+texto: 'Processo n. 401-56.2012.8.17.0510.\r\n\r\nDECISÃO\r\n\r\n\t\tVistos etc.\r\n\r\n\t\tDe acordo com a certidão de
+fl. 83, a sentença ainda não transitou em julgado, uma vez que os autos foram remetidos ao TJPE para apreciação do
+recurso interposto.\r\n\t\tA inclusão de vantagens em folha de pagamento antes do trânsito em julgado da sentença é
+expressamente vedada pelo art. 2º-B da Lei n. 9.494/19971.\r\n\t\tAssim, INDEFIRO os pedidos formulados às fls.
+103/104.\r\n\t\tAguarde-se o trânsito em julgado da sentença.\r\n\t\tIntimem-se.\r\n\r\n\t\tCondado,
+                18 de outubro de
+2013.\r\n\r\n\r\n\t\tEugênio Cícero Marques\r\n\t\tJuiz de Direito.\r\n\r\n1 Art. 2º-B A sentença que tenha por objeto a
+liberação de recurso, inclusão em folha de pagamento, reclassificação, equiparação, concessão de aumento ou extensão de
+vantagens a servidores da União, dos Estados, do Distrito Federal e dos Municípios, inclusive de suas autarquias e
+fundações, somente poderá ser executada após seu trânsito em julgado.\r\n??\r\n\r\n??\r\n\r\n??\r\n\r\n??', complemento: null, dataHora: '2013-10-18T15: 11: 00.000+0000', fase: 'Indeferimento de pedidos (alvará, inspeção, notificação, perícia,
+guarda, etc.',
+            },
+            {
+texto: null, complemento: 'Despacho', dataHora: '2013-10-04T16: 59: 00.000+0000', fase: 'Conclusos para despacho',
+            },
+            {
+texto: null, complemento: 'Petição', dataHora: '2013-10-04T16: 56: 00.000+0000', fase: 'Juntada de Petição -
+20131110002750 - Petição (outras)',
+            },
+            {
+texto: null, complemento: 'Distribuidor/Avaliador/Contador de Condado', dataHora: '2013-09-12T11: 51: 00.000+0000', fase:
+'Remessa Interna Petição Geral: 20131110002750',
+            },
+            {
+texto: null, complemento: 'Advogado do Acionante', dataHora: '2013-09-11T03: 00: 00.000+0000', fase: 'Recebidos os autos
+Advogado do Acionante',
+            },
+            {
+texto: null, complemento: 'Advogado do Acionante', dataHora: '2013-09-04T15: 28: 00.000+0000', fase: 'Autos entregues em
+carga ao Advogado do Acionante',
+            },
+            {
+texto: null, complemento: 'Petição', dataHora: '2013-09-04T15: 25: 00.000+0000', fase: 'Juntada de Petição -
+20131110002675 - Petição (outras)',
+            },
+            {
+texto: null, complemento: 'Distribuidor/Avaliador/Contador de Condado', dataHora: '2013-09-04T15: 06: 00.000+0000', fase:
+'Remessa Interna Petição Geral: 20131110002675',
+            },
+            {
+texto: 'Processo n. 401-56.2012.8.17.0510.\r\n\r\nDESPACHO\r\n\r\n\t\tR. h.\r\n\r\n\t\tIntime-se a parte autora para
+falar, em 10 dias, sobre a petição de fl. 87 e documentos juntados.\r\n\r\n\t\tCondado,
+                21.8.2013.\r\n\r\n\r\n\t\tEugênio Cícero Marques\r\n\t\tJuiz de Direito.', complemento: null, dataHora:
+'2013-08-21T17: 32: 00.000+0000', fase: 'Determinação de citação e intimação de partes e advogados',
+            },
+            {
+texto: null, complemento: 'Despacho', dataHora: '2013-06-19T14: 02: 00.000+0000', fase: 'Conclusos para despacho',
+            },
+            {
+texto: null, complemento: 'Petição', dataHora: '2013-06-19T13: 59: 00.000+0000', fase: 'Juntada de Petição -
+20131110001859 - Petição (outras)',
+            },
+            {
+texto: null, complemento: 'Mandado Cumprido', dataHora: '2013-06-17T19: 52: 00.000+0000', fase: 'Juntada de
+Mandados-20130112001884 - Outros documentos',
+            },
+            {
+texto: null, complemento: 'Distribuidor/Avaliador/Contador de Condado', dataHora: '2013-06-17T17: 11: 00.000+0000', fase:
+'Remessa Interna Petição Geral: 20131110001859',
+            },
+            {
+texto: null, complemento: 'Mandados', dataHora: '2013-05-29T16: 50: 00.000+0000', fase: 'Expedição de Mandado',
+            },
+            {
+texto: 'Processo n. 0000401-56.2012.8.17.0510\r\n\r\n\r\nDESPACHO\r\n\r\n\t\tVistos etc.\r\n\r\n\t\tIntime-se o
+Município de Condado, por meio de seu advogado e da Sra. Prefeita, para comprovar, no prazo de 5 dias, o cumprimento da
+obrigação de fazer determinada na sentença, fazendo ressaltar que foi imposta multa de R$ 1.000,
+                00 por exequente e por
+mês de descumprimento.\r\n\t\tTranscorrido o prazo sem manifestação, voltem-me os autos conclusos.\r\n\r\n\t\tCondado,
+                3de maio de 2013.\r\n\r\n\r\n\t\tEugênio Cícero Marques\r\n\t\tJuiz de Direito.', complemento: null, dataHora:
+'2013-05-03T19: 01: 00.000+0000', fase: 'Determinação de cumprimento de atos processuais pela Secretaria',
+            },
+            {
+texto: null, complemento: 'Despacho', dataHora: '2013-03-19T18: 07: 00.000+0000', fase: 'Conclusos para despacho',
+            },
+            {
+texto: 'Processo n. 401-56.2012.8.17.0510.\r\n\r\nDESPACHO\r\n\r\n\t\tR. h.\r\n\r\n\t\tCertifique a Secretaria se a
+sentença prolatada nos autos do processo n. 786-09.2009.8.17.0510 já transitou em julgado.\r\n\t\tApós, voltem-me os
+autos conclusos.\r\n\r\n\t\tCondado,
+                6 de março de 2013.\r\n\r\n\r\n\t\tEugênio Cícero Marques\r\n\t\tJuiz de Direito.',
+complemento: null, dataHora: '2013-03-06T19: 20: 00.000+0000', fase: 'Determinação de cumprimento de atos processuais pela
+Secretaria',
+            },
+            {
+texto: null, complemento: 'Despacho', dataHora: '2013-01-09T16: 38: 00.000+0000', fase: 'Conclusos para despacho',
+            },
+            {
+texto: null, complemento: 'Advogado do Acionado', dataHora: '2012-08-27T14: 34: 00.000+0000', fase: 'Recebidos os autos
+Advogado do Acionado',
+            },
+            {
+texto: null, complemento: 'Advogado do Acionado', dataHora: '2012-08-17T12: 11: 00.000+0000', fase: 'Autos entregues em
+carga ao Advogado do Acionado',
+            },
+            {
+texto: null, complemento: 'Petição', dataHora: '2012-08-17T12: 08: 00.000+0000', fase: 'Juntada de Petição -
+20121110001970 - Petição (outras)',
+            },
+            {
+texto: null, complemento: 'Mandado Cumprido', dataHora: '2012-08-16T17: 13: 00.000+0000', fase: 'Juntada de
+Mandados-20120112001712 - Outros documentos',
+            },
+            {
+texto: null, complemento: null, dataHora: '2012-08-16T14: 43: 00.000+0000', fase: 'Remessa Interna Petição Geral: 20121110001970',
+            },
+            {
+texto: null, complemento: 'Mandados', dataHora: '2012-06-06T19: 59: 00.000+0000', fase: 'Expedição de Mandado',
+            },
+            {
+texto: 'PODER JUDICIÁRIO DO ESTADO DE PERNAMBUCO\r\nJuízo de Direito da Comarca de Condado\r\nVara única\r\n\r\n \r\nNPU
+000401-56.2012.1.8.17.0510\r\n\r\n \r\n\r\n DECISÃO INTERLOCUTÓRIA\r\n\r\n R.H\r\n \r\n\r\n1) \t\tFace ao alegado na
+inicial, defiro os benefícios da Justiça gratuita, nos termos do art. 5°, inciso "LXXIV", CF/88 da CF e do art. 4°, da
+da Lei 1060/50;\r\n\r\n2) \t\tCite-se para cumprimento da obrigação de fazer nos termos do art. 475-I e §1º, do CPC,
+inclusive com a multa cominatória de R$ 1000,
+                00 (hum mil reais) por cada exequente, sendo o prazo de cumprimento cada
+folha salarial;\r\n\r\n \r\n Condado,
+                06 de junho de 2012.\r\n\r\n\r\n Enrico Duarte da Costa Oliveira\r\n \t Juiz de
+Direito', complemento: null, dataHora: '2012-06-06T14: 33: 00.000+0000', fase: 'Concessão de assistência judiciária
+gratuita',
+            },
+            {
+texto: null, complemento: 'Despacho', dataHora: '2012-06-05T14: 13: 00.000+0000', fase: 'Conclusos para despacho',
+            },
+            {
+texto: null, complemento: 'Vara Unica da Comarca de Condado', dataHora: '2012-06-01T18: 23: 00.000+0000', fase:
+'Distribuído por Condenatória, com sursis',
+            }
+        ],
+cdas: null,
+assuntos: ['Obrigação de Fazer / Não Fazer '
+        ],
+cdaPesquisada: null,
+orgaoJulgador: null,
+relator: null,
+classeTJPE: null,
+    }
+];

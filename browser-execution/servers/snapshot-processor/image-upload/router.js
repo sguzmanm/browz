@@ -30,7 +30,7 @@ const mkdirRecursive = (fullPath) => {
   let currentPath = pathArgs[currentArg];
 
   while (currentArg !== pathArgs.length) {
-    if (!fs.existsSync(currentPath)) {
+    if (currentPath.trim() !== '' && !fs.existsSync(currentPath)) {
       fs.mkdirSync(currentPath);
     }
     currentPath += path.sep + pathArgs[currentArg += 1];

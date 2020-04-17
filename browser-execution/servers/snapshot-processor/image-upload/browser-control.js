@@ -59,7 +59,6 @@ const compare = async (original, modified, dateString) => {
   }
 
 
-  console.log(original, modified, dateString);
   const data = await compareImages(
     await readFile(original),
     await readFile(modified),
@@ -68,9 +67,16 @@ const compare = async (original, modified, dateString) => {
 
   const fileSeparation = modified.split(path.sep);
 
-  console.log(fileSeparation);
-  const comparisonPath = `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${fileSeparation[fileSeparation.length - 2]}${path.sep}comparison_${baseBrowser}_vs_${fileSeparation[fileSeparation.length - 1]}`;
-  await writeFile(comparisonPath, data.getBuffer());
+  const idBasePath = `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${fileSeparation[fileSeparation.length - 2]}${path.sep}`;
+  const comparisonPath = `${idBasePath}comparison.json`;
+  await writeFile(comparisonPath, JSON.stringify({
+    resemble: {
+      ...data,
+    },
+  }));
+
+  const resultPath = `${idBasePath}comparison_${baseBrowser}_vs_${fileSeparation[fileSeparation.length - 1]}`;
+  await writeFile(resultPath, data.getBuffer());
 };
 
 // Browser comparison of snapshots
