@@ -17,10 +17,12 @@ const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '
 const baseBrowser = process.env.BASE_BROWSER || 'chrome';
 const browserWaitingTime = parseInt(process.env.BROWSER_RESPONSE_WAITING_TIME, 10) || 30000;
 
-
 // Modify this var to take into account active browsers
 const activeBrowsers = [browsers.FIREFOX, browsers.CHROME];
 
+let startDate;
+let endDate;
+const events = [];
 const timeoutMap = {};
 const imageMap = {};
 const defaultResembleConfig = {
@@ -59,7 +61,6 @@ const compare = async (original, modified, dateString) => {
   if (!resembleConfig) {
     setupResemble();
   }
-
 
   const data = await compareImages(
     await readFile(original),
@@ -108,23 +109,30 @@ const compareBrowsers = async (screenshotMap, dateString) => {
   }
 };
 
-const checkNewImage = async (key, dateString) => {
-  if (Object.keys(imageMap[key]).length === activeBrowsers.length) {
-    await compareBrowsers(imageMap[key], dateString);
-    imageMap[key] = {};
+const checkNewImage = async (key, event, dateString) => {
+  if (Object.keys(imageMap[key]).length !== activeBrowsers.length) {
+    return;
   }
+
+  await compareBrowsers(imageMap[key], dateString);
+
+  events.push({
+    id: key,
+    event,
+    snapshotPath: `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${key}`,
+  });
 };
 
-const addNewImage = async (key, browser, requestData) => {
+const addNewImage = async (key, browser, event, requestData) => {
   if (!imageMap[key]) {
     return;
   }
 
   imageMap[key][browser] = requestData.fileNames;
-  await checkNewImage(key, requestData.dateString);
+  await checkNewImage(key, event, requestData.dateString);
 };
 
-const deactivateBrowser = async (browser, requestData) => {
+const deactivateBrowser = async (browser, event, requestData) => {
   const index = activeBrowsers.indexOf(browser);
   activeBrowsers.splice(index, 1);
   logger.logInfo('Deactivating browser...', browser);
@@ -138,14 +146,14 @@ const deactivateBrowser = async (browser, requestData) => {
   const results = [];
   for (let i = 0; i < keys.length; i += 1) {
     delete imageMap[keys[i]][browser]; // Remove inactive browser
-    results.push(checkNewImage(keys[i], requestData.dateString));
+    results.push(checkNewImage(keys[i], event, requestData.dateString));
   }
 
   await Promise.all(results);
 };
 
 module.exports.registerImage = async (imageRequestBody, requestData) => {
-  const { browser } = imageRequestBody;
+  const { browser, id, event } = imageRequestBody;
   if (!activeBrowsers.includes(browser)) {
     logger.logWarning(`Inactive browser requested browser ${browser}`);
     throw new Error(`Inactive browser requested browser ${browser}`);
@@ -155,13 +163,20 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
 
   // Set waiting timeout for image from browser
   timeoutMap[browser] = setTimeout(() => {
-    deactivateBrowser(browser, requestData);
+    deactivateBrowser(browser, event, requestData);
   }, browserWaitingTime);
 
-  const imageKey = imageRequestBody.id;
-  if (!imageMap[imageKey]) {
-    imageMap[imageKey] = {};
+  if (!imageMap[id]) {
+    imageMap[id] = {};
   }
 
-  await addNewImage(imageKey, browser, requestData);
+  await addNewImage(id, browser, event, requestData);
+};
+
+module.exports.writeResults = async (dateString) => {
+  const runPath = `${imagePath}${path.sep}${dateString}runs.json`;
+  await writeFile(runPath, JSON.stringify({
+    start: dateString,
+    events,
+  }));
 };

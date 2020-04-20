@@ -1,6 +1,7 @@
 require('dotenv').config(); // Setup variables from .env file
 const express = require('express');
 const ImageRouter = require('./image-upload/router');
+const { writeResults } = require('./image-upload/browser-control');
 
 const port = process.env.IMAGE_PORT || '8081';
 const app = express();
@@ -34,3 +35,5 @@ module.exports.start = () => {
     throw new Error('Snapshot Processor Error:', err.message);
   });
 };
+
+module.exports.writeResults = writeResults;
