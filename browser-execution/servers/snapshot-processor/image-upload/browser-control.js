@@ -11,10 +11,14 @@ const writeFile = util.promisify(fs.writeFile);
 const compareImages = require('resemblejs/compareImages');
 
 const { browsers } = require('../../../../shared/browsers');
+const logger = require('../../../../shared/logger');
+
+logger.newInstance('Snapshot Processor Browser Control');
 
 const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../runs');
 const baseBrowser = process.env.BASE_BROWSER || 'chrome';
 const browserWaitingTime = parseInt(process.env.BROWSER_RESPONSE_WAITING_TIME, 10) || 30000;
+
 
 // Modify this var to take into account active browsers
 const activeBrowsers = [browsers.FIREFOX, browsers.CHROME];
@@ -81,21 +85,18 @@ const compare = async (original, modified, dateString) => {
 
 // Browser comparison of snapshots
 const compareBrowsers = async (screenshotMap, dateString) => {
-  console.log('Compare browsers');
+  logger.logInfo('Start Browser comparison');
   const baseImages = screenshotMap[baseBrowser];
 
   const comparableBrowsers = [...activeBrowsers];
   const spliceIndex = comparableBrowsers.indexOf(baseBrowser);
   comparableBrowsers.splice(spliceIndex, 1);
 
-  console.log(baseImages, screenshotMap);
+  logger.logInfo(baseImages, screenshotMap);
   try {
     comparableBrowsers.forEach((browser) => {
-      console.log('Compare', baseBrowser, browser);
+      logger.logInfo(`Compare ${baseBrowser} vs ${browser}`);
       for (let i = 0; i < baseImages.length; i += 1) {
-        console.log(baseImages[i], screenshotMap[browser][i]);
-        console.log(`${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}`);
-
         compare(
           `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]}`,
           `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${screenshotMap[browser][i]}`,
@@ -104,12 +105,12 @@ const compareBrowsers = async (screenshotMap, dateString) => {
       }
     });
   } catch (error) {
+    logger.logWarning('Image comparison failed!!! ', error.message, error);
     throw new Error('Image comparison failed!!! ', error.message, error);
   }
 };
 
 const checkNewImage = async (key, dateString) => {
-  console.log('Image Map', imageMap, Object.keys(imageMap[key]).length);
   if (Object.keys(imageMap[key]).length === activeBrowsers.length) {
     await compareBrowsers(imageMap[key], dateString);
     imageMap[key] = {};
@@ -117,7 +118,6 @@ const checkNewImage = async (key, dateString) => {
 };
 
 const addNewImage = async (key, browser, requestData) => {
-  console.log('RequestData', requestData);
   if (!imageMap[key]) {
     return;
   }
@@ -129,9 +129,9 @@ const addNewImage = async (key, browser, requestData) => {
 const deactivateBrowser = async (browser, requestData) => {
   const index = activeBrowsers.indexOf(browser);
   activeBrowsers.splice(index, 1);
-  console.log('Deactivating browser...', browser);
+  logger.logInfo('Deactivating browser...', browser);
   if (browser === baseBrowser) {
-    console.error('Base browser deactivated. Nothing more to compare');
+    logger.logError('Base browser deactivated. Nothing more to compare');
     throw new Error('Base browser deactivated. Nothing more to compare');
   }
 
@@ -147,15 +147,13 @@ const deactivateBrowser = async (browser, requestData) => {
 };
 
 module.exports.registerImage = async (imageRequestBody, requestData) => {
-  console.log('DATA', imageRequestBody, requestData);
   const { browser } = imageRequestBody;
   if (!activeBrowsers.includes(browser)) {
-    console.log(`Inactive browser requested browser ${browser}`);
+    logger.logWarning(`Inactive browser requested browser ${browser}`);
     throw new Error(`Inactive browser requested browser ${browser}`);
   }
 
   clearTimeout(timeoutMap[browser]);
-  console.log(browserWaitingTime);
 
   // Set waiting timeout for image from browser
   timeoutMap[browser] = setTimeout(() => {
@@ -163,9 +161,9 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
   }, browserWaitingTime);
 
   const imageKey = imageRequestBody.id;
-  console.log('Image key');
   if (!imageMap[imageKey]) {
     imageMap[imageKey] = {};
   }
+
   await addNewImage(imageKey, browser, requestData);
 };

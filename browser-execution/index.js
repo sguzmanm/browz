@@ -4,15 +4,19 @@ dotenv.config();
 
 const { startServers } = require('./servers/servers');
 const { exploreApp } = require('./exploration/exploration');
+const logger = require('../shared/logger');
+
+logger.newInstance('Browser Execution');
+
 
 const main = async () => {
   try {
-    console.log('------------Start Servers -------------');
+    logger.logInfo('Start dev servers');
     await startServers();
-    console.log('------------Explore App -------------');
+    logger.logInfo('Start app exploration');
     await exploreApp();
   } catch (error) {
-    console.error('ERROR', error);
+    logger.logError(error);
   }
 
   process.exit(0);
