@@ -15,6 +15,8 @@ const UNIT_MB = 'Mi';
 const ENV_PARAM = '--env';
 const CONTAINER_NAME = 'thesis';
 const IMAGE_MEMORY_THRESHOLD = 200 * 2 ** 20; // 200MB
+const ESTIMATED_IMAGE_SIZE = 1.99 * 2 ** 30; // 1.99 GB
+
 const checkImageMemoryCmd = `docker --config ${`${__dirname}/config`} manifest inspect -v ${linuxContainer} | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | numfmt --to=iec-i`;
 
 const askQuestion = (query) => {
@@ -75,10 +77,15 @@ const pullImage = async () => {
 };
 
 module.exports.setupDocker = async () => {
-  let compressedImageMem = await checkImageMemory();
-  compressedImageMem = convertMBtoBytes(
-    parseInt(compressedImageMem.split(UNIT_MB)[0], 10),
+  let dockerImageSize = await checkImageMemory();
+  dockerImageSize = convertMBtoBytes(
+    parseInt(dockerImageSize.split(UNIT_MB)[0], 10),
   );
+  const approximateImageMem = dockerImageSize * (dockerImageSize / ESTIMATED_IMAGE_SIZE);
+
+  logger.logInfo(`The image will occupy at least ${approximateImageMem} MB of your disk`);
+  if (approximateImageMem > os.freemem()) {
+    const requiredMemory = approximateImageMem - os.freemem();
 
   if (compressedImageMem > os.freemem()) {
     const requiredMemory = compressedImageMem - os.freemem();

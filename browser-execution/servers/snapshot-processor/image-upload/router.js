@@ -4,6 +4,10 @@ const path = require('path');
 const express = require('express');
 const multer = require('multer');
 const { registerImage } = require('./browser-control');
+const logger = require('../../../../shared/logger');
+
+logger.newInstance('Snapshot Processor Router');
+
 
 const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../runs');
 let dateString;
@@ -53,11 +57,9 @@ const getMimetypeExtension = (mimetype) => {
 
 const getFilename = (fieldName, imageRequestBody) => {
   const dirPath = `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${imageRequestBody.id}`;
-  console.log(dirPath);
-
   mkdirRecursive(dirPath);
 
-  console.log('[Filename]', `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${fieldName}`);
+  logger.logInfo('Filename:', `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${fieldName}`);
   return `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${fieldName}`;
 };
 
@@ -68,26 +70,21 @@ const storage = multer.diskStorage({
     }
 
     const destination = `${imagePath}${path.sep}${dateString}${path.sep}snapshots`;
-    console.log('DESTINATION', destination);
     resolveDestination(null, destination);
   },
   filename(req, file, createFilename) {
-    console.log('FILENAME', file.fieldname);
     const fieldName = file.fieldname;
     if (fieldName !== BEFORE_IMAGE && fieldName !== AFTER_IMAGE) {
-      console.error('Invalid file passed during request');
+      logger.logError(`Invalid file passed during request ${fieldName}`);
       return;
     }
 
     const imageRequestBody = req.body;
-    console.log(imageRequestBody);
     const fileName = getFilename(fieldName, imageRequestBody);
-    console.log(fileName);
     createFilename(
       null,
       `${fileName}${getMimetypeExtension(file.mimetype)}`,
     );
-    console.log('After create');
   },
 });
 
@@ -109,8 +106,6 @@ const getFile = (files, fieldname) => files.find((file) => file.fieldname === fi
 }
 */
 router.post('/', upload.any(), async (req, res, next) => {
-  console.log('POST');
-  console.log(getFile(req.files, AFTER_IMAGE).filename);
   try {
     await registerImage(req.body, {
       dateString,
@@ -121,7 +116,7 @@ router.post('/', upload.any(), async (req, res, next) => {
     });
     res.json({ status: 'OK' });
   } catch (err) {
-    console.log(err);
+    logger.logError(err);
     next(err);
   }
 });

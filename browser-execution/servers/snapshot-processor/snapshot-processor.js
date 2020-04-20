@@ -4,6 +4,9 @@ const ImageRouter = require('./image-upload/router');
 
 const port = process.env.IMAGE_PORT || '8081';
 const app = express();
+const logger = require('../../../shared/logger');
+
+logger.newInstance('Snapshot Processor Server');
 
 const errorHandler = (err, req, res, next) => {
   if (res.headersSent) {
@@ -25,11 +28,11 @@ module.exports.start = () => {
 
   // Main action
   const server = app.listen(port, () => {
-    console.log('Snapshot Server started', port);
+    logger.logInfo('Snapshot Server started', port);
   });
 
   server.on('error', (err) => {
-    console.error('Snapshot Processor Error:', err);
+    logger.logError('Snapshot Processor Error:', err);
     throw new Error('Snapshot Processor Error:', err.message);
   });
 };
