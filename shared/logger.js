@@ -20,16 +20,17 @@ logger.newInstance = (context) => {
     logger.context = context;
 };
 
-logger.logInfo = () => {
-    // eslint-disable-next-line no-undef
-    console.log(`${logger.context}>>[INFO]:${getMessage(arguments)}`);
+logger.log = (...messages) => {
+    console.log(getMessage(messages));
 };
 
-logger.logWarning = () => {
-    // eslint-disable-next-line no-undef
-    console.log(`${logger.context}>>[WARNING]:${getMessage(arguments)}`);
+logger.logInfo = (...messages) => {
+    console.log(`${logger.context}>>[INFO]:${getMessage(messages)}`);
 };
-logger.logError = () => {
-    // eslint-disable-next-line no-undef
-    console.error(`${logger.context}>>[ERROR]:${getMessage(arguments)}`);
+
+logger.logWarning = (...messages) => {
+    console.log(`${logger.context}>>[WARNING]:${getMessage(messages)}`);
+};
+logger.logError = (...messages) => {
+    console.error(`${logger.context}>>[ERROR]:${getMessage(messages)}`);
 };
