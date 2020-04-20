@@ -31,10 +31,13 @@ const logError = (context, ...messages) => {
     console.error(`${context}>>[ERROR]:${getMessage(messages)}`);
 };
 
-logger.newInstance = (context) => ({
-    context?context: "Default",
-    log,
-    logInfo: (messages) => logInfo(context, messages),
-    logWarning: (messages) => logWarning(context, messages),
-    logError: (messages) => logError(context, messages),
-});
+logger.newInstance = (context) => {
+    context = context || 'Default';
+    return {
+        context,
+        log,
+        logInfo: (messages) => logInfo(context, messages),
+        logWarning: (messages) => logWarning(context, messages),
+        logError: (messages) => logError(context, messages),
+    };
+};

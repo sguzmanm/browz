@@ -16,8 +16,8 @@ module.exports.start = () => {
 
   const fileServer = new nStatic.Server(httpPath);
   const server = http.createServer((req, res) => {
-    const ans = fileServer.serve(req, res);
-    logger.logInfo('Serving static files', ans);
+    logger.logInfo(`Requested ${req.url} with method ${req.method}`);
+    fileServer.serve(req, res);
   });
 
   server.on('error', (error) => {

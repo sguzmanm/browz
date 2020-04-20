@@ -83,8 +83,8 @@ const compare = async (original, modified, dateString) => {
 
 // Browser comparison of snapshots
 const compareBrowsers = async (screenshotMap, dateString) => {
-  logger.logInfo('Start Browser comparison');
   const baseImages = screenshotMap[baseBrowser];
+  logger.logInfo('Start Browser comparison');
 
   const comparableBrowsers = [...activeBrowsers];
   const spliceIndex = comparableBrowsers.indexOf(baseBrowser);

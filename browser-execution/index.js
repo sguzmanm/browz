@@ -16,8 +16,6 @@ const main = async () => {
   } catch (error) {
     logger.logError(error);
   }
-
-  process.exit(0);
 };
 
 main();

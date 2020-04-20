@@ -57,7 +57,6 @@ const getFilename = (fieldName, imageRequestBody) => {
   const dirPath = `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${imageRequestBody.id}`;
   mkdirRecursive(dirPath);
 
-  logger.logInfo('Filename:', `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${fieldName}`);
   return `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${fieldName}`;
 };
 
