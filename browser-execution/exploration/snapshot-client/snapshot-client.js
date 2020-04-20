@@ -3,6 +3,8 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 const fs = require('fs');
 
+const ERR_SERVER_STOPPED_PROCESSING_REQUESTS = new Error('Snapshot Server won\'t process more requests');
+
 const getBrowser = (path) => {
   // TODO improve
   if (path.includes('chrome')) return 'chrome';
@@ -13,15 +15,11 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
   const { path: beforePath } = beforeSnapshot;
   const { path: afterPath } = afterSnapshot;
 
-  console.log('[client] Before splits');
-
   const [id, eventType, event] = beforePath.split('/')[beforePath.split('/').length - 1].split('.')[0].split('-');
   const browser = getBrowser(beforePath);
 
   let beforeImage;
   let afterImage;
-
-  console.log('[client] After splits');
 
   try {
     beforeImage = fs.readFileSync(beforePath);
@@ -42,12 +40,18 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
     };
 
     const response = await fetch('http://localhost:8081/', options);
-    const text = await response.text();
+    if (response.status === 400) {
+      throw ERR_SERVER_STOPPED_PROCESSING_REQUESTS;
+    }
 
-    console.log('[client] After fetch');
-
-    console.log(`Response: (${response.status}) content:\n${text}\n------------`);
+    if (response.status !== 200) {
+      console.log(`Snapshot server returned unknown status: ${response.status}`);
+    }
   } catch (error) {
-    console.error('Error reading images: ', error);
+    if (error === ERR_SERVER_STOPPED_PROCESSING_REQUESTS) {
+      throw ERR_SERVER_STOPPED_PROCESSING_REQUESTS;
+    }
+
+    console.error('Error sending images to snapshot server: ', error);
   }
 };

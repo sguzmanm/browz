@@ -98,14 +98,20 @@ module.exports = (on, config) => {
   // snapshot plugins
 
   let preSnapshot = null
+  let snapshotError = null
 
   on('after:screenshot', (snapshot) => {
+    if (snapshotError) {
+      throw snapshotError
+    }
+
     if (!preSnapshot) {
         preSnapshot = snapshot
         return
     }
 
-    Client.sendSnapshot([preSnapshot, snapshot]);
+    Client.sendSnapshot([preSnapshot, snapshot])
+      .catch(err => snapshotError = err);
     preSnapshot = null
   })
 }
