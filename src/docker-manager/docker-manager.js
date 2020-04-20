@@ -3,6 +3,10 @@ const fs = require('fs');
 const os = require('os');
 const readline = require('readline');
 
+const logger = require('../../shared/logger');
+
+logger.newInstance('Docker Manager');
+
 const linuxContainer = process.env.LINUX_CONTAINER || 'sguzmanm/linux_cypress_tests:lite';
 const httpAppDir = process.env.HTTP_APP_DIR || '/tmp/app';
 const snapshotDir = process.env.SNAPSHOT_DESTINATION_DIR || '/tmp/runs';
@@ -11,6 +15,8 @@ const UNIT_MB = 'Mi';
 const ENV_PARAM = '--env';
 const CONTAINER_NAME = 'thesis';
 const IMAGE_MEMORY_THRESHOLD = 200 * 2 ** 20; // 200MB
+const ESTIMATED_IMAGE_SIZE = 1.99 * 2 ** 30; // 1.99 GB
+
 const checkImageMemoryCmd = `docker --config ${`${__dirname}/config`} manifest inspect -v ${linuxContainer} | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | numfmt --to=iec-i`;
 
 const askQuestion = (query) => {
@@ -36,13 +42,13 @@ const checkImageMemory = () => {
     spawnElement.stdout.on('data', (data) => {
       dataLine = data.toString().split(UNIT_MB);
       if (dataLine.length > 1) {
-        console.log(`Image memory retrieved ${dataLine[0]}`);
+        logger.logInfo(`Compressed docker image disk space: ${dataLine[0]} MB`);
         resolve(dataLine[0]);
       }
     });
 
     spawnElement.stderr.on('data', (data) => {
-      console.error(data);
+      logger.logError(`Error checking available memory to pull image: ${data}`);
       reject(
         new Error(`Error checking available memory to pull image: ${data}`),
       );
@@ -56,32 +62,36 @@ const pullImage = async () => {
   const spawnElement = spawn('docker', ['pull', linuxContainer]);
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
-      console.log(`child stdout:\n${data}`);
+      logger.logInfo(`Docker pull output:\n ${data}`);
       if (data.toString().trim().includes(linuxContainer)) {
-        console.log('Image successfully pulled');
+        logger.logInfo('Image successfully pulled');
         resolve(data);
       }
     });
 
     spawnElement.stderr.on('data', (data) => {
-      console.error(data);
+      logger.logError(`Error setting up docker container ${data}`);
       reject(new Error(`Error setting up docker container ${data}`));
     });
   });
 };
 
 module.exports.setupDocker = async () => {
-  let compressedImageMem = await checkImageMemory();
-  compressedImageMem = convertMBtoBytes(
-    parseInt(compressedImageMem.split(UNIT_MB)[0], 10),
+  let dockerImageSize = await checkImageMemory();
+  dockerImageSize = convertMBtoBytes(
+    parseInt(dockerImageSize.split(UNIT_MB)[0], 10),
   );
+  const approximateImageMem = dockerImageSize * (dockerImageSize / ESTIMATED_IMAGE_SIZE);
 
-  if (compressedImageMem > os.freemem()) {
-    const requiredMemory = compressedImageMem - os.freemem();
+  logger.logInfo(`The image will occupy at least ${approximateImageMem} MB of your disk`);
+  if (approximateImageMem > os.freemem()) {
+    const requiredMemory = approximateImageMem - os.freemem();
+
     const answer = await askQuestion(
       `You need ${requiredMemory} MB to install our current image. If the process continues the app will probably fail. Do you still want to go on? (y/N)`,
     );
     if (answer.toLowerCase() !== 'y' && answer !== '') {
+      logger.logWarning('Pull image process stopped by user, please review necessary requirements');
       throw new Error(
         'Pull image process stopped by user, please review necessary requirements',
       );
@@ -98,10 +108,11 @@ const parseFilesAsEnvVariables = () => {
 
   const ans = [];
   let data;
+
   Object.keys(configFiles).forEach((file) => {
     data = fs.readFileSync(`${__dirname}/config/${file}`, 'utf8');
     if (data.length > 0) {
-      console.log(configFiles[file], data);
+      logger.logInfo('Added config', `${configFiles[file]}=${data}`);
       ans.push(ENV_PARAM);
       ans.push(`${configFiles[file]}=${data}`);
     }
@@ -135,34 +146,38 @@ const executeContainer = (httpSource, imageDestination) => {
     'cd /tmp/thesis && git reset --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js',
   ];
 
-  console.log(commands.join(' '));
+  logger.logInfo('Run command');
+  logger.logInfo(commands.join(' '));
   const spawnElement = spawn('docker', commands);
 
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
-      console.log(`Docker logs >>\n${data}`);
+      logger.log(`${data}`);
     });
 
     spawnElement.stderr.on('data', (data) => {
-      console.error(`Docker error >>\n${data}`);
+      logger.log(`${data}`);
     });
 
     spawnElement.on('close', (code) => {
       if (code !== 0) {
+        logger.logError(`Container execution failed with exit code: ${code}`);
         reject(new Error(`Container execution failed with exit code: ${code}`));
       }
     });
 
     spawnElement.on('exit', (code, signal) => {
       if (!code && signal) {
+        logger.logError(`Container execution finished with error signal: ${signal}`);
         reject(new Error(`Container execution finished with error signal: ${signal}`));
       }
 
       if (code !== 0) {
+        logger.logError(`Container execution finished with exit code: ${code}`);
         reject(new Error(`Container execution finished with exit code: ${code}`));
       }
 
-      console.log('Container execution finished');
+      logger.logInfo('Container execution finished');
       resolve(code);
     });
   });
@@ -171,10 +186,14 @@ const executeContainer = (httpSource, imageDestination) => {
 // Run docker with volume params
 module.exports.runDocker = async (httpSource, imageDestination) => {
   if (os.freemem() < IMAGE_MEMORY_THRESHOLD) {
+    logger.logInfo('Docker requirements for running image');
+
     const answer = await askQuestion(
       `Your free memory is less than our suggested threshold of ${IMAGE_MEMORY_THRESHOLD} MB for running the docker. Do you still want to go on? (y/N)`,
     );
+
     if (answer.toLowerCase() !== 'y' && answer !== '') {
+      logger.logError('Run image process stopped by user, please review necessary requirements');
       throw new Error(
         'Run image process stopped by user, please review necessary requirements',
       );
@@ -189,12 +208,13 @@ module.exports.killDocker = () => {
 
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
-      console.log(`child stdout:\n${data}`);
+      logger.logInfo(`Docker process stopped:\n${data}`);
       resolve(data);
     });
 
     spawnElement.stderr.on('data', (data) => {
       if (!data.includes('No such container:')) {
+        logger.logError(`Error stopping docker container ${data}`);
         reject(new Error(`Error stopping docker container ${data}`));
       }
     });

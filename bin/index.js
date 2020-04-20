@@ -4,13 +4,15 @@ const fs = require('fs');
 // Two main params, http source and image destination
 const { setupDocker, runDocker, killDocker } = require('../src/docker-manager/docker-manager');
 const { createReport } = require('../src/report-manager/report-manager');
+const logger = require('../shared/logger');
+
 
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';
 
 const httpSource = process.argv[2];
 if (!httpSource || httpSource.trim() === '') {
   // eslint-disable-next-line no-undef
-  console.error(EMPTY_DIR_MSG, 'Http');
+  logger.logError(EMPTY_DIR_MSG, 'Http');
   process.exit(1);
 }
 
@@ -34,24 +36,24 @@ const finishProcess = async (success) => {
 
 const main = async () => {
   try {
-    console.log('-----Setup Container-----');
+    logger.logInfo('-----Setup Container-----');
     await setupDocker();
-    console.log('----Run Container-------');
+    logger.logInfo('----Run Container-------');
     await runDocker(httpSource, imagesDestination);
-    console.log('-----Create Report--------');
+    logger.logInfo('-----Create Report--------');
     await createReport();
-    console.log('-----Finish process-------');
+    logger.logInfo('-----Finish process-------');
     await finishProcess(true);
   } catch (error) {
-    console.error('Error running container code', error);
+    logger.logError('Error running container code', error);
     throw error;
   }
 };
 
 process.on('unhandledRejection', (error) => {
   // Won't execute
-  console.log('-----Finish process with unhandled error-------');
-  console.error(error);
+  logger.logWarning('-----Finish process with unhandled error-------');
+  logger.logError(error);
   finishProcess(false);
 });
 
@@ -59,6 +61,7 @@ process.on('unhandledRejection', (error) => {
 try {
   main();
 } catch (error) {
-  console.log('-----Finish process with error-------');
+  logger.logWarning('-----Finish process with error-------');
+  logger.logError(error);
   finishProcess(false);
 }
