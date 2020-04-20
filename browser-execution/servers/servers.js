@@ -7,3 +7,9 @@ module.exports.startServers = () => {
     ImageServer.start(),
   ]);
 };
+
+module.exports.writeResults = () => {
+  Promise.all([
+    ImageServer.writeResults(),
+  ]);
+};
