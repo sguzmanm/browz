@@ -3,9 +3,7 @@ const fs = require('fs');
 const os = require('os');
 const readline = require('readline');
 
-const logger = require('../../shared/logger');
-
-logger.newInstance('Docker Manager');
+const logger = require('../../shared/logger').newInstance('Docker Manager');
 
 const linuxContainer = process.env.LINUX_CONTAINER || 'sguzmanm/linux_cypress_tests:lite';
 const httpAppDir = process.env.HTTP_APP_DIR || '/tmp/app';

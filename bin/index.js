@@ -4,7 +4,7 @@ const fs = require('fs');
 // Two main params, http source and image destination
 const { setupDocker, runDocker, killDocker } = require('../src/docker-manager/docker-manager');
 const { createReport } = require('../src/report-manager/report-manager');
-const logger = require('../shared/logger');
+const logger = require('../shared/logger').newInstance();
 
 
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';

@@ -1,3 +1,5 @@
+const logger = require('../../../shared/logger').newInstance('Cypress Plugins');
+
 /* eslint-disable */
 /// <reference types="cypress" />
 // ***********************************************************
@@ -25,49 +27,49 @@ module.exports = (on, config) => {
   // `config` is the resolved Cypress config
 
   on('task', {
-    logCommand({ funtype, info}){
+    logCommand({ funtype, info }) {
       let html = `<li><span><h2> ${funtype} event</h2>`
-      if(!!info) html+=`<p><strong>Details: </strong> ${info}</p>`
+      if (!!info) html += `<p><strong>Details: </strong> ${info}</p>`
       html += "</span></li>"
       fs.appendFile(LOG_FILENAME, html, (err) => {
-          if (err) throw err
-          console.log(`Logged #${funtype}`)
+        if (err) throw err
+        logger.logInfo(`Logged #${funtype}`)
       })
       return null
     },
-    logStart({type, url, seed}){
+    logStart({ type, url, seed }) {
       //Date might be inaccurate
       var currentdate = new Date(Date.now());
       var date = currentdate.getDay() + "/" + currentdate.getMonth() + "/" + currentdate.getFullYear();
       var time = currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds();
       fs.appendFile(LOG_FILENAME, `<html><body><h1>Execution of ${type} in <a href = ${url}>${url}</a></h1><h2>Date of execution: ${date} at ${time}</h2><h2>Seed:${seed}</h2><ol type = '1'>`, (err) => {
         if (err) throw err
-        console.log(`Log started`)
+        logger.logInfo(`Log started`)
       })
       return null
     },
-    logEnd(){
+    logEnd() {
       fs.appendFile(LOG_FILENAME, "</ol></body></html>", (err) => {
         if (err) throw err
-        console.log(`Finished logging`)
+        logger.logInfo(`Finished logging`)
       })
       return null
     },
-    logPctNo100(){
+    logPctNo100() {
       fs.appendFile(LOG_FILENAME, `<h1>Error:</h1><p>El porcentaje de eventos configurados no suma 100, sino ${pcg}</p>`, (err) => {
         if (err) throw err
-        console.log(`Logged error`)
+        logger.logInfo(`Logged error`)
       })
       return null
     },
-    genericLog({message}){
-      console.log(message)
+    genericLog({ message }) {
+      logger.logInfo(message)
       return null
     },
-    genericReport({html}){
+    genericReport({ html }) {
       fs.appendFile(LOG_FILENAME, html, (err) => {
         if (err) throw err
-        console.log(`Logged error`)
+        logger.logInfo(`Logged error`)
       })
       return null
     }
@@ -80,16 +82,16 @@ module.exports = (on, config) => {
     //  https://chromedevtools.github.io/devtools-protocol/tot/Log#type-LogEntry
     // if `type` is `console`, `event` is an object of the type passed to `Runtime.consoleAPICalled`:
     //  https://chromedevtools.github.io/devtools-protocol/tot/Runtime#event-consoleAPICalled
-    if(type === 'browser'){
+    if (type === 'browser') {
       fs.appendFile(LOG_FILENAME, `<p><strong>Browser event (source: ${event.source}): </strong>${event.text}</p>`, (err) => {
         if (err) throw err
-        console.log(`Finished logging`)
+        logger.logInfo(`Finished logging`)
       })
     }
-    else if (type === 'console'){
-      fs.appendFile(LOG_FILENAME, `<p><strong>Console ${event.type} event. Trace: </strong>${(!!event.stackTrace)?event.stackTrace.description:"none"}</p>`, (err) => {
+    else if (type === 'console') {
+      fs.appendFile(LOG_FILENAME, `<p><strong>Console ${event.type} event. Trace: </strong>${(!!event.stackTrace) ? event.stackTrace.description : "none"}</p>`, (err) => {
         if (err) throw err
-        console.log(`Finished logging`)
+        logger.logInfo(`Finished logging`)
       })
     }
     return true;
@@ -101,8 +103,8 @@ module.exports = (on, config) => {
 
   on('after:screenshot', (snapshot) => {
     if (!preSnapshot) {
-        preSnapshot = snapshot
-        return
+      preSnapshot = snapshot
+      return
     }
 
     Client.sendSnapshot([preSnapshot, snapshot]);

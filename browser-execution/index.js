@@ -4,9 +4,7 @@ dotenv.config();
 
 const { startServers } = require('./servers/servers');
 const { exploreApp } = require('./exploration/exploration');
-const logger = require('../shared/logger');
-
-logger.newInstance('Browser Execution');
+const logger = require('../shared/logger').newInstance('Browser Execution');
 
 
 const main = async () => {

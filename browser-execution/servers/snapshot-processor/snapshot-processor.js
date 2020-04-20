@@ -4,9 +4,7 @@ const ImageRouter = require('./image-upload/router');
 
 const port = process.env.IMAGE_PORT || '8081';
 const app = express();
-const logger = require('../../../shared/logger');
-
-logger.newInstance('Snapshot Processor Server');
+const logger = require('../../../shared/logger').newInstance('Snapshot Processor Server');
 
 const errorHandler = (err, req, res, next) => {
   if (res.headersSent) {

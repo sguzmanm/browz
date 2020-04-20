@@ -2,6 +2,7 @@
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 const fs = require('fs');
+const logger = require('../../../shared/logger').newInstance('Snapshot Client');
 
 const getBrowser = (path) => {
   // TODO improve
@@ -13,7 +14,7 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
   const { path: beforePath } = beforeSnapshot;
   const { path: afterPath } = afterSnapshot;
 
-  console.log('[client] Before splits');
+  logger.logInfo('[client] Before splits');
 
   const [id, eventType, event] = beforePath.split('/')[beforePath.split('/').length - 1].split('.')[0].split('-');
   const browser = getBrowser(beforePath);
@@ -21,7 +22,7 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
   let beforeImage;
   let afterImage;
 
-  console.log('[client] After splits');
+  logger.logInfo('[client] After splits');
 
   try {
     beforeImage = fs.readFileSync(beforePath);
@@ -44,10 +45,10 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
     const response = await fetch('http://localhost:8081/', options);
     const text = await response.text();
 
-    console.log('[client] After fetch');
+    logger.logInfo('[client] After fetch');
 
-    console.log(`Response: (${response.status}) content:\n${text}\n------------`);
+    logger.logInfo(`Response: (${response.status}) content:\n${text}\n------------`);
   } catch (error) {
-    console.error('Error reading images: ', error);
+    logger.logError('Error reading images: ', error);
   }
 };

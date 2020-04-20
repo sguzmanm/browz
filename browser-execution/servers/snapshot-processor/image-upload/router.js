@@ -4,9 +4,7 @@ const path = require('path');
 const express = require('express');
 const multer = require('multer');
 const { registerImage } = require('./browser-control');
-const logger = require('../../../../shared/logger');
-
-logger.newInstance('Snapshot Processor Router');
+const logger = require('../../../../shared/logger').newInstance('Snapshot Processor Router');
 
 
 const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../runs');

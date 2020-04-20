@@ -4,9 +4,7 @@ const nStatic = require('node-static');
 
 const port = process.env.HTTP_PORT || '8080';
 const httpPath = process.env.HTTP_APP_DIR || '../../app';
-const logger = require('../../../shared/logger');
-
-logger.newInstance('HTTP Server');
+const logger = require('../../../shared/logger').newInstance('HTTP Server');
 
 module.exports.start = () => {
   logger.logInfo(httpPath);

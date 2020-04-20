@@ -11,9 +11,7 @@ const writeFile = util.promisify(fs.writeFile);
 const compareImages = require('resemblejs/compareImages');
 
 const { browsers } = require('../../../../shared/browsers');
-const logger = require('../../../../shared/logger');
-
-logger.newInstance('Snapshot Processor Browser Control');
+const logger = require('../../../../shared/logger').newInstance('Snapshot Processor Browser Control');
 
 const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../runs');
 const baseBrowser = process.env.BASE_BROWSER || 'chrome';

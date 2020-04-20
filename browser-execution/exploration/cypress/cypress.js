@@ -1,4 +1,5 @@
 const Cypress = require('cypress');
+const logger = require('../../../shared/logger').newInstance('Cypress Handler');
 
 // const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || '../../screenshots';
 const path = (relativePath) => `${__dirname}/${relativePath}`;
@@ -50,7 +51,7 @@ const browserOptions = (browser) => {
 };
 
 module.exports.cypressHandler = async () => {
-  console.log('Starting cypress...');
+  logger.logInfo('Starting cypress...');
 
   const cypressRuns = [
     Cypress.run(browserOptions('chrome')),
@@ -59,5 +60,5 @@ module.exports.cypressHandler = async () => {
 
   await Promise.all(cypressRuns);
 
-  console.log('Finished :)');
+  logger.logInfo('Finished :)');
 };

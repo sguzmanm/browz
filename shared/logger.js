@@ -1,4 +1,4 @@
-const logger = exports;
+const logger = exports; // FIXME: Why does thihs have to be exported like this?
 
 const getMessage = (args) => {
     let fullMessage = '';
@@ -16,21 +16,25 @@ const getMessage = (args) => {
     return fullMessage;
 };
 
-logger.newInstance = (context) => {
-    logger.context = context;
-};
-
-logger.log = (...messages) => {
+const log = (...messages) => {
     console.log(getMessage(messages));
 };
 
-logger.logInfo = (...messages) => {
-    console.log(`${logger.context}>>[INFO]:${getMessage(messages)}`);
+const logInfo = (context, ...messages) => {
+    console.log(`${context}>>[INFO]:${getMessage(messages)}`);
 };
 
-logger.logWarning = (...messages) => {
-    console.log(`${logger.context}>>[WARNING]:${getMessage(messages)}`);
+const logWarning = (context, ...messages) => {
+    console.log(`${context}>>[WARNING]:${getMessage(messages)}`);
 };
-logger.logError = (...messages) => {
-    console.error(`${logger.context}>>[ERROR]:${getMessage(messages)}`);
+const logError = (context, ...messages) => {
+    console.error(`${context}>>[ERROR]:${getMessage(messages)}`);
 };
+
+logger.newInstance = (context) => ({
+    context?context: "Default",
+    log,
+    logInfo: (messages) => logInfo(context, messages),
+    logWarning: (messages) => logWarning(context, messages),
+    logError: (messages) => logError(context, messages),
+});
