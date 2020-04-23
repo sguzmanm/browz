@@ -6,25 +6,18 @@ const multer = require('multer');
 const { registerImage } = require('./browser-control');
 const logger = require('../../../../shared/logger').newInstance('Snapshot Processor Router');
 
-
 const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../runs');
-let dateString;
 
 const BEFORE_IMAGE = 'before';
 const AFTER_IMAGE = 'after';
 
-const calculateDateString = () => {
-  const date = new Date();
-  const dateOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-  };
+let dateString = 'Regular run';
 
-  dateString = date.toLocaleDateString('es-CO', dateOptions).replace(':', '');
+module.exports.setDate = (date) => {
+  dateString = date;
 };
+
+const router = express.Router();
 
 const mkdirRecursive = (fullPath) => {
   let currentArg = 0;
@@ -62,10 +55,6 @@ const getFilename = (fieldName, imageRequestBody) => {
 
 const storage = multer.diskStorage({
   destination(req, file, resolveDestination) {
-    if (!dateString) {
-      calculateDateString();
-    }
-
     const destination = `${imagePath}${path.sep}${dateString}${path.sep}snapshots`;
     resolveDestination(null, destination);
   },
@@ -86,7 +75,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-const router = express.Router();
 
 const getFile = (files, fieldname) => files.find((file) => file.fieldname === fieldname) || {};
 
@@ -103,6 +91,7 @@ const getFile = (files, fieldname) => files.find((file) => file.fieldname === fi
 }
 */
 router.post('/', upload.any(), async (req, res, next) => {
+  logger.logInfo('DATE STRING', dateString);
   try {
     await registerImage(req.body, {
       dateString,
@@ -118,4 +107,4 @@ router.post('/', upload.any(), async (req, res, next) => {
   }
 });
 
-module.exports = router;
+module.exports.router = router;

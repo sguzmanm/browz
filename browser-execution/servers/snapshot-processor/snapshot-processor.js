@@ -1,6 +1,6 @@
 require('dotenv').config(); // Setup variables from .env file
 const express = require('express');
-const ImageRouter = require('./image-upload/router');
+const { setDate, router } = require('./image-upload/router');
 const { writeResults } = require('./image-upload/browser-control');
 
 const port = process.env.IMAGE_PORT || '8081';
@@ -19,9 +19,10 @@ const errorHandler = (err, req, res, next) => {
   return ans;
 };
 
-module.exports.start = () => {
+module.exports.start = (dateString) => {
   // Routes
-  app.use('/', ImageRouter);
+  setDate(dateString);
+  app.use('/', router);
   // Middleware
   app.use(errorHandler);
 

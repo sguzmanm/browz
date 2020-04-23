@@ -20,8 +20,6 @@ const browserWaitingTime = parseInt(process.env.BROWSER_RESPONSE_WAITING_TIME, 1
 // Modify this var to take into account active browsers
 const activeBrowsers = [browsers.FIREFOX, browsers.CHROME];
 
-let startDate;
-let endDate;
 const events = [];
 const timeoutMap = {};
 const imageMap = {};
@@ -173,10 +171,12 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
   await addNewImage(id, browser, event, requestData);
 };
 
-module.exports.writeResults = async (dateString) => {
-  const runPath = `${imagePath}${path.sep}${dateString}runs.json`;
+module.exports.writeResults = async (startDateString, endDateString) => {
+  const runPath = `${imagePath}${path.sep}${startDateString}${path.sep}runs.json`;
   await writeFile(runPath, JSON.stringify({
-    start: dateString,
+    seed: process.env.seed,
+    start: startDateString,
+    end: endDateString,
     events,
   }));
 };
