@@ -143,7 +143,7 @@ const executeContainer = (httpSource, imageDestination) => {
     'cd /tmp/thesis && git reset --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js',
   ];
 
-  logger.logDebug('Run docerk image command');
+  logger.logDebug('Run docker image command');
   logger.logDebug(commands.join(' '));
   const spawnElement = spawn('docker', commands);
 
@@ -161,6 +161,8 @@ const executeContainer = (httpSource, imageDestination) => {
         logger.logError(`Container execution failed with exit code: ${code}`);
         reject(new Error(`Container execution failed with exit code: ${code}`));
       }
+
+      logger.logInfo('Container execution closed successfully');
     });
 
     spawnElement.on('exit', (code, signal) => {

@@ -37,7 +37,7 @@ npm install
 After that, just run
 
 ```
-node index.js <Path to web app project> <Destination of screenshots of browsers>
+npm run thesis -- <Path to web app project> <Destination of screenshots of browsers> 
 ```
 
 - The first param you specify is the path where your web app project is. This projects can only be composed of HTML, JS and CSS files with graphic assets (videos, images, etc). We are not supporting applications that are processed by the server (SSR).
@@ -65,9 +65,6 @@ This project has tow execution machines: The host machine, which triggers the co
 
 ### Host Machine
 
-- [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-- [Maven](https://maven.apache.org/) - Dependency Management
-- [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
 
 ### Docker Container
 

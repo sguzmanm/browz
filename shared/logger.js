@@ -23,7 +23,7 @@ const argsFromLevel = {
     '--errors': ERROR,
 };
 
-let level;
+let level = DEBUG;
 
 module.exports.setLevel = (args) => {
     let currentLevel;
@@ -33,7 +33,7 @@ module.exports.setLevel = (args) => {
         }
     });
 
-    level = currentLevel && validLevels[currentLevel] ? currentLevel : INFO;
+    level = currentLevel && validLevels[currentLevel] ? currentLevel : DEBUG;
 };
 
 const log = (...messages) => {

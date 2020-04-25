@@ -1,4 +1,4 @@
-require('dotenv').config(); // Setup variables from .env file
+require('dotenv').config();
 const express = require('express');
 const { setDate, router } = require('./image-upload/router');
 const { writeResults } = require('./image-upload/browser-control');

@@ -550,7 +550,7 @@ function clickRandButton() {
         cy.wrap(randomButton).click({ force: true });
         info = `Clicked button ${
           randomButton.textContent
-        } with jsPath ${fullPath(randomButton)}`;
+          } with jsPath ${fullPath(randomButton)}`;
       } else info = `Button ${randomButton.textContent} is hidden`;
     } else info = 'INVALID. There are no buttons in the current page';
     cy.task('logCommand', { funtype: 'Action: click button', info: info });

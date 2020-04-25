@@ -34,6 +34,7 @@ const main = async () => {
 
     logger.logInfo('Write results...');
     await writeResults(startDateString, endDateString);
+    logger.logInfo('Ending browser execution....');
   } catch (error) {
     logger.logError(error);
   }

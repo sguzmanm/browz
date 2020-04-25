@@ -13,14 +13,15 @@ const { createReport } = require('../src/report-manager/report-manager');
 
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';
 
-const httpSource = process.argv[2];
+const executionArguments = process.argv.filter((el) => !el.startsWith('--')); // Filter flags
+const httpSource = executionArguments[2];
 if (!httpSource || httpSource.trim() === '') {
   // eslint-disable-next-line no-undef
   logger.logError(EMPTY_DIR_MSG, 'Http');
   process.exit(1);
 }
 
-let imagesDestination = process.argv[3];
+let imagesDestination = executionArguments[3];
 if (!imagesDestination || imagesDestination.trim() === '') {
   imagesDestination = path.join(__dirname, '../runs');
   if (!fs.existsSync(imagesDestination)) {
@@ -43,7 +44,6 @@ const finishProcess = async (success) => {
 };
 
 const main = async () => {
-  logger.setLevel();
   try {
     logger.logInfo('-----Setup Container-----');
     await setupDocker();

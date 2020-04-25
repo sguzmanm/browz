@@ -1,7 +1,4 @@
-const dotenv = require('dotenv');
-
-dotenv.config();
-
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
@@ -118,7 +115,7 @@ const checkNewImage = async (key, event, dateString) => {
   events.push({
     id: key,
     event,
-    snapshotPath: `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${key}`,
+    snapshotPath: `${dateString}${path.sep}snapshots${path.sep}${key}`,
   });
 };
 
@@ -175,7 +172,7 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
 module.exports.writeResults = async (startDateString, endDateString) => {
   const runPath = `${imagePath}${path.sep}${startDateString}${path.sep}runs.json`;
   await writeFile(runPath, JSON.stringify({
-    seed: process.env.seed,
+    seed: process.env.SEED,
     start: startDateString,
     end: endDateString,
     events,

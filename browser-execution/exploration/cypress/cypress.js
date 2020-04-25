@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Cypress = require('cypress');
 const logger = require('../../../shared/logger').newInstance('Cypress Handler');
 
@@ -6,7 +7,6 @@ const path = (relativePath) => `${__dirname}/${relativePath}`;
 
 const baseConfig = {
   baseUrl: 'http://localhost:8080',
-  events: 10,
   integrationFolder: path('.'),
   chromeWebSecurity: false,
   pluginsFile: path('cypress_plugins.js'),
@@ -41,6 +41,9 @@ const browserOptions = (browser) => {
     ...baseConfig,
     videosFolder: path(`runs/${dateString}/${browser}/videos`),
     screenshotsFolder: path(`runs/${dateString}/${browser}/screenshots`),
+    env: {
+      seed: process.env.SEED,
+    },
   };
 
   return {
