@@ -28,12 +28,12 @@ module.exports.start = (dateString) => {
 
   // Main action
   const server = app.listen(port, () => {
-    logger.logInfo('Snapshot Server started', port);
+    logger.logInfo('Snapshot Server started on port...', port);
   });
 
   server.on('error', (err) => {
-    logger.logError('Snapshot Processor Error:', err);
-    throw new Error('Snapshot Processor Error:', err.message);
+    logger.logError('Server Error:', err);
+    throw new Error('Server Error:', err.message);
   });
 };
 

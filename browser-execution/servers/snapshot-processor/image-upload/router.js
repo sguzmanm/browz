@@ -50,6 +50,7 @@ const getFilename = (fieldName, imageRequestBody) => {
   const dirPath = `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${imageRequestBody.id}`;
   mkdirRecursive(dirPath);
 
+  logger.logDebug(`Saving file ${imageRequestBody.browser}_${fieldName}`);
   return `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${fieldName}`;
 };
 
@@ -91,7 +92,6 @@ const getFile = (files, fieldname) => files.find((file) => file.fieldname === fi
 }
 */
 router.post('/', upload.any(), async (req, res, next) => {
-  logger.logInfo('DATE STRING', dateString);
   try {
     await registerImage(req.body, {
       dateString,

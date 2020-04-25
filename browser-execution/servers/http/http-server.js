@@ -7,8 +7,6 @@ const httpPath = process.env.HTTP_APP_DIR || '../../app';
 const logger = require('../../../shared/logger').newInstance('HTTP Server');
 
 module.exports.start = () => {
-  logger.logInfo(httpPath);
-
   if (!fs.existsSync(`${httpPath}/index.html`)) {
     logger.logError('No index.html file found');
     throw new Error('No index.html file found');
@@ -16,7 +14,7 @@ module.exports.start = () => {
 
   const fileServer = new nStatic.Server(httpPath);
   const server = http.createServer((req, res) => {
-    logger.logInfo(`Requested ${req.url} with method ${req.method}`);
+    logger.logDebug(`Requested ${req.url} with method ${req.method}`);
     fileServer.serve(req, res);
   });
 
@@ -26,6 +24,6 @@ module.exports.start = () => {
   });
 
   server.listen(port, () => {
-    logger.logInfo('Start http server', port);
+    logger.logInfo('Starting http server on port...', port);
   });
 };

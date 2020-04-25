@@ -78,21 +78,22 @@ const compare = async (original, modified, dateString) => {
 
   const resultPath = `${idBasePath}comparison_${baseBrowser}_vs_${fileSeparation[fileSeparation.length - 1]}`;
   await writeFile(resultPath, data.getBuffer());
+
+  logger.logDebug(`Comparison result saved at ${resultPath}`);
 };
 
 // Browser comparison of snapshots
 const compareBrowsers = async (screenshotMap, dateString) => {
   const baseImages = screenshotMap[baseBrowser];
-  logger.logInfo('Start Browser comparison');
+  logger.logDebug('Start Browser comparison...');
 
   const comparableBrowsers = [...activeBrowsers];
   const spliceIndex = comparableBrowsers.indexOf(baseBrowser);
   comparableBrowsers.splice(spliceIndex, 1);
 
-  logger.logInfo(baseImages, screenshotMap);
   try {
     comparableBrowsers.forEach((browser) => {
-      logger.logInfo(`Compare ${baseBrowser} vs ${browser}`);
+      logger.logDebug(`Compare ${baseBrowser} vs ${browser}`);
       for (let i = 0; i < baseImages.length; i += 1) {
         compare(
           `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]}`,
@@ -133,7 +134,7 @@ const addNewImage = async (key, browser, event, requestData) => {
 const deactivateBrowser = async (browser, event, requestData) => {
   const index = activeBrowsers.indexOf(browser);
   activeBrowsers.splice(index, 1);
-  logger.logInfo('Deactivating browser...', browser);
+  logger.logDebug('Deactivating browser...', browser);
   if (browser === baseBrowser) {
     logger.logError('Base browser deactivated. Nothing more to compare');
     throw new Error('Base browser deactivated. Nothing more to compare');
@@ -153,8 +154,8 @@ const deactivateBrowser = async (browser, event, requestData) => {
 module.exports.registerImage = async (imageRequestBody, requestData) => {
   const { browser, id, event } = imageRequestBody;
   if (!activeBrowsers.includes(browser)) {
-    logger.logWarning(`Inactive browser requested browser ${browser}`);
-    throw new Error(`Inactive browser requested browser ${browser}`);
+    logger.logWarning(`Inactive browser requested: ${browser}`);
+    throw new Error(`Inactive browser requested: ${browser}`);
   }
 
   clearTimeout(timeoutMap[browser]);

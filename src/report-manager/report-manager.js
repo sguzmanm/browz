@@ -1,3 +1,5 @@
+const logger = require('../../shared/logger').newInstance('Report Manager');
+
 module.exports.createReport = async () => {
-  console.log('REPORT OK');
+  logger.logInfo('REPORT OK');
 };

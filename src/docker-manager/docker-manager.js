@@ -40,7 +40,6 @@ const checkImageMemory = () => {
     spawnElement.stdout.on('data', (data) => {
       dataLine = data.toString().split(UNIT_MB);
       if (dataLine.length > 1) {
-        logger.logInfo(`Compressed docker image disk space: ${dataLine[0]} MB`);
         resolve(dataLine[0]);
       }
     });
@@ -60,7 +59,7 @@ const pullImage = async () => {
   const spawnElement = spawn('docker', ['pull', linuxContainer]);
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
-      logger.logInfo(`Docker pull output:\n ${data}`);
+      logger.logInfo(`Docker image pull output:\n ${data}`);
       if (data.toString().trim().includes(linuxContainer)) {
         logger.logInfo('Image successfully pulled');
         resolve(data);
@@ -144,8 +143,8 @@ const executeContainer = (httpSource, imageDestination) => {
     'cd /tmp/thesis && git reset --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js',
   ];
 
-  logger.logInfo('Run command');
-  logger.logInfo(commands.join(' '));
+  logger.logDebug('Run docerk image command');
+  logger.logDebug(commands.join(' '));
   const spawnElement = spawn('docker', commands);
 
   return new Promise((resolve, reject) => {
@@ -175,7 +174,7 @@ const executeContainer = (httpSource, imageDestination) => {
         reject(new Error(`Container execution finished with exit code: ${code}`));
       }
 
-      logger.logInfo('Container execution finished');
+      logger.logInfo('Container execution finished successfully');
       resolve(code);
     });
   });
@@ -206,7 +205,7 @@ module.exports.killDocker = () => {
 
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
-      logger.logInfo(`Docker process stopped:\n${data}`);
+      logger.logInfo(`Docker process stopped successfully:\n${data}`);
       resolve(data);
     });
 

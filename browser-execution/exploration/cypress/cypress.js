@@ -51,7 +51,7 @@ const browserOptions = (browser) => {
 };
 
 module.exports.cypressHandler = async () => {
-  logger.logInfo('Starting cypress...');
+  logger.logInfo('Starting cypress exploration...');
 
   const cypressRuns = [
     Cypress.run(browserOptions('chrome')),
@@ -60,5 +60,5 @@ module.exports.cypressHandler = async () => {
 
   await Promise.all(cypressRuns);
 
-  logger.logInfo('Finished :)');
+  logger.logInfo('Finished cypress exploration');
 };

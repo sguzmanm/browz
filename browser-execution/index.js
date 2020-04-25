@@ -22,15 +22,17 @@ const calculateDateString = () => {
 
 const main = async () => {
   try {
-    logger.logInfo('Start dev servers');
     const startDateString = calculateDateString();
+
+    logger.logInfo('Start servers...');
     await startServers(startDateString);
 
-    logger.logInfo('Start app exploration');
+    logger.logInfo('Start app exploration...');
     await exploreApp();
+
     const endDateString = calculateDateString();
 
-    logger.logInfo('Write results');
+    logger.logInfo('Write results...');
     await writeResults(startDateString, endDateString);
   } catch (error) {
     logger.logError(error);

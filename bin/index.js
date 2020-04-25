@@ -1,11 +1,15 @@
 const path = require('path');
 const fs = require('fs');
 
+// Setup logging
+const { setLevel, newInstance } = require('../shared/logger');
+
+setLevel(process.argv);
+const logger = newInstance();
+
 // Two main params, http source and image destination
 const { setupDocker, runDocker, killDocker } = require('../src/docker-manager/docker-manager');
 const { createReport } = require('../src/report-manager/report-manager');
-const logger = require('../shared/logger').newInstance();
-
 
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';
 
@@ -25,7 +29,11 @@ if (!imagesDestination || imagesDestination.trim() === '') {
 }
 
 const finishProcess = async (success) => {
-  await killDocker();
+  try {
+    await killDocker();
+  } catch (error) {
+    logger.logError('Process finished without stopping container');
+  }
 
   if (success) {
     process.exit(0);
@@ -35,6 +43,7 @@ const finishProcess = async (success) => {
 };
 
 const main = async () => {
+  logger.setLevel();
   try {
     logger.logInfo('-----Setup Container-----');
     await setupDocker();

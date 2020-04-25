@@ -1,5 +1,3 @@
-const logger = exports; // FIXME: Why does thihs have to be exported like this?
-
 const getMessage = (args) => {
     let fullMessage = '';
     let message;
@@ -16,8 +14,34 @@ const getMessage = (args) => {
     return fullMessage;
 };
 
+const [DEBUG, INFO, WARNING, ERROR] = [0, 1, 2, 3];
+const validLevels = [true, true, true, true]; // Corresponds to the constants in the line above
+
+// Add possible args for logging here
+const argsFromLevel = {
+    '--verbose': DEBUG,
+    '--errors': ERROR,
+};
+
+let level;
+
+module.exports.setLevel = (args) => {
+    let currentLevel;
+    args.forEach((arg) => {
+        if (argsFromLevel[arg] && !currentLevel) {
+            currentLevel = argsFromLevel[arg];
+        }
+    });
+
+    level = currentLevel && validLevels[currentLevel] ? currentLevel : INFO;
+};
+
 const log = (...messages) => {
     console.log(getMessage(messages));
+};
+
+const logDebug = (context, ...messages) => {
+    console.log(`${context}>>[DEBUG]:${getMessage(messages)}`);
 };
 
 const logInfo = (context, ...messages) => {
@@ -31,13 +55,15 @@ const logError = (context, ...messages) => {
     console.error(`${context}>>[ERROR]:${getMessage(messages)}`);
 };
 
-logger.newInstance = (context) => {
-    context = context || 'Default';
+module.exports.newInstance = (context) => {
+    const loggingContext = context || 'Default';
+
     return {
         context,
         log,
-        logInfo: (messages) => logInfo(context, messages),
-        logWarning: (messages) => logWarning(context, messages),
-        logError: (messages) => logError(context, messages),
+        logDebug: (messages) => (level <= DEBUG ? logDebug(loggingContext, messages) : undefined),
+        logInfo: (messages) => (level <= INFO ? logInfo(loggingContext, messages) : undefined),
+        logWarning: (messages) => (level <= WARNING ? logWarning(loggingContext, messages) : undefined),
+        logError: (messages) => (level <= ERROR ? logError(loggingContext, messages) : undefined),
     };
 };
