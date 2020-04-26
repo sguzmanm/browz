@@ -1,10 +1,11 @@
-const dotenv = require('dotenv');
-
-dotenv.config();
+require('dotenv').config();
 
 const { startServers, writeResults } = require('./servers/servers');
 const { exploreApp } = require('./exploration/exploration');
-const logger = require('../shared/logger').newInstance('Browser Execution');
+const { setLevel, newInstance } = require('../shared/logger');
+
+setLevel(process.env.LEVEL);
+const logger = newInstance('Browser Execution');
 
 const calculateDateString = () => {
   const date = new Date();
@@ -35,6 +36,7 @@ const main = async () => {
     logger.logInfo('Write results...');
     await writeResults(startDateString, endDateString);
     logger.logInfo('Ending browser execution....');
+    process.exit(0);
   } catch (error) {
     logger.logError(error);
   }

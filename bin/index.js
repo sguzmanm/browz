@@ -2,9 +2,9 @@ const path = require('path');
 const fs = require('fs');
 
 // Setup logging
-const { setLevel, newInstance } = require('../shared/logger');
+const { setLevelWithFlags, newInstance } = require('../shared/logger');
 
-setLevel(process.argv);
+setLevelWithFlags(process.argv);
 const logger = newInstance();
 
 // Two main params, http source and image destination
@@ -48,7 +48,7 @@ const main = async () => {
     logger.logInfo('-----Setup Container-----');
     await setupDocker();
     logger.logInfo('----Run Container-------');
-    await runDocker(httpSource, imagesDestination);
+    await runDocker(httpSource, imagesDestination, logger.level);
     logger.logInfo('-----Create Report--------');
     await createReport();
     logger.logInfo('-----Finish process-------');

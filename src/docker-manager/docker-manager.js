@@ -11,9 +11,10 @@ const snapshotDir = process.env.SNAPSHOT_DESTINATION_DIR || '/tmp/runs';
 
 const UNIT_MB = 'Mi';
 const ENV_PARAM = '--env';
+const LEVEL_ENV_VAR = 'LEVEL';
 const CONTAINER_NAME = 'thesis';
-const IMAGE_MEMORY_THRESHOLD = 200 * 2 ** 20; // 200MB
-const ESTIMATED_IMAGE_SIZE = 1.99 * 2 ** 30; // 1.99 GB
+const IMAGE_MEMORY_THRESHOLD = 200 * 10 ** 6; // 200MB
+const ESTIMATED_IMAGE_SIZE = 1.99 * 10 ** 9; // 1.99 GB
 
 const checkImageMemoryCmd = `docker --config ${`${__dirname}/config`} manifest inspect -v ${linuxContainer} | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | numfmt --to=iec-i`;
 
@@ -80,6 +81,7 @@ module.exports.setupDocker = async () => {
   );
   const approximateImageMem = dockerImageSize * (dockerImageSize / ESTIMATED_IMAGE_SIZE);
 
+  logger.logInfo(dockerImageSize, ESTIMATED_IMAGE_SIZE);
   logger.logInfo(`The image will occupy at least ${approximateImageMem} MB of your disk`);
   if (approximateImageMem > os.freemem()) {
     const requiredMemory = approximateImageMem - os.freemem();
@@ -123,9 +125,9 @@ const parseFilesAsEnvVariables = () => {
  * --env-file="../.env" sguzmanm/linux_cypress_tests:lite sh -c cd /tmp/thesis && git reset
  * --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js
  */
-const executeContainer = (httpSource, imageDestination) => {
+const executeContainer = (httpSource, imageDestination, level) => {
   const envFile = `${__dirname}/config/.env`;
-  const fileEnvVariables = parseFilesAsEnvVariables();
+  const fileEnvVariables = parseFilesAsEnvVariables(level);
   const commands = [
     'run',
     '--shm-size=512m',
@@ -133,6 +135,8 @@ const executeContainer = (httpSource, imageDestination) => {
     `${httpSource}:${httpAppDir}`,
     '-v',
     `${imageDestination}:${snapshotDir}`,
+    ENV_PARAM,
+    `${LEVEL_ENV_VAR}=${level}`,
     `--env-file=${envFile}`,
     ...fileEnvVariables,
     '--name',
@@ -149,11 +153,11 @@ const executeContainer = (httpSource, imageDestination) => {
 
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
-      logger.log(`${data}`);
+      logger.logInfo(`Regular stream: ${data}`);
     });
 
     spawnElement.stderr.on('data', (data) => {
-      logger.log(`${data}`);
+      logger.logInfo(`Error stream: ${data}`);
     });
 
     spawnElement.on('close', (code) => {
@@ -183,7 +187,7 @@ const executeContainer = (httpSource, imageDestination) => {
 };
 
 // Run docker with volume params
-module.exports.runDocker = async (httpSource, imageDestination) => {
+module.exports.runDocker = async (httpSource, imageDestination, level) => {
   if (os.freemem() < IMAGE_MEMORY_THRESHOLD) {
     logger.logInfo('Docker requirements for running image');
 
@@ -199,7 +203,7 @@ module.exports.runDocker = async (httpSource, imageDestination) => {
     }
   }
 
-  await executeContainer(httpSource, imageDestination);
+  await executeContainer(httpSource, imageDestination, level);
 };
 
 module.exports.killDocker = () => {
