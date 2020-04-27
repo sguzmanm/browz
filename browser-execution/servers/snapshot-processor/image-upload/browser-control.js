@@ -7,6 +7,7 @@ const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 const compareImages = require('resemblejs/compareImages');
 
+const config = require('../../../../shared/config.js').getContainerConfig();
 const { browsers } = require('../../../../shared/browsers');
 const logger = require('../../../../shared/logger').newInstance('Snapshot Processor Browser Control');
 
@@ -40,11 +41,11 @@ let resembleConfig;
 
 const setupResemble = () => {
   resembleConfig = defaultResembleConfig;
-  if (!process.env.CONFIG_RESEMBLE) {
+  if (!config.resemble) {
     return;
   }
 
-  resembleConfig = JSON.parse(process.env.CONFIG_RESEMBLE);
+  resembleConfig = config.resemble;
 };
 
 /*

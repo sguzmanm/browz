@@ -1,5 +1,5 @@
+const path = require('path');
 const { spawn } = require('child_process');
-const fs = require('fs');
 const os = require('os');
 const readline = require('readline');
 
@@ -9,6 +9,8 @@ const { getDockerErrorCodeMessage, getWrongOutputMessage } = require('./error-ou
 const linuxContainer = process.env.LINUX_CONTAINER || 'sguzmanm/linux_cypress_tests:lite';
 const httpAppDir = process.env.HTTP_APP_DIR || '/tmp/app';
 const snapshotDir = process.env.SNAPSHOT_DESTINATION_DIR || '/tmp/runs';
+const hostConfigDir = path.join(__dirname, '../../config');
+const containerConfigDir = process.env.CONTAINER_CONFIG_DIR || '/tmp/config';
 
 const UNIT_MB = 'Mi';
 const ENV_PARAM = '--env';
@@ -107,26 +109,6 @@ module.exports.setupDocker = async () => {
   await pullImage();
 };
 
-const parseFilesAsEnvVariables = () => {
-  const configFiles = {
-    'resemble.json': 'CONFIG_RESEMBLE',
-  };
-
-  const ans = [];
-  let data;
-
-  Object.keys(configFiles).forEach((file) => {
-    data = fs.readFileSync(`${__dirname}/config/${file}`, 'utf8');
-    if (data.length > 0) {
-      logger.logInfo('Added config', `${configFiles[file]}=${data}`);
-      ans.push(ENV_PARAM);
-      ans.push(`${configFiles[file]}=${data}`);
-    }
-  });
-
-  return ans;
-};
-
 /*
  * Command example: docker run --shm-size=512 -v /httpDir:/tmp/app /imageDir:/tmp/screenshots
  * --env-file="../.env" sguzmanm/linux_cypress_tests:lite sh -c cd /tmp/thesis && git reset
@@ -134,7 +116,6 @@ const parseFilesAsEnvVariables = () => {
  */
 const executeContainer = (httpSource, imageDestination, level) => {
   const envFile = `${__dirname}/config/.env`;
-  const fileEnvVariables = parseFilesAsEnvVariables(level);
   const commands = [
     'run',
     '--shm-size=512m',
@@ -142,10 +123,11 @@ const executeContainer = (httpSource, imageDestination, level) => {
     `${httpSource}:${httpAppDir}`,
     '-v',
     `${imageDestination}:${snapshotDir}`,
+    '-v',
+    `${hostConfigDir}:${containerConfigDir}`,
     ENV_PARAM,
     `${LEVEL_ENV_VAR}=${level}`,
     `--env-file=${envFile}`,
-    ...fileEnvVariables,
     '--name',
     CONTAINER_NAME,
     linuxContainer,

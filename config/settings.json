@@ -1,0 +1,18 @@
+{
+    "baseUrl": "https://www.amazon.com/",
+    "resemble": {
+        "output": {
+            "errorColor": {
+                "red": 0,
+                "green": 0,
+                "blue": 255
+            },
+            "errorType": "movement",
+            "transparency": 0.6,
+            "largeImageThreshold": 0,
+            "outputDiff": true
+        },
+        "scaleToSameSize": true,
+        "ignore": "antialiasing"
+    }
+}
