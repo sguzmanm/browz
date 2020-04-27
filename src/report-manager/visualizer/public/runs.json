@@ -1,0 +1,151 @@
+{
+  "start": "April 27, 2020, 710 AM",
+  "end": "April 27, 2020, 712 AM",
+  "events": [
+    {
+      "id": "1",
+      "event": "Action or Click: clearInput",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/1"
+    },
+    {
+      "id": "2",
+      "event": "Random click: randDClick",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/2"
+    },
+    {
+      "id": "3",
+      "event": "Random click: randDClick",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/3"
+    },
+    {
+      "id": "4",
+      "event": "Keypress: typeCharKey",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/4"
+    },
+    {
+      "id": "5",
+      "event": "Special Keypress: spkeypress",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/5"
+    },
+    {
+      "id": "6",
+      "event": "Browser Chaos: clearCookies",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/6"
+    },
+    {
+      "id": "7",
+      "event": "Selector focus: randHover",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/7"
+    },
+    {
+      "id": "8",
+      "event": "Keypress: typeCharKey",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/8"
+    },
+    {
+      "id": "9",
+      "event": "Selector focus: randHover",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/9"
+    },
+    {
+      "id": "10",
+      "event": "Selector focus: randHover",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/10"
+    },
+    {
+      "id": "11",
+      "event": "Browser Chaos: clickRandAnchor",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/11"
+    },
+    {
+      "id": "12",
+      "event": "Scroll event: randHover",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/12"
+    },
+    {
+      "id": "13",
+      "event": "Special Keypress: reload",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/13"
+    },
+    {
+      "id": "14",
+      "event": "Random click: randDClick",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/14"
+    },
+    {
+      "id": "15",
+      "event": "Special Keypress: clearCookies",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/15"
+    },
+    {
+      "id": "16",
+      "event": "Keypress: navBack",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/16"
+    },
+    {
+      "id": "17",
+      "event": "Random click: randClick",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/17"
+    },
+    {
+      "id": "18",
+      "event": "Special Keypress: clearInput",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/18"
+    },
+    {
+      "id": "19",
+      "event": "Special Keypress: clickRandAnchor",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/19"
+    },
+    {
+      "id": "20",
+      "event": "Special Keypress: clickRandAnchor",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/20"
+    },
+    {
+      "id": "21",
+      "event": "Random click: randDClick",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/21"
+    },
+    {
+      "id": "22",
+      "event": "Keypress: navBack",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/22"
+    },
+    {
+      "id": "23",
+      "event": "Scroll event: typeCharKey",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/23"
+    },
+    {
+      "id": "24",
+      "event": "Random click: randDClick",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/24"
+    },
+    {
+      "id": "25",
+      "event": "Scroll event: typeCharKey",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/25"
+    },
+    {
+      "id": "26",
+      "event": "Random click: randClick",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/26"
+    },
+    {
+      "id": "27",
+      "event": "Keypress: reload",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/27"
+    },
+    {
+      "id": "28",
+      "event": "Selector focus: spkeypress",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/28"
+    },
+    {
+      "id": "29",
+      "event": "Selector focus: spkeypress",
+      "snapshotPath": "April 27, 2020, 710 AM/snapshots/29"
+    }
+  ]
+}
