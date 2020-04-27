@@ -1,4 +1,6 @@
 const fs = require('fs');
+const fse = require('fs-extra'); // TODO: Do implementation of recursive copy to avoid this dependency
+
 const path = require('path');
 
 const visualizerPath = path.join(__dirname, './visualizer/dist');
@@ -20,7 +22,7 @@ const moveReportSnapshots = async (imagesDestination, runsPath) => {
       }
 
       // eslint-disable-next-line no-await-in-loop
-      await fs.promises.copyFile(imagePath, destinationPath);
+      await fse.copy(imagePath, destinationPath);
 
       // Log because we're crazy
       logger.logDebug(`Moved ${imagePath} -> ${destinationPath}`);
@@ -30,6 +32,8 @@ const moveReportSnapshots = async (imagesDestination, runsPath) => {
   } catch (error) {
     logger.logWarning(`Could not move file: ${error}`);
   }
+
+  return movedFiles;
 };
 
 
