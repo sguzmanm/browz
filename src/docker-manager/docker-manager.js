@@ -4,6 +4,7 @@ const os = require('os');
 const readline = require('readline');
 
 const logger = require('../../shared/logger').newInstance('Docker Manager');
+const { getWrongOutputMessage } = require('./error-outputs');
 
 const linuxContainer = process.env.LINUX_CONTAINER || 'sguzmanm/linux_cypress_tests:lite';
 const httpAppDir = process.env.HTTP_APP_DIR || '/tmp/app';
@@ -81,7 +82,7 @@ module.exports.setupDocker = async () => {
   );
   const approximateImageMem = dockerImageSize * (dockerImageSize / ESTIMATED_IMAGE_SIZE);
 
-  logger.logInfo(dockerImageSize, ESTIMATED_IMAGE_SIZE);
+  logger.logInfo(`Image mem: ${dockerImageSize}, ${ESTIMATED_IMAGE_SIZE}, ${approximateImageMem}`);
   logger.logInfo(`The image will occupy at least ${approximateImageMem} MB of your disk`);
   if (approximateImageMem > os.freemem()) {
     const requiredMemory = approximateImageMem - os.freemem();
@@ -153,11 +154,21 @@ const executeContainer = (httpSource, imageDestination, level) => {
 
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
-      logger.logInfo(`Regular stream: ${data}`);
+      const wrongOutputMessage = getWrongOutputMessage(data);
+      if (wrongOutputMessage) {
+        logger.logError(`Container execution failed with error: ${wrongOutputMessage}`);
+        reject(new Error(`Container execution failed with error: ${wrongOutputMessage}`));
+      }
+      logger.log(`Info stream: ${data}`);
     });
 
     spawnElement.stderr.on('data', (data) => {
-      logger.logInfo(`Error stream: ${data}`);
+      const wrongOutputMessage = getWrongOutputMessage(data);
+      if (wrongOutputMessage) {
+        logger.logError(`Container execution failed with error: ${wrongOutputMessage}`);
+        reject(new Error(`Container execution failed with error: ${wrongOutputMessage}`));
+      }
+      logger.logInfo(`Secondary stream: ${data}`);
     });
 
     spawnElement.on('close', (code) => {
