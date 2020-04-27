@@ -102,7 +102,7 @@ router.post('/', upload.any(), async (req, res, next) => {
     });
     res.json({ status: 'OK' });
   } catch (err) {
-    logger.logError(err);
+    logger.logError(`${err}`);
     next(err);
   }
 });

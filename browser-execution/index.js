@@ -7,8 +7,7 @@ const { setLevel, newInstance } = require('../shared/logger');
 setLevel(process.env.LEVEL);
 const logger = newInstance('Browser Execution');
 
-const calculateDateString = () => {
-  const date = new Date();
+const calculateDateString = (date) => {
   const dateOptions = {
     year: 'numeric',
     month: 'long',
@@ -23,7 +22,8 @@ const calculateDateString = () => {
 
 const main = async () => {
   try {
-    const startDateString = calculateDateString();
+    const startDate = new Date();
+    const startDateString = calculateDateString(startDate);
 
     logger.logInfo('Start servers...');
     await startServers(startDateString);
@@ -31,10 +31,10 @@ const main = async () => {
     logger.logInfo('Start app exploration...');
     await exploreApp();
 
-    const endDateString = calculateDateString();
+    const endDateString = calculateDateString(new Date());
 
     logger.logInfo('Write results...');
-    await writeResults(startDateString, endDateString);
+    await writeResults(startDate.getTime(), startDateString, endDateString);
     logger.logInfo('Ending browser execution....');
 
     process.exit(0);

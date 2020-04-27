@@ -9,7 +9,7 @@ const logger = newInstance();
 
 // Two main params, http source and image destination
 const { setupDocker, runDocker, killDocker } = require('../src/docker-manager/docker-manager');
-const { createReport } = require('../src/report-manager/report-manager');
+const { createReportData } = require('../src/report-manager/report-manager');
 
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';
 
@@ -50,7 +50,7 @@ const main = async () => {
     logger.logInfo('----Run Container-------');
     await runDocker(httpSource, imagesDestination, logger.level);
     logger.logInfo('-----Create Report--------');
-    await createReport();
+    await createReportData(imagesDestination);
     logger.logInfo('-----Finish process-------');
     await finishProcess(true);
   } catch (error) {

@@ -17,6 +17,7 @@ const browserWaitingTime = parseInt(process.env.BROWSER_RESPONSE_WAITING_TIME, 1
 
 // Modify this var to take into account active browsers
 const activeBrowsers = [browsers.FIREFOX, browsers.CHROME];
+const startBrowsers = activeBrowsers; // Logging for run.json
 
 const events = [];
 const timeoutMap = {};
@@ -65,9 +66,10 @@ const compare = async (original, modified, dateString) => {
   );
 
   const fileSeparation = modified.split(path.sep);
+  const isBefore = original.includes('before');
 
   const idBasePath = `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${fileSeparation[fileSeparation.length - 2]}${path.sep}`;
-  const comparisonPath = `${idBasePath}comparison.json`;
+  const comparisonPath = isBefore ? `${idBasePath}comparison_before.json` : `${idBasePath}comparison_after.json`;
   await writeFile(comparisonPath, JSON.stringify({
     resemble: {
       ...data,
@@ -78,6 +80,11 @@ const compare = async (original, modified, dateString) => {
   await writeFile(resultPath, data.getBuffer());
 
   logger.logDebug(`Comparison result saved at ${resultPath}`);
+
+  return {
+    isBefore,
+    mismatch: data.misMatchPercentage,
+  };
 };
 
 // Browser comparison of snapshots
@@ -89,21 +96,40 @@ const compareBrowsers = async (screenshotMap, dateString) => {
   const spliceIndex = comparableBrowsers.indexOf(baseBrowser);
   comparableBrowsers.splice(spliceIndex, 1);
 
+  let tempEvent; // FIXME: What to do when using more than 2 browsers?
+
+  const eventResult = {
+  };
+
+  // FIXME: Fix await inside loop
   try {
-    comparableBrowsers.forEach((browser) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const browser of comparableBrowsers) {
       logger.logDebug(`Compare ${baseBrowser} vs ${browser}`);
       for (let i = 0; i < baseImages.length; i += 1) {
-        compare(
+        // eslint-disable-next-line no-await-in-loop
+        tempEvent = await compare(
           `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]}`,
           `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${screenshotMap[browser][i]}`,
           dateString,
         );
+
+        logger.logDebug('Comparison done between', `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]}`,
+          `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${screenshotMap[browser][i]}`);
+        const { mismatch, isBefore } = tempEvent;
+        if (isBefore) {
+          eventResult.misMatchPercentageBefore = mismatch;
+        } else {
+          eventResult.mismatchPercentageAfter = mismatch;
+        }
       }
-    });
+    }
   } catch (error) {
     logger.logWarning('Image comparison failed!!! ', error.message, error);
     throw new Error('Image comparison failed!!! ', error.message, error);
   }
+
+  return eventResult;
 };
 
 const checkNewImage = async (key, event, dateString) => {
@@ -111,15 +137,20 @@ const checkNewImage = async (key, event, dateString) => {
     return;
   }
 
-  await compareBrowsers(imageMap[key], dateString);
+  const { misMatchPercentageBefore, mismatchPercentageAfter } = await compareBrowsers(imageMap[key], dateString);
 
   const { eventType, eventName } = event;
-  events.push({
+  const eventItem = {
     id: key,
     eventType,
     eventName,
-    snapshotPath: `${dateString}${path.sep}snapshots${path.sep}${key}`,
-  });
+    timestamp: new Date().getTime(),
+    misMatchPercentageBefore,
+    mismatchPercentageAfter,
+  };
+
+  logger.logDebug(JSON.stringify(eventItem));
+  events.push(eventItem);
 };
 
 const addNewImage = async (key, browser, event, requestData) => {
@@ -179,12 +210,15 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
   await addNewImage(id, browser, event, requestData);
 };
 
-module.exports.writeResults = async (startDateString, endDateString) => {
-  const runPath = `${imagePath}${path.sep}${startDateString}${path.sep}runs.json`;
+module.exports.writeResults = async (startDateTimestamp, startDateString, endDateString) => {
+  const runPath = `${imagePath}${path.sep}${startDateString}${path.sep}run.json`;
   await writeFile(runPath, JSON.stringify({
     seed: process.env.SEED,
-    start: startDateString,
-    end: endDateString,
+    startDate: startDateString,
+    startTimestamp: startDateTimestamp,
+    endDate: endDateString,
+    baseBrowser,
+    browsers: startBrowsers,
     events,
   }));
 };
