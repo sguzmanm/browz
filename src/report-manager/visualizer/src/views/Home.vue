@@ -17,7 +17,12 @@
         <div class="comparison column">Comparison</div>
       </div>
       <!-- eslint-disable-next-line max-len -->
-      <div class="row-container" v-for="{ id: eventID, event: eventType, resemble } in run.events" :key="eventID">
+      <div
+        class="row-container event"
+        v-for="{ id: eventID, event: eventType, resemble } in run.events"
+        :key="eventID"
+        @click="$router.push({ name: 'Event', params: { eventID }})"
+      >
         <div class="id column">{{ eventID }}</div>
         <div class="type column">{{ eventType }}</div>
         <div class="mismatch column">{{ resemble.misMatchPercentage }}%</div>
@@ -105,6 +110,14 @@ h2 {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+}
+
+.event {
+  cursor: pointer;
+}
+
+.event:hover {
+  background-color: rgb(235, 235, 235);
 }
 
 .column {
