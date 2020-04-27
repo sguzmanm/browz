@@ -112,9 +112,11 @@ const checkNewImage = async (key, event, dateString) => {
 
   await compareBrowsers(imageMap[key], dateString);
 
+  const { eventType, eventName } = event;
   events.push({
     id: key,
-    event,
+    eventType,
+    eventName,
     snapshotPath: `${dateString}${path.sep}snapshots${path.sep}${key}`,
   });
 };
@@ -149,7 +151,14 @@ const deactivateBrowser = async (browser, event, requestData) => {
 };
 
 module.exports.registerImage = async (imageRequestBody, requestData) => {
-  const { browser, id, event } = imageRequestBody;
+  const {
+    browser, id, eventType, eventName,
+  } = imageRequestBody;
+  const event = {
+    eventType,
+    eventName,
+  };
+
   if (!activeBrowsers.includes(browser)) {
     logger.logWarning(`Inactive browser requested: ${browser}`);
     throw new Error(`Inactive browser requested: ${browser}`);

@@ -29,7 +29,8 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
     const form = new FormData();
     form.append('browser', browser);
     form.append('id', id);
-    form.append('event', `${eventType}: ${event}`);
+    form.append('eventType', eventType);
+    form.append('eventName', event);
 
     form.append('before', beforeImage, { contentType: 'image/png', filename: 'before.png' });
     form.append('after', afterImage, { contentType: 'image/png', filename: 'after.png' });
