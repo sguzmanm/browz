@@ -25,5 +25,8 @@
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-cypress": "^2.10.3",
     "eslint-plugin-import": "^2.20.1"
+  },
+  "dependencies": {
+    "fs-extra": "^9.0.0"
   }
 }

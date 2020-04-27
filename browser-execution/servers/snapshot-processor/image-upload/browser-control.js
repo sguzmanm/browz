@@ -112,8 +112,7 @@ const compareBrowsers = async (screenshotMap, dateString) => {
           dateString,
         );
 
-        logger.logDebug('Comparison done between', `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]}`,
-          `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${screenshotMap[browser][i]}`);
+        logger.logDebug(`Comparison done between ${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]} and ${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${screenshotMap[browser][i]}`);
       }
     }
   } catch (error) {
