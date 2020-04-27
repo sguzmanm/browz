@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const getMessage = (args) => {
   let fullMessage = '';
   let message;

@@ -82,7 +82,7 @@ module.exports.setupDocker = async () => {
   const fraction = dockerImageSize / ESTIMATED_IMAGE_SIZE_MB;
   // Use an estimate since we do not have access to the uncompressed image size
   let approximateImageMem = dockerImageSize
-    * (1 + fraction > 0.5 ? fraction : fraction + 0.5);
+    * (1 + fraction > 0.5 ? fraction : (fraction + 0.5));
   let unit = 'MB';
 
   if (approximateImageMem > os.freemem()) {

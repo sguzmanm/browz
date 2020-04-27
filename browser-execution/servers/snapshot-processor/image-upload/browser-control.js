@@ -96,8 +96,6 @@ const compareBrowsers = async (screenshotMap, dateString) => {
   const spliceIndex = comparableBrowsers.indexOf(baseBrowser);
   comparableBrowsers.splice(spliceIndex, 1);
 
-  let tempEvent; // FIXME: What to do when using more than 2 browsers?
-
   const eventResult = {
   };
 
@@ -108,7 +106,7 @@ const compareBrowsers = async (screenshotMap, dateString) => {
       logger.logDebug(`Compare ${baseBrowser} vs ${browser}`);
       for (let i = 0; i < baseImages.length; i += 1) {
         // eslint-disable-next-line no-await-in-loop
-        tempEvent = await compare(
+        compare(
           `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]}`,
           `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${screenshotMap[browser][i]}`,
           dateString,
@@ -116,12 +114,6 @@ const compareBrowsers = async (screenshotMap, dateString) => {
 
         logger.logDebug('Comparison done between', `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]}`,
           `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${screenshotMap[browser][i]}`);
-        const { mismatch, isBefore } = tempEvent;
-        if (isBefore) {
-          eventResult.misMatchPercentageBefore = mismatch;
-        } else {
-          eventResult.mismatchPercentageAfter = mismatch;
-        }
       }
     }
   } catch (error) {
@@ -137,7 +129,7 @@ const checkNewImage = async (key, event, dateString) => {
     return;
   }
 
-  const { misMatchPercentageBefore, mismatchPercentageAfter } = await compareBrowsers(imageMap[key], dateString);
+  await compareBrowsers(imageMap[key], dateString);
 
   const { eventType, eventName } = event;
   const eventItem = {
@@ -145,8 +137,6 @@ const checkNewImage = async (key, event, dateString) => {
     eventType,
     eventName,
     timestamp: new Date().getTime(),
-    misMatchPercentageBefore,
-    mismatchPercentageAfter,
   };
 
   logger.logDebug(JSON.stringify(eventItem));

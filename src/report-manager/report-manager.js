@@ -20,7 +20,7 @@ const moveReportSnapshots = async (imagesDestination, runsPath) => {
       }
 
       // eslint-disable-next-line no-await-in-loop
-      await fs.promises.rename(imagePath, destinationPath);
+      await fs.promises.copyFile(imagePath, destinationPath);
 
       // Log because we're crazy
       logger.logDebug(`Moved ${imagePath} -> ${destinationPath}`);

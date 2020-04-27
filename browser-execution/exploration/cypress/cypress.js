@@ -3,17 +3,17 @@ const Cypress = require('cypress');
 const logger = require('../../../shared/logger').newInstance('Cypress Handler');
 
 const path = (relativePath) => `${__dirname}/${relativePath}`;
-const config = require('../../../shared/config.js').getContainerConfig();
+const containerConfig = require('../../../shared/config.js').getContainerConfig();
 
 const baseConfig = {
-  baseUrl: config.baseUrl ? config.baseUrl : 'http://localhost:8080',
+  baseUrl: containerConfig.baseUrl ? containerConfig.baseUrl : 'http://localhost:8080',
   integrationFolder: path('.'),
   chromeWebSecurity: false,
   pluginsFile: path('cypress_plugins.js'),
   fixturesFolder: false,
   supportFile: false,
   testFiles: path('*.spec.js'),
-  video: true,
+  video: false,
   trashAssetsBeforeRuns: false,
 };
 
