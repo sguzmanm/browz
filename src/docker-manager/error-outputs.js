@@ -9,10 +9,8 @@ const dockerErrorCodes = {
     139: 'Container received SIGSEGV',
     143: 'Container received SIGTERM',
 };
-}
-module.exports.getDockerErrorCodeMessage = (code) => {
-    return dockerErrorCodes[code] ? dockerErrorCodes[code] : "Internal docker execution error"
-}
+
+module.exports.getDockerErrorCodeMessage = (code) => (dockerErrorCodes[code] ? dockerErrorCodes[code] : 'Internal docker execution error');
 
 const cypressHandlerErrors = [
     'The automation client disconnected. Cannot continue running tests.',
