@@ -2,11 +2,11 @@ require('dotenv').config();
 const Cypress = require('cypress');
 const logger = require('../../../shared/logger').newInstance('Cypress Handler');
 
-// const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || '../../screenshots';
 const path = (relativePath) => `${__dirname}/${relativePath}`;
+const config = require('../../../shared/config.js').getContainerConfig();
 
 const baseConfig = {
-  baseUrl: 'http://localhost:8080',
+  baseUrl: config.baseUrl ? config.baseUrl : 'http://localhost:8080',
   integrationFolder: path('.'),
   chromeWebSecurity: false,
   pluginsFile: path('cypress_plugins.js'),
