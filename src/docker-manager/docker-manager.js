@@ -4,6 +4,7 @@ const os = require('os');
 const readline = require('readline');
 
 const logger = require('../../shared/logger').newInstance('Docker Manager');
+const { getDockerErrorCodeMessage, getWrongOutputMessage } = require('./error-outputs');
 
 const linuxContainer = process.env.LINUX_CONTAINER || 'sguzmanm/linux_cypress_tests:lite';
 const httpAppDir = process.env.HTTP_APP_DIR || '/tmp/app';
@@ -13,8 +14,8 @@ const UNIT_MB = 'Mi';
 const ENV_PARAM = '--env';
 const LEVEL_ENV_VAR = 'LEVEL';
 const CONTAINER_NAME = 'thesis';
-const IMAGE_MEMORY_THRESHOLD = 200 * 10 ** 6; // 200MB
-const ESTIMATED_IMAGE_SIZE = 1.99 * 10 ** 9; // 1.99 GB
+const IMAGE_MEMORY_BYTES_THRESHOLD = 200 * 10 ** 6; // 200MB
+const ESTIMATED_IMAGE_SIZE_MB = 1.99 * 10 ** 3; // 1.99 GB
 
 const checkImageMemoryCmd = `docker --config ${`${__dirname}/config`} manifest inspect -v ${linuxContainer} | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | numfmt --to=iec-i`;
 
@@ -54,8 +55,6 @@ const checkImageMemory = () => {
   });
 };
 
-const convertMBtoBytes = (mb) => mb * 2 ** 20;
-
 const pullImage = async () => {
   const spawnElement = spawn('docker', ['pull', linuxContainer]);
   return new Promise((resolve, reject) => {
@@ -76,13 +75,14 @@ const pullImage = async () => {
 
 module.exports.setupDocker = async () => {
   let dockerImageSize = await checkImageMemory();
-  dockerImageSize = convertMBtoBytes(
-    parseInt(dockerImageSize.split(UNIT_MB)[0], 10),
-  );
-  const approximateImageMem = dockerImageSize * (dockerImageSize / ESTIMATED_IMAGE_SIZE);
+  dockerImageSize = parseInt(dockerImageSize.split(UNIT_MB)[0], 10);
 
-  logger.logInfo(dockerImageSize, ESTIMATED_IMAGE_SIZE);
-  logger.logInfo(`The image will occupy at least ${approximateImageMem} MB of your disk`);
+  const fraction = dockerImageSize / ESTIMATED_IMAGE_SIZE_MB;
+  // Use an estimate since we do not have access to the uncompressed image size
+  let approximateImageMem = dockerImageSize
+    * (1 + fraction > 0.5 ? fraction : fraction + 0.5);
+  let unit = 'MB';
+
   if (approximateImageMem > os.freemem()) {
     const requiredMemory = approximateImageMem - os.freemem();
 
@@ -96,6 +96,13 @@ module.exports.setupDocker = async () => {
       );
     }
   }
+
+  if (approximateImageMem >= 1000) {
+    approximateImageMem /= 1000;
+    unit = 'GB';
+  }
+
+  logger.logInfo(`The image will occupy at least ${approximateImageMem} ${unit} of your disk`);
 
   await pullImage();
 };
@@ -153,17 +160,27 @@ const executeContainer = (httpSource, imageDestination, level) => {
 
   return new Promise((resolve, reject) => {
     spawnElement.stdout.on('data', (data) => {
-      logger.logInfo(`Regular stream: ${data}`);
+      const wrongOutputMessage = getWrongOutputMessage(data);
+      if (wrongOutputMessage) {
+        logger.logError(`Container execution failed with error: ${wrongOutputMessage}`);
+        reject(new Error(`Container execution failed with error: ${wrongOutputMessage}`));
+      }
+      logger.log(`Info stream: ${data}`);
     });
 
     spawnElement.stderr.on('data', (data) => {
-      logger.logInfo(`Error stream: ${data}`);
+      const wrongOutputMessage = getWrongOutputMessage(data);
+      if (wrongOutputMessage) {
+        logger.logError(`Container execution failed with error: ${wrongOutputMessage}`);
+        reject(new Error(`Container execution failed with error: ${wrongOutputMessage}`));
+      }
+      logger.logInfo(`Secondary stream: ${data}`);
     });
 
     spawnElement.on('close', (code) => {
       if (code !== 0) {
-        logger.logError(`Container execution failed with exit code: ${code}`);
-        reject(new Error(`Container execution failed with exit code: ${code}`));
+        logger.logError(`Container execution failed with exit code: ${getDockerErrorCodeMessage(code)} (Code:${code})`);
+        reject(new Error(`Container execution failed with exit code: ${getDockerErrorCodeMessage(code)} (Code:${code})`));
       }
 
       logger.logInfo('Container execution closed successfully');
@@ -176,8 +193,8 @@ const executeContainer = (httpSource, imageDestination, level) => {
       }
 
       if (code !== 0) {
-        logger.logError(`Container execution finished with exit code: ${code}`);
-        reject(new Error(`Container execution finished with exit code: ${code}`));
+        logger.logError(`Container execution finished with exit code: ${getDockerErrorCodeMessage(code)} (Code:${code})`);
+        reject(new Error(`Container execution finished with exit code: ${getDockerErrorCodeMessage(code)} (Code:${code})`));
       }
 
       logger.logInfo('Container execution finished successfully');
@@ -188,11 +205,11 @@ const executeContainer = (httpSource, imageDestination, level) => {
 
 // Run docker with volume params
 module.exports.runDocker = async (httpSource, imageDestination, level) => {
-  if (os.freemem() < IMAGE_MEMORY_THRESHOLD) {
+  if (os.freemem() < IMAGE_MEMORY_BYTES_THRESHOLD) {
     logger.logInfo('Docker requirements for running image');
 
     const answer = await askQuestion(
-      `Your free memory is less than our suggested threshold of ${IMAGE_MEMORY_THRESHOLD} MB for running the docker. Do you still want to go on? (y/N)`,
+      `Your free memory is less than our suggested threshold of ${IMAGE_MEMORY_BYTES_THRESHOLD} MB for running the docker. Do you still want to go on? (y/N)`,
     );
 
     if (answer.toLowerCase() !== 'y' && answer !== '') {
