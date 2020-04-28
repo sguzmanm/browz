@@ -15,11 +15,11 @@ const num_categories = 7;
 const pct_clicks = Cypress.env('pctClicks') || 30;
 const pct_scrolls = Cypress.env('pctScroll') || 0;
 const pct_selectors = Cypress.env('pctSelectors') || 12;
-const pct_keys = Cypress.env('pctKeys') || 12;
+const pct_keys = Cypress.env('pctKeys') || 14;
 const pct_spkeys = Cypress.env('pctSpKeys') || 12;
 const pct_pgnav = Cypress.env('pctPgNav') || 12;
-const pct_browserChaos = Cypress.env('pctBwChaos') || 6;
-const pct_actions = Cypress.env('pctActions') || 16;
+const pct_browserChaos = Cypress.env('pctBwChaos') || 0;
+const pct_actions = Cypress.env('pctActions') || 20;
 
 const LOG_FILENAME = '../../../results/smart-monkey-execution.html';
 
