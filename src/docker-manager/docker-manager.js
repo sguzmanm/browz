@@ -160,7 +160,7 @@ const executeContainer = (httpSource, imageDestination, level) => {
         logger.logError(`Container execution failed with error: ${wrongOutputMessage}`);
         reject(new Error(`Container execution failed with error: ${wrongOutputMessage}`));
       }
-      logger.logInfo(`Secondary stream: ${data}`);
+      logger.log(`Secondary stream: ${data}`);
     });
 
     spawnElement.on('close', (code) => {
