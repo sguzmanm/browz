@@ -1,10 +1,14 @@
 const playwright = require('playwright');
 const fs = require('fs');
+const path = require('path');
 const util = require('util');
 
-const mkdir = util.promisify(fs.mkdir);
-const port = process.env.HTTP_PORT || '8080';
+const config = require('../../../shared/config.js').getContainerConfig();
+
+const port = config.httpServer ? config.httpServer.port : '8080';
 const URL = `http://localhost:${port}`;
+
+const mkdir = util.promisify(fs.mkdir);
 
 const logger = require('../../../shared/logger').newInstance('Playwright');
 

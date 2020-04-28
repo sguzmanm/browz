@@ -11,9 +11,10 @@ const config = require('../../../../shared/config.js').getContainerConfig();
 const { browsers } = require('../../../../shared/browsers');
 const logger = require('../../../../shared/logger').newInstance('Snapshot Processor Browser Control');
 
-const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../runs');
-const baseBrowser = process.env.BASE_BROWSER || 'chrome';
-const browserWaitingTime = parseInt(process.env.BROWSER_RESPONSE_WAITING_TIME, 10) || 30000;
+const containerConfig = config.container;
+const imagePath = containerConfig && containerConfig.snapshotDestinationDir ? containerConfig.snapshotDestinationDir : path.join(__dirname, '../../../runs');
+const baseBrowser = config.baseBrowser || 'chrome';
+const browserWaitingTime = parseInt(config.browserWaitingResponseTime, 10) || 30000;
 
 // Modify this var to take into account active browsers
 const activeBrowsers = [browsers.FIREFOX, browsers.CHROME];
@@ -202,7 +203,7 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
 module.exports.writeResults = async (startDateTimestamp, startDateString, endDateString) => {
   const runPath = `${imagePath}${path.sep}${startDateString}${path.sep}run.json`;
   await writeFile(runPath, JSON.stringify({
-    seed: process.env.SEED,
+    seed: containerConfig.seed,
     startDate: startDateString,
     startTimestamp: startDateTimestamp,
     endDate: endDateString,

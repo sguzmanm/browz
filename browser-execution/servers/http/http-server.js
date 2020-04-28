@@ -1,9 +1,12 @@
 const fs = require('fs');
+const path = require('path');
 const http = require('http');
 const nStatic = require('node-static');
 
-const port = process.env.HTTP_PORT || '8080';
-const httpPath = process.env.HTTP_APP_DIR || '../../app';
+const { container, httpServerConfig } = require('../../../shared/config.js').getContainerConfig();
+
+const port = httpServerConfig && httpServerConfig.port ? httpServerConfig.port : '8080';
+const httpPath = container && container.httpAppDir ? container.httpAppDir : path.join(__dirname, '../../app');
 const logger = require('../../../shared/logger').newInstance('HTTP Server');
 
 module.exports.start = () => {

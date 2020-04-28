@@ -1,34 +1,35 @@
 const fs = require('fs');
 const fse = require('fs-extra'); // TODO: Do implementation of recursive copy to avoid this dependency
-
 const path = require('path');
+const util = require('util');
+
+const readdir = util.promisify(fs.readdir);
+const readFile = util.promisify(fs.readFile);
+const writeFile = util.promisify(fs.writeFile);
 
 const visualizerPath = path.join(__dirname, './visualizer/dist');
 const logger = require('../../shared/logger').newInstance('Report Manager');
 
 const moveReportSnapshots = async (imagesDestination, runsPath) => {
-  const files = await fs.promises.readdir(imagesDestination);
+  const files = await readdir(imagesDestination);
   const movedFiles = [];
 
   try {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const file of files) {
+    await Promise.all(files.map(async (file) => {
       // Get the full paths
       const imagePath = path.join(imagesDestination, file);
       const destinationPath = path.join(runsPath, file);
+
       if (fs.existsSync(destinationPath)) {
-        // eslint-disable-next-line no-continue
-        continue;
+        return;
       }
 
-      // eslint-disable-next-line no-await-in-loop
       await fse.copy(imagePath, destinationPath);
 
-      // Log because we're crazy
       logger.logDebug(`Moved ${imagePath} -> ${destinationPath}`);
 
       movedFiles.push(file);
-    }
+    }));
   } catch (error) {
     logger.logWarning(`Could not move file: ${error}`);
   }
@@ -48,22 +49,16 @@ module.exports.createReportData = async (imagesDestination) => {
 
     let runs = [];
     if (fs.existsSync(`${runsPath}/runs.json`)) {
-      runs = await fs.promises.readFile(`${runsPath}/runs.json`);
+      const runContent = await await readFile(`${runsPath}/runs.json`);
+      runs = JSON.parse(runContent);
     }
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const file of resultFiles) {
-      if (runs.includes(file)) {
-        // eslint-disable-next-line no-continue
-        continue;
-      }
+    resultFiles.forEach((file) => {
+      if (!runs.includes(file)) { runs.push(file); }
+    });
 
-      runs.push(file);
-    }
-
-    await fs.promises.writeFile(`${runsPath}/runs.json`, JSON.stringify(runs));
+    await writeFile(`${runsPath}/runs.json`, JSON.stringify(runs));
   } catch (e) {
-    // Catch anything bad that happens
     logger.logError(`Error moving report files: ${e}`);
   }
 };

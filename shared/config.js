@@ -40,7 +40,7 @@ module.exports.getHostConfig = () => {
     return hostConfig;
   }
 
-  hostConfig = JSON.parse(fs.readFileSync(JSON.stringify(hostConfigPath)));
+  hostConfig = JSON.parse(fs.readFileSync(hostConfigPath));
   logger.logInfo(`Using settings host config file ${hostConfigPath}: ${JSON.stringify(hostConfig)}`);
 
   return hostConfig;

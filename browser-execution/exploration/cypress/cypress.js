@@ -42,7 +42,7 @@ const browserOptions = (browser) => {
     videosFolder: path(`runs/${dateString}/${browser}/videos`),
     screenshotsFolder: path(`runs/${dateString}/${browser}/screenshots`),
     env: {
-      seed: process.env.SEED,
+      seed: containerConfig.seed,
     },
   };
 

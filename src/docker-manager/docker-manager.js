@@ -4,13 +4,15 @@ const os = require('os');
 const readline = require('readline');
 
 const logger = require('../../shared/logger').newInstance('Docker Manager');
+const { container } = require('../../shared/config.js').getHostConfig();
 const { getDockerErrorCodeMessage, getWrongOutputMessage } = require('./error-outputs');
 
-const linuxContainer = process.env.LINUX_CONTAINER || 'sguzmanm/linux_cypress_tests:lite';
-const httpAppDir = process.env.HTTP_APP_DIR || '/tmp/app';
-const snapshotDir = process.env.SNAPSHOT_DESTINATION_DIR || '/tmp/runs';
+const linuxContainer = container && container.name ? container.name : 'sguzmanm/linux_cypress_tests:lite';
+const httpAppDir = container && container.httpAppDir ? container.httpAppDir : '/tmp/app';
+const snapshotDir = container && container.snapshotDestinationDir ? container.snapshotDestinationDir : '/tmp/runs';
+const containerConfigDir = container && container.configDir ? container.configDir : '/tmp/config';
+
 const hostConfigDir = path.join(__dirname, '../../config');
-const containerConfigDir = process.env.CONTAINER_CONFIG_DIR || '/tmp/config';
 
 const UNIT_MB = 'Mi';
 const ENV_PARAM = '--env';
@@ -115,7 +117,6 @@ module.exports.setupDocker = async () => {
  * --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js
  */
 const executeContainer = (httpSource, imageDestination, level) => {
-  const envFile = `${__dirname}/config/.env`;
   const commands = [
     'run',
     '--shm-size=512m',
@@ -127,7 +128,6 @@ const executeContainer = (httpSource, imageDestination, level) => {
     `${hostConfigDir}:${containerConfigDir}`,
     ENV_PARAM,
     `${LEVEL_ENV_VAR}=${level}`,
-    `--env-file=${envFile}`,
     '--name',
     CONTAINER_NAME,
     linuxContainer,

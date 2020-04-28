@@ -3,10 +3,12 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const multer = require('multer');
+
 const { registerImage } = require('./browser-control');
 const logger = require('../../../../shared/logger').newInstance('Snapshot Processor Router');
+const { container } = require('../../../../shared/config.js').getContainerConfig();
 
-const imagePath = process.env.SNAPSHOT_DESTINATION_DIR || path.join(__dirname, '../../../runs');
+const snapshotDestinationDir = container && container.snapshotDestinationDir ? container.snapshotDestinationDir : path.join(__dirname, '../../../runs');
 
 const BEFORE_IMAGE = 'before';
 const AFTER_IMAGE = 'after';
@@ -47,7 +49,7 @@ const getMimetypeExtension = (mimetype) => {
 };
 
 const getFilename = (fieldName, imageRequestBody) => {
-  const dirPath = `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${imageRequestBody.id}`;
+  const dirPath = `${snapshotDestinationDir}${path.sep}${dateString}${path.sep}snapshots${path.sep}${imageRequestBody.id}`;
   mkdirRecursive(dirPath);
 
   logger.logDebug(`Saving file ${imageRequestBody.browser}_${fieldName}`);
@@ -56,7 +58,7 @@ const getFilename = (fieldName, imageRequestBody) => {
 
 const storage = multer.diskStorage({
   destination(req, file, resolveDestination) {
-    const destination = `${imagePath}${path.sep}${dateString}${path.sep}snapshots`;
+    const destination = `${snapshotDestinationDir}${path.sep}${dateString}${path.sep}snapshots`;
     resolveDestination(null, destination);
   },
   filename(req, file, createFilename) {

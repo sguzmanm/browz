@@ -3,7 +3,9 @@ const express = require('express');
 const { setDate, router } = require('./image-upload/router');
 const { writeResults } = require('./image-upload/browser-control');
 
-const port = process.env.IMAGE_PORT || '8081';
+const { snapshotProcessorServerConfig } = require('../../../shared/config.js').getContainerConfig();
+
+const port = snapshotProcessorServerConfig && snapshotProcessorServerConfig.port ? snapshotProcessorServerConfig.port : '8081';
 const app = express();
 const logger = require('../../../shared/logger').newInstance('Snapshot Processor Server');
 
