@@ -18,6 +18,8 @@ const UNIT_MB = 'Mi';
 const ENV_PARAM = '--env';
 const LEVEL_ENV_VAR = 'LEVEL';
 const CONTAINER_NAME = 'thesis';
+
+const MAX_MEMORY_GB = 2;
 const IMAGE_MEMORY_BYTES_THRESHOLD = 200 * 10 ** 6; // 200MB
 const ESTIMATED_IMAGE_SIZE_MB = 1.99 * 10 ** 3; // 1.99 GB
 
@@ -120,6 +122,8 @@ const executeContainer = (httpSource, imageDestination, level) => {
   const commands = [
     'run',
     '--shm-size=512m',
+    '-m',
+    `${MAX_MEMORY_GB}GB`,
     '-v',
     `${httpSource}:${httpAppDir}`,
     '-v',
