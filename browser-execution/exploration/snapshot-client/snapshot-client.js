@@ -43,7 +43,7 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
 
     const response = await fetch('http://localhost:8081/', options);
     if (response.status === 400) {
-      logger.logWarning(ERR_SERVER_STOPPED_PROCESSING_REQUESTS);
+      logger.logWarning(`${ERR_SERVER_STOPPED_PROCESSING_REQUESTS}`);
       throw ERR_SERVER_STOPPED_PROCESSING_REQUESTS;
     }
 

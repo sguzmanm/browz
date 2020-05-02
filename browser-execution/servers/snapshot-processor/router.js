@@ -5,10 +5,10 @@ const express = require('express');
 const multer = require('multer');
 
 const { registerImage } = require('./browser-control');
-const logger = require('../../../../shared/logger').newInstance('Snapshot Processor Router');
-const { container } = require('../../../../shared/config.js').getContainerConfig();
+const logger = require('../../../shared/logger').newInstance('Snapshot Processor Router');
+const { container } = require('../../../shared/config.js').getContainerConfig();
 
-const snapshotDestinationDir = container && container.snapshotDestinationDir ? container.snapshotDestinationDir : path.join(__dirname, '../../../runs');
+const snapshotDestinationDir = container && container.snapshotDestinationDir ? container.snapshotDestinationDir : '/tmp/runs';
 
 const BEFORE_IMAGE = 'before';
 const AFTER_IMAGE = 'after';
@@ -65,7 +65,7 @@ const storage = multer.diskStorage({
     const fieldName = file.fieldname;
     if (fieldName !== BEFORE_IMAGE && fieldName !== AFTER_IMAGE) {
       logger.logError(`Invalid file passed during request ${fieldName}`);
-      return;
+      throw new Error(`Invalid file passed during request ${fieldName}`);
     }
 
     const imageRequestBody = req.body;
@@ -87,10 +87,9 @@ const getFile = (files, fieldname) => files.find((file) => file.fieldname === fi
     before:file,
     after: file,
     id:String,
-    event:String,
-    selector:string,
+    eventName:String,
+    eventType:string,
     browser:String,
-
 }
 */
 router.post('/', upload.any(), async (req, res, next) => {

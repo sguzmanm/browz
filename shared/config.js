@@ -23,7 +23,7 @@ const defaultConfig = {
       outputDiff: true,
     },
     scaleToSameSize: true,
-    ignore: 'antialiasing',
+    ignore: 'none',
   },
 };
 

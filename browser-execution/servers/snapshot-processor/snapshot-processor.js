@@ -1,13 +1,14 @@
 require('dotenv').config();
 const express = require('express');
+
 const { setDate, router } = require('./image-upload/router');
 const { writeResults } = require('./image-upload/browser-control');
 
 const { snapshotProcessorServerConfig } = require('../../../shared/config.js').getContainerConfig();
+const logger = require('../../../shared/logger').newInstance('Snapshot Processor Server');
 
 const port = snapshotProcessorServerConfig && snapshotProcessorServerConfig.port ? snapshotProcessorServerConfig.port : '8081';
 const app = express();
-const logger = require('../../../shared/logger').newInstance('Snapshot Processor Server');
 
 const errorHandler = (err, req, res, next) => {
   if (res.headersSent) {
@@ -34,8 +35,8 @@ module.exports.start = (dateString) => {
   });
 
   server.on('error', (err) => {
-    logger.logError('Server Error:', err);
-    throw new Error('Server Error:', err.message);
+    logger.logError(`Server Error: ${err}`);
+    throw new Error(`Server Error: ${err.message}`);
   });
 };
 

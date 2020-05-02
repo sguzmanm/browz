@@ -61,7 +61,12 @@ module.exports.cypressHandler = async () => {
     Cypress.run(browserOptions('firefox')),
   ];
 
-  await Promise.all(cypressRuns);
+  try {
+    await Promise.all(cypressRuns);
+  } catch (error) {
+    logger.logError(`Handler error: ${error}`);
+    throw error;
+  }
 
   logger.logInfo('Finished cypress exploration');
 };

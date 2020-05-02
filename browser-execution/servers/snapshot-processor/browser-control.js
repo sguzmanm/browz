@@ -5,65 +5,33 @@ const util = require('util');
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
-const compareImages = require('resemblejs/compareImages');
+const compareImages = require('resemblejs/compareImages'); // Resemble
 
-const config = require('../../../../shared/config.js').getContainerConfig();
-const { browsers } = require('../../../../shared/browsers');
-const logger = require('../../../../shared/logger').newInstance('Snapshot Processor Browser Control');
+const config = require('../../../shared/config.js').getContainerConfig();
+const { browsers } = require('../../../shared/browsers');
+const logger = require('../../../shared/logger').newInstance('Snapshot Processor Browser Control');
 
 const containerConfig = config.container;
-const imagePath = containerConfig && containerConfig.snapshotDestinationDir ? containerConfig.snapshotDestinationDir : path.join(__dirname, '../../../runs');
+const imagePath = containerConfig && containerConfig.snapshotDestinationDir ? containerConfig.snapshotDestinationDir : '/tmp/runs';
 const baseBrowser = config.baseBrowser || 'chrome';
-const browserWaitingTime = parseInt(config.browserWaitingResponseTime, 10) || 30000;
+const browserWaitingTime = config.browserWaitingResponseTime
+  ? parseInt(config.browserWaitingResponseTime, 10) : 30000;
 
 // Modify this var to take into account active browsers
 const activeBrowsers = [browsers.FIREFOX, browsers.CHROME];
-const startBrowsers = activeBrowsers; // Logging for run.json
-
+// Logging
+const startBrowsers = activeBrowsers;
 const events = [];
-const timeoutMap = {};
-const imageMap = {};
-const defaultResembleConfig = {
-  output: {
-    errorColor: {
-      red: 255,
-      green: 0,
-      blue: 255,
-    },
-    errorType: 'movement',
-    transparency: 0.6,
-    largeImageThreshold: 0,
-    outputDiff: true,
-  },
-  scaleToSameSize: true,
-  ignore: 'antialiasing',
-};
 
-let resembleConfig;
 
-const setupResemble = () => {
-  resembleConfig = defaultResembleConfig;
-  if (!config.resemble) {
-    return;
-  }
+const timeoutMap = {}; // Map: Browser(String)->Function
+const imageMap = {}; // Map: Id(String)-> [Map:Browser(String)->Filenames(Array) ]
 
-  resembleConfig = config.resemble;
-};
-
-/*
-  misMatchPercentage : 100, // %
-  isSameDimensions: true, // or false
-  getImageDataUrl: function(){}
-*/
-const compare = async (original, modified, dateString) => {
-  if (!resembleConfig) {
-    setupResemble();
-  }
-
+const compareSnapshots = async (original, modified, dateString) => {
   const data = await compareImages(
     await readFile(original),
     await readFile(modified),
-    resembleConfig,
+    config.resemble,
   );
 
   const fileSeparation = modified.split(path.sep);
@@ -81,24 +49,15 @@ const compare = async (original, modified, dateString) => {
   await writeFile(resultPath, data.getBuffer());
 
   logger.logDebug(`Comparison result saved at ${resultPath}`);
-
-  return {
-    isBefore,
-    mismatch: data.misMatchPercentage,
-  };
 };
 
 // Browser comparison of snapshots
-const compareBrowsers = async (screenshotMap, dateString) => {
-  const baseImages = screenshotMap[baseBrowser];
-  logger.logDebug('Start Browser comparison...');
+const compareBrowsers = async (snapshotMap, dateString) => {
+  const baseImages = snapshotMap[baseBrowser];
 
   const comparableBrowsers = [...activeBrowsers];
   const spliceIndex = comparableBrowsers.indexOf(baseBrowser);
   comparableBrowsers.splice(spliceIndex, 1);
-
-  const eventResult = {
-  };
 
   // FIXME: Fix await inside loop
   try {
@@ -107,49 +66,37 @@ const compareBrowsers = async (screenshotMap, dateString) => {
       logger.logDebug(`Compare ${baseBrowser} vs ${browser}`);
       for (let i = 0; i < baseImages.length; i += 1) {
         // eslint-disable-next-line no-await-in-loop
-        compare(
-          `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]}`,
-          `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${screenshotMap[browser][i]}`,
+        const baseBrowserImage = baseImages[i];
+        const comparableBrowserImage = snapshotMap[browser][i];
+        compareSnapshots(
+          `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseBrowserImage}`,
+          `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${comparableBrowserImage}`,
           dateString,
         );
 
-        logger.logDebug(`Comparison done between ${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]} and ${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${screenshotMap[browser][i]}`);
+        logger.logDebug(`Comparison done between ${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]} and ${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${snapshotMap[browser][i]}`);
       }
     }
   } catch (error) {
     logger.logWarning('Image comparison failed!!! ', error.message, error);
     throw new Error('Image comparison failed!!! ', error.message, error);
   }
-
-  return eventResult;
 };
 
-const checkNewImage = async (key, event, dateString) => {
-  if (Object.keys(imageMap[key]).length !== activeBrowsers.length) {
+const makeIdComparison = async (id, event, dateString) => {
+  if (Object.keys(imageMap[id]).length !== activeBrowsers.length) {
     return;
   }
 
-  await compareBrowsers(imageMap[key], dateString);
+  await compareBrowsers(imageMap[id], dateString);
 
   const { eventType, eventName } = event;
-  const eventItem = {
-    id: key,
+  events.push({
+    id,
     eventType,
     eventName,
     timestamp: new Date().getTime(),
-  };
-
-  logger.logDebug(JSON.stringify(eventItem));
-  events.push(eventItem);
-};
-
-const addNewImage = async (key, browser, event, requestData) => {
-  if (!imageMap[key]) {
-    return;
-  }
-
-  imageMap[key][browser] = requestData.fileNames;
-  await checkNewImage(key, event, requestData.dateString);
+  });
 };
 
 const deactivateBrowser = async (browser, event, requestData) => {
@@ -163,11 +110,10 @@ const deactivateBrowser = async (browser, event, requestData) => {
 
   // Check images sent by remaining browsers if complete
   const keys = Object.keys(imageMap);
-  const results = [];
-  for (let i = 0; i < keys.length; i += 1) {
-    delete imageMap[keys[i]][browser]; // Remove inactive browser
-    results.push(checkNewImage(keys[i], event, requestData.dateString));
-  }
+  const results = keys.map(async (id) => {
+    delete imageMap[id][browser]; // Remove inactive browser
+    await makeIdComparison(id, event, requestData.dateString);
+  });
 
   await Promise.all(results);
 };
@@ -197,7 +143,8 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
     imageMap[id] = {};
   }
 
-  await addNewImage(id, browser, event, requestData);
+  imageMap[id][browser] = requestData.fileNames;
+  await makeIdComparison(id, event, requestData.dateString);
 };
 
 module.exports.writeResults = async (startDateTimestamp, startDateString, endDateString) => {

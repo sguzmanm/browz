@@ -1,5 +1,6 @@
-// Import handlers (each one returns a promise)
+const logger = require('../../shared/logger').newInstance('Browser Exploration');
 
+// Import handlers (each one returns a promise)
 const { cypressHandler } = require('./cypress/cypress');
 
 const handlers = {
@@ -8,7 +9,13 @@ const handlers = {
 
 module.exports.exploreApp = async () => {
   const handler = handlers.cypress;
-  await handler();
+
+  try {
+    await handler();
+  } catch (error) {
+    logger.logError(error);
+    throw error;
+  }
 };
 
 // Map [string]handler
