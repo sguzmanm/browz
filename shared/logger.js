@@ -27,6 +27,7 @@ const argsFromLevel = {
 let level = INFO;
 
 module.exports.setLevel = (currentLevel) => {
+  console.log('Current level'.currentLevel);
   if (!validLevels[currentLevel]) { return; }
   level = currentLevel;
 };

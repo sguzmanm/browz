@@ -8,8 +8,7 @@ const writeFile = util.promisify(fs.writeFile);
 const compareImages = require('resemblejs/compareImages'); // Resemble
 
 const config = require('../../../shared/config.js').getContainerConfig();
-const { browsers } = require('../../../shared/browsers');
-const logger = require('../../../shared/logger').newInstance('Snapshot Processor Browser Control');
+const logger = require('../../../shared/logger').newInstance('Snapshot Processor Comparator');
 
 const containerConfig = config.container;
 const imagePath = containerConfig && containerConfig.snapshotDestinationDir ? containerConfig.snapshotDestinationDir : '/tmp/runs';
@@ -17,10 +16,9 @@ const baseBrowser = config.baseBrowser || 'chrome';
 const browserWaitingTime = config.browserWaitingResponseTime
   ? parseInt(config.browserWaitingResponseTime, 10) : 30000;
 
-// Modify this var to take into account active browsers
-const activeBrowsers = [browsers.FIREFOX, browsers.CHROME];
+const activeBrowsers = [...config.browsers];
+
 // Logging
-const startBrowsers = activeBrowsers;
 const events = [];
 
 
@@ -55,31 +53,28 @@ const compareSnapshots = async (original, modified, dateString) => {
 const compareBrowsers = async (snapshotMap, dateString) => {
   const baseImages = snapshotMap[baseBrowser];
 
-  const comparableBrowsers = [...activeBrowsers];
-  const spliceIndex = comparableBrowsers.indexOf(baseBrowser);
-  comparableBrowsers.splice(spliceIndex, 1);
-
-  // FIXME: Fix await inside loop
   try {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const browser of comparableBrowsers) {
-      logger.logDebug(`Compare ${baseBrowser} vs ${browser}`);
-      for (let i = 0; i < baseImages.length; i += 1) {
-        // eslint-disable-next-line no-await-in-loop
-        const baseBrowserImage = baseImages[i];
+    const comparisonResults = activeBrowsers.map(async (browser) => {
+      if (browser === baseBrowser) {
+        return;
+      }
+
+      const stageResults = baseImages.map(async (baseBrowserImage, i) => {
         const comparableBrowserImage = snapshotMap[browser][i];
-        compareSnapshots(
+        await compareSnapshots(
           `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseBrowserImage}`,
           `${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${comparableBrowserImage}`,
           dateString,
         );
+      });
 
-        logger.logDebug(`Comparison done between ${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseImages[i]} and ${imagePath}${path.sep}${dateString}${path.sep}snapshots${path.sep}${snapshotMap[browser][i]}`);
-      }
-    }
+      await Promise.all(stageResults);
+      logger.logDebug(`Comparison process finished between ${baseBrowser} vs ${browser}`);
+    });
+
+    await Promise.all(comparisonResults);
   } catch (error) {
     logger.logWarning('Image comparison failed!!! ', error.message, error);
-    throw new Error('Image comparison failed!!! ', error.message, error);
   }
 };
 
@@ -155,7 +150,7 @@ module.exports.writeResults = async (startDateTimestamp, startDateString, endDat
     startTimestamp: startDateTimestamp,
     endDate: endDateString,
     baseBrowser,
-    browsers: startBrowsers,
+    browsers: containerConfig.browsers,
     events,
   }));
 };

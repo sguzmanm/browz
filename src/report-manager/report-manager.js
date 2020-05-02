@@ -6,6 +6,8 @@ const util = require('util');
 const readdir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
+const mkdir = util.promisify(fs.mkdir);
+const existsFile = util.promisify(fs.exists);
 
 const visualizerPath = path.join(__dirname, './visualizer/dist');
 const logger = require('../../shared/logger').newInstance('Report Manager');
@@ -20,7 +22,8 @@ const moveReportSnapshots = async (imagesDestination, runsPath) => {
       const imagePath = path.join(imagesDestination, file);
       const destinationPath = path.join(runsPath, file);
 
-      if (fs.existsSync(destinationPath)) {
+      const isFileCreated = await existsFile(destinationPath);
+      if (isFileCreated) {
         return;
       }
 
@@ -41,15 +44,17 @@ const moveReportSnapshots = async (imagesDestination, runsPath) => {
 module.exports.createReportData = async (imagesDestination) => {
   try {
     const runsPath = `${visualizerPath}/runs`;
-    if (!fs.existsSync(runsPath)) {
-      fs.mkdirSync(runsPath);
+    const isRunVisualizerDirCreated = await existsFile(runsPath);
+    if (!isRunVisualizerDirCreated) {
+      await mkdir(runsPath);
     }
 
     const resultFiles = await moveReportSnapshots(imagesDestination, runsPath);
 
+    const isRunCreated = await existsFile(`${runsPath}/runs.json`);
     let runs = [];
-    if (fs.existsSync(`${runsPath}/runs.json`)) {
-      const runContent = await await readFile(`${runsPath}/runs.json`);
+    if (isRunCreated) {
+      const runContent = await readFile(`${runsPath}/runs.json`);
       runs = JSON.parse(runContent);
     }
 

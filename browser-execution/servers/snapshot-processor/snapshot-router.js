@@ -4,7 +4,7 @@ const path = require('path');
 const express = require('express');
 const multer = require('multer');
 
-const { registerImage } = require('./browser-control');
+const { registerImage } = require('./snapshot-comparator');
 const logger = require('../../../shared/logger').newInstance('Snapshot Processor Router');
 const { container } = require('../../../shared/config.js').getContainerConfig();
 
@@ -52,7 +52,7 @@ const getFilename = (fieldName, imageRequestBody) => {
   const dirPath = `${snapshotDestinationDir}${path.sep}${dateString}${path.sep}snapshots${path.sep}${imageRequestBody.id}`;
   mkdirRecursive(dirPath);
 
-  logger.logDebug(`Saving file ${imageRequestBody.browser}_${fieldName}`);
+  logger.logDebug(`Saving file ${imageRequestBody.browser}_${fieldName} for id ${imageRequestBody.id}`);
   return `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${fieldName}`;
 };
 

@@ -1,8 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 
-const { setDate, router } = require('./image-upload/router');
-const { writeResults } = require('./image-upload/browser-control');
+const { setDate, router } = require('./snapshot-router');
+const { writeResults } = require('./snapshot-comparator');
 
 const { snapshotProcessorServerConfig } = require('../../../shared/config.js').getContainerConfig();
 const logger = require('../../../shared/logger').newInstance('Snapshot Processor Server');

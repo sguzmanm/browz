@@ -1,6 +1,5 @@
 const playwright = require('playwright');
 const fs = require('fs');
-const path = require('path');
 const util = require('util');
 
 const config = require('../../../shared/config.js').getContainerConfig();

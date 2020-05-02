@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const logger = require('./logger').newInstance('Config');
+const { browsers } = require('./browsers');
 
 const hostConfigPath = path.join(__dirname, '../config/settings.json');
 const containerConfigPath = '/tmp/config/settings.json';
@@ -27,6 +28,7 @@ const defaultConfig = {
   },
 };
 
+const defaultActiveBrowsers = [browsers.CHROME, browsers.FIREFOX];
 
 module.exports.getHostConfig = () => {
   logger.logInfo(`Current host config: ${JSON.stringify(hostConfig)}`);
@@ -46,6 +48,26 @@ module.exports.getHostConfig = () => {
   return hostConfig;
 };
 
+const cleanBrowsers = (configBrowsers) => {
+  let cleanedBrowsers = [];
+  const browserValues = Object.values(browsers);
+  logger.logDebug(`Browser map ${browserValues}`);
+  configBrowsers.forEach((browser) => {
+    logger.logDebug(`Getting browser ${browser} inside ${browserValues}`);
+    const lowerCaseBrowser = browser.trim().toLowerCase();
+    if (browserValues.includes(lowerCaseBrowser)) {
+      cleanedBrowsers.push(lowerCaseBrowser);
+    }
+  });
+
+  if (cleanedBrowsers.length === 0) {
+    cleanedBrowsers = defaultActiveBrowsers;
+  }
+
+  logger.logDebug('Result', cleanedBrowsers);
+  return cleanedBrowsers;
+};
+
 module.exports.getContainerConfig = () => {
   logger.logInfo(`Current container config: ${JSON.stringify(containerConfig)}`);
   if (containerConfig) {
@@ -54,11 +76,13 @@ module.exports.getContainerConfig = () => {
 
   if (!fs.existsSync(containerConfigPath)) {
     containerConfig = this.getHostConfig();
+    containerConfig.browsers = cleanBrowsers(containerConfig.browsers);
     logger.logInfo(`Using default container config: ${JSON.stringify(containerConfig)}`);
     return containerConfig;
   }
 
   containerConfig = JSON.parse(fs.readFileSync(containerConfigPath));
+  containerConfig.browsers = cleanBrowsers(containerConfig.browsers);
   logger.logInfo(`Using settings container config file ${containerConfigPath}: ${JSON.stringify(containerConfig)}`);
 
   return containerConfig;

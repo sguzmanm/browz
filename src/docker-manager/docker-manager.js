@@ -163,15 +163,6 @@ const executeContainer = (httpSource, imageDestination, level) => {
       logger.log(`Secondary stream: ${data}`);
     });
 
-    spawnElement.on('close', (code) => {
-      if (code !== 0) {
-        logger.logError(`Container execution failed with exit code: ${getDockerErrorCodeMessage(code)} (Code:${code})`);
-        reject(new Error(`Container execution failed with exit code: ${getDockerErrorCodeMessage(code)} (Code:${code})`));
-      }
-
-      logger.logInfo('Container execution closed successfully');
-    });
-
     spawnElement.on('exit', (code, signal) => {
       if (!code && signal) {
         logger.logError(`Container execution finished with error signal: ${signal}`);
