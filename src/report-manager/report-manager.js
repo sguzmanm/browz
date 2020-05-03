@@ -29,12 +29,12 @@ const moveReportSnapshots = async (imagesDestination, runsPath) => {
 
       await fse.copy(imagePath, destinationPath);
 
-      logger.logDebug(`Moved ${imagePath} -> ${destinationPath}`);
+      logger.logDebug(`Copy folder: ${imagePath} -> ${destinationPath}`);
 
       movedFiles.push(file);
     }));
   } catch (error) {
-    logger.logWarning(`Could not move file: ${error}`);
+    logger.logWarning(`Could not copy file: ${error}`);
   }
 
   return movedFiles;

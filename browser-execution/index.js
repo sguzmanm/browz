@@ -25,7 +25,7 @@ const main = async () => {
     const startDate = new Date();
     const startDateString = calculateDateString(startDate);
 
-    logger.logInfo('Start servers...');
+    logger.logInfo(`Start servers... at ${startDateString}`);
     await startServers(startDateString);
 
     logger.logInfo('Start app exploration...');
