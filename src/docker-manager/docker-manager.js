@@ -1,7 +1,5 @@
 const path = require('path');
 const { spawn } = require('child_process');
-const os = require('os');
-const readline = require('readline');
 
 const logger = require('../../shared/logger').newInstance('Docker Manager');
 const { container } = require('../../shared/config.js').getHostConfig();
@@ -20,22 +18,9 @@ const LEVEL_ENV_VAR = 'LEVEL';
 const CONTAINER_NAME = 'thesis';
 
 const MAX_MEMORY_GB = 2;
-const IMAGE_MEMORY_BYTES_THRESHOLD = 200 * 10 ** 6; // 200MB
 const ESTIMATED_IMAGE_SIZE_MB = 1.99 * 10 ** 3; // 1.99 GB
 
 const checkImageMemoryCmd = `docker --config ${`${__dirname}/config`} manifest inspect -v ${linuxContainer} | grep size | awk -F ':' '{sum+=$NF} END {print sum}' | numfmt --to=iec-i`;
-
-const askQuestion = (query) => {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  return new Promise((resolve) => rl.question(query, (ans) => {
-    rl.close();
-    resolve(ans);
-  }));
-};
 
 const checkImageMemory = () => {
   if (process.platform === 'win32') {
@@ -86,22 +71,8 @@ module.exports.setupDocker = async () => {
   const fraction = dockerImageSize / ESTIMATED_IMAGE_SIZE_MB;
   // Use an estimate since we do not have access to the uncompressed image size
   let approximateImageMem = dockerImageSize
-    * (1 + fraction > 0.5 ? fraction : (fraction + 0.5));
+    * (1 + fraction + (fraction > 0.5 ? 0 : 0.5));
   let unit = 'MB';
-
-  if (approximateImageMem > os.freemem()) {
-    const requiredMemory = approximateImageMem - os.freemem();
-
-    const answer = await askQuestion(
-      `You need ${requiredMemory} MB to install our current image. If the process continues the app will probably fail. Do you still want to go on? (y/N)`,
-    );
-    if (answer.toLowerCase() !== 'y' && answer !== '') {
-      logger.logWarning('Pull image process stopped by user, please review necessary requirements');
-      throw new Error(
-        'Pull image process stopped by user, please review necessary requirements',
-      );
-    }
-  }
 
   if (approximateImageMem >= 1000) {
     approximateImageMem /= 1000;
@@ -118,7 +89,7 @@ module.exports.setupDocker = async () => {
  * --env-file="../.env" sguzmanm/linux_cypress_tests:lite sh -c cd /tmp/thesis && git reset
  * --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js
  */
-const executeContainer = (httpSource, imageDestination, level) => {
+module.exports.runDocker = (httpSource, imageDestination, level) => {
   const commands = [
     'run',
     '--shm-size=512m',
@@ -178,26 +149,6 @@ const executeContainer = (httpSource, imageDestination, level) => {
       resolve(code);
     });
   });
-};
-
-// Run docker with volume params
-module.exports.runDocker = async (httpSource, imageDestination, level) => {
-  if (os.freemem() < IMAGE_MEMORY_BYTES_THRESHOLD) {
-    logger.logInfo('Docker requirements for running image');
-
-    const answer = await askQuestion(
-      `Your free memory is less than our suggested threshold of ${IMAGE_MEMORY_BYTES_THRESHOLD} MB for running the docker. Do you still want to go on? (y/N)`,
-    );
-
-    if (answer.toLowerCase() !== 'y' && answer !== '') {
-      logger.logError('Run image process stopped by user, please review necessary requirements');
-      throw new Error(
-        'Run image process stopped by user, please review necessary requirements',
-      );
-    }
-  }
-
-  await executeContainer(httpSource, imageDestination, level);
 };
 
 module.exports.killDocker = () => {
