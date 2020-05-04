@@ -13,13 +13,23 @@ const { createReportData } = require('../src/report-manager/report-manager');
 
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';
 
+const parseHttpSource = (rawHttpSource) => {
+  if (rawHttpSource.startsWith('/')) {
+    return rawHttpSource; // Absolute path
+  }
+
+  return `${__dirname}/${rawHttpSource}`;
+};
+
 const executionArguments = process.argv.filter((el) => !el.startsWith('--')); // Filter flags
-const httpSource = executionArguments[2];
-if (!httpSource || httpSource.trim() === '') {
+const rawHttpSource = executionArguments[2];
+if (!rawHttpSource || rawHttpSource.trim() === '') {
   // eslint-disable-next-line no-undef
   logger.logError(EMPTY_DIR_MSG, 'Http');
   process.exit(1);
 }
+
+const httpSource = parseHttpSource(rawHttpSource);
 
 let imagesDestination = executionArguments[3];
 if (!imagesDestination || imagesDestination.trim() === '') {

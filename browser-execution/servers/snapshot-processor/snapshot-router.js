@@ -34,7 +34,6 @@ const mkdirRecursive = (fullPath) => {
   }
 };
 
-
 const getMimetypeExtension = (mimetype) => {
   switch (mimetype) {
     case 'image/jpeg':
