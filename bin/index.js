@@ -13,12 +13,12 @@ const { createReportData } = require('../src/report-manager/report-manager');
 
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';
 
-const parseHttpSource = (rawHttpSource) => {
-  if (rawHttpSource.startsWith('/')) {
-    return rawHttpSource; // Absolute path
+const parseSource = (rawSource) => {
+  if (rawSource.startsWith('/')) { // TODO: Define absolute path for windows
+    return rawSource; // Absolute path
   }
 
-  return `${__dirname}/${rawHttpSource}`;
+  return `${process.cwd()}/${rawSource}`;
 };
 
 const executionArguments = process.argv.filter((el) => !el.startsWith('--')); // Filter flags
@@ -29,9 +29,13 @@ if (!rawHttpSource || rawHttpSource.trim() === '') {
   process.exit(1);
 }
 
-const httpSource = parseHttpSource(rawHttpSource);
+const httpSource = parseSource(rawHttpSource);
 
 let imagesDestination = executionArguments[3];
+if (imagesDestination) {
+  imagesDestination = parseSource(imagesDestination);
+}
+
 if (!imagesDestination || imagesDestination.trim() === '') {
   imagesDestination = path.join(__dirname, '../runs');
   if (!fs.existsSync(imagesDestination)) {

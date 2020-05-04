@@ -21,7 +21,7 @@ const activeBrowsers = [...config.browsers];
 // Logging
 const events = [];
 
-
+// Maps to handle race condition of snapshot processor
 const timeoutMap = {}; // Map: Browser(String)->Function
 const imageMap = {}; // Map: Id(String)-> [Map:Browser(String)->Filenames(Array) ]
 
@@ -35,7 +35,7 @@ const compareSnapshots = async (original, modified, dateString) => {
   const fileSeparation = modified.split(path.sep);
   const isBefore = original.includes('before');
 
-  const idBasePath = `${snapshotDestinationDir}${path.sep}${dateString}${path.sep}snapshots${path.sep}${fileSeparation[fileSeparation.length - 2]}${path.sep}`;
+  const idBasePath = `${snapshotDestinationDir}/${dateString}/snapshots/${fileSeparation[fileSeparation.length - 2]}/`;
   const comparisonPath = isBefore ? `${idBasePath}comparison_before.json` : `${idBasePath}comparison_after.json`;
   await writeFile(comparisonPath, JSON.stringify({
     resemble: {
@@ -62,8 +62,8 @@ const compareBrowsers = async (snapshotMap, dateString) => {
       const stageResults = baseImages.map(async (baseBrowserImage, i) => {
         const comparableBrowserImage = snapshotMap[browser][i];
         await compareSnapshots(
-          `${snapshotDestinationDir}${path.sep}${dateString}${path.sep}snapshots${path.sep}${baseBrowserImage}`,
-          `${snapshotDestinationDir}${path.sep}${dateString}${path.sep}snapshots${path.sep}${comparableBrowserImage}`,
+          `${snapshotDestinationDir}/${dateString}/snapshots/${baseBrowserImage}`,
+          `${snapshotDestinationDir}/${dateString}/snapshots/${comparableBrowserImage}`,
           dateString,
         );
       });
@@ -149,7 +149,7 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
 };
 
 module.exports.writeResults = async (startDateTimestamp, startDateString, endDateString) => {
-  const runPath = `${snapshotDestinationDir}${path.sep}${startDateString}${path.sep}run.json`;
+  const runPath = `${snapshotDestinationDir}/${startDateString}/run.json`;
   await writeFile(runPath, JSON.stringify({
     seed: containerConfig.seed,
     startDate: startDateString,

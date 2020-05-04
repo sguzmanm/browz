@@ -48,16 +48,16 @@ const getMimetypeExtension = (mimetype) => {
 };
 
 const getFilename = (fieldName, imageRequestBody) => {
-  const dirPath = `${snapshotDestinationDir}${path.sep}${dateString}${path.sep}snapshots${path.sep}${imageRequestBody.id}`;
+  const dirPath = `${snapshotDestinationDir}/${dateString}/snapshots/${imageRequestBody.id}`;
   mkdirRecursive(dirPath);
 
   logger.logDebug(`Saving file ${imageRequestBody.browser}_${fieldName} for id ${imageRequestBody.id}`);
-  return `${imageRequestBody.id}${path.sep}${imageRequestBody.browser}_${fieldName}`;
+  return `${imageRequestBody.id}/${imageRequestBody.browser}_${fieldName}`;
 };
 
 const storage = multer.diskStorage({
   destination(req, file, resolveDestination) {
-    const destination = `${snapshotDestinationDir}${path.sep}${dateString}${path.sep}snapshots`;
+    const destination = `${snapshotDestinationDir}/${dateString}/snapshots`;
     resolveDestination(null, destination);
   },
   filename(req, file, createFilename) {

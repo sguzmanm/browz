@@ -31,7 +31,7 @@
       "largeImageThreshold": 0,
       "outputDiff": true
     },
-    "scaleToSameSize": true,
+    "scaleToSameSize": false,
     "ignore": "antialiasing"
   }
 }
