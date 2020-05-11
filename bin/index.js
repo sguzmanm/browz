@@ -9,7 +9,7 @@ const logger = newInstance();
 
 // Two main params, http source and image destination
 const { setupDocker, runDocker, killDocker } = require('../src/docker-manager/docker-manager');
-const { createReportData } = require('../src/report-manager/report-manager');
+const { createReportData, visualize } = require('../src/report-manager/report-manager');
 
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';
 
@@ -50,11 +50,9 @@ const finishProcess = async (success) => {
     logger.logError('Process finished without stopping container');
   }
 
-  if (success) {
-    process.exit(0);
+  if (!success) {
+    process.exit(1);
   }
-
-  process.exit(1);
 };
 
 const main = async () => {
@@ -65,10 +63,12 @@ const main = async () => {
     await runDocker(httpSource, imagesDestination, logger.level);
     logger.logInfo('-----Create Report--------');
     await createReportData(imagesDestination);
-    logger.logInfo('-----Finish process-------');
+    logger.logInfo('-----Stop docker container-------');
     await finishProcess(true);
+    logger.logInfo('-----Visualize report information-------');
+    visualize();
   } catch (error) {
-    logger.logError('Error running container code', error);
+    logger.logError('Error during report process:', error);
     throw error;
   }
 };

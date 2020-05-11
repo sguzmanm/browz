@@ -6,6 +6,9 @@
     "snapshotDestinationDir": "/tmp/runs",
     "configDir": "/tmp/config"
   },
+  "visualizerServerConfig": {
+    "port": "8080"
+  },
   "httpServerConfig": {
     "port": "8080"
   },

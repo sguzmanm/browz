@@ -2,6 +2,8 @@ const fs = require('fs');
 const fse = require('fs-extra'); // TODO: Do implementation of recursive copy to avoid this dependency
 const path = require('path');
 const util = require('util');
+const http = require('http');
+const nStatic = require('node-static');
 
 const readdir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
@@ -9,6 +11,9 @@ const writeFile = util.promisify(fs.writeFile);
 const mkdir = util.promisify(fs.mkdir);
 const existsFile = util.promisify(fs.exists);
 
+const { visualizerServerConfig } = require('../../shared/config.js').getHostConfig();
+
+const port = visualizerServerConfig && visualizerServerConfig.port ? visualizerServerConfig.port : '8080';
 const visualizerPath = path.join(__dirname, './visualizer/dist');
 const logger = require('../../shared/logger').newInstance('Report Manager');
 
@@ -66,4 +71,26 @@ module.exports.createReportData = async (imagesDestination) => {
   } catch (e) {
     logger.logError(`Error moving report files: ${e}`);
   }
+};
+
+module.exports.visualize = () => {
+  if (!fs.existsSync(`${visualizerPath}/index.html`)) {
+    logger.logError('No index.html found for the visualization path');
+    throw new Error('No index.html found for the visualization path');
+  }
+
+  const fileServer = new nStatic.Server(visualizerPath);
+  const server = http.createServer((req, res) => {
+    logger.logDebug(`Requested ${req.url} with method ${req.method}`);
+    fileServer.serve(req, res);
+  });
+
+  server.on('error', (error) => {
+    logger.logError('Visualizer Server Error:', error);
+    throw new Error('Visualizer Server Error:', error.message);
+  });
+
+  server.listen(port, () => {
+    logger.logInfo(`Visualizer Server started on http://localhost:${port}`);
+  });
 };
