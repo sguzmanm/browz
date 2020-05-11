@@ -4,30 +4,30 @@
     <h2>Before</h2>
     <div class="before-container">
       <div class="image-container">
-        <img :src="`snapshots/${eventID}/chrome_before.png`">
+        <img :src="`runs/${$route.params.run}/snapshots/${eventID}/chrome_before.png`">
         <span>Chrome</span>
       </div>
       <div class="image-container">
-        <img :src="`snapshots/${eventID}/firefox_before.png`">
+        <img :src="`runs/${$route.params.run}/snapshots/${eventID}/firefox_before.png`">
         <span>Firefox</span>
       </div>
       <div class="image-container">
-        <img :src="`snapshots/${eventID}/comparison_chrome_vs_firefox_before.png`">
+        <img :src="`runs/${$route.params.run}/snapshots/${eventID}/comparison_chrome_vs_firefox_before.png`">
         <span>Diff (comparison)</span>
       </div>
     </div>
     <h2>After</h2>
     <div class="before-container">
       <div class="image-container">
-        <img :src="`snapshots/${eventID}/chrome_after.png`">
+        <img :src="`runs/${$route.params.run}/snapshots/${eventID}/chrome_after.png`">
         <span>Chrome</span>
       </div>
       <div class="image-container">
-        <img :src="`snapshots/${eventID}/firefox_after.png`">
+        <img :src="`runs/${$route.params.run}/snapshots/${eventID}/firefox_after.png`">
         <span>Firefox</span>
       </div>
       <div class="image-container">
-        <img :src="`snapshots/${eventID}/comparison_chrome_vs_firefox_after.png`">
+        <img :src="`runs/${$route.params.run}/snapshots/${eventID}/comparison_chrome_vs_firefox_after.png`">
         <span>Diff (comparison)</span>
       </div>
     </div>

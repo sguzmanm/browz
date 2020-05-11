@@ -1,36 +1,45 @@
 <template>
-  <div class="home">
-    <div class="run-info">
-      <span><b>Run date:</b> {{ date.toLocaleString() }} </span>
-      <span><b>Seed:</b> 54319902875 </span>
-      <span><b>Base browser:</b> Chrome </span>
-      <span><b>Browsers tested:</b> Chrome, Firefox </span>
+  <div class="run-container">
+    <div v-if="loading">
+      Loading...
     </div>
-    <hr>
-    <h2>Event list</h2>
-    <div class="test-table">
-      <div class="row-container">
-        <div class="id column">Event ID</div>
-        <div class="type column">Event type</div>
-        <div class="mismatch column">Mismatch percentage</div>
-        <div class="comparison column">Comparison</div>
+    <div v-else-if="error">
+      <span>There was an error loading this run: {{ error }}</span>
+      <button @click="rertyLoading">Retry</button>
+    </div>
+    <template v-else>
+      <div class="run-info">
+        <span><b>Run start date:</b> {{ run.startDate }} </span>
+        <span><b>Run end date:</b> {{ run.endDate }} </span>
+        <span><b>Seed:</b> 54319902875 </span>
+        <span><b>Base browser:</b> {{ run.baseBrowser }} </span>
+        <span><b>Browsers tested:</b> {{ testedBrowsers }} </span>
       </div>
-      <!-- eslint-disable-next-line max-len -->
-      <div
-        class="row-container event"
-        v-for="{ id: eventID, event: eventType, resemble } in run.events"
-        :key="eventID"
-        @click="$router.push({ name: 'Event', params: { eventID }})"
-      >
-        <div class="id column">{{ eventID }}</div>
-        <div class="type column">{{ eventType }}</div>
-        <div class="mismatch column">{{ resemble.misMatchPercentage }}%</div>
-        <div class="comparison column">
-          <img class="after" :src="(`snapshots/${eventID}/comparison_chrome_vs_firefox_after.png`)">
+      <hr>
+      <h2>Event list</h2>
+      <div class="test-table">
+        <div class="row-container">
+          <div class="id column">Event ID</div>
+          <div class="type column">Event type</div>
+          <div class="mismatch column">Mismatch percentage</div>
+          <div class="comparison column">Comparison</div>
+        </div>
+        <!-- eslint-disable-next-line max-len -->
+        <div
+          class="row-container event"
+          v-for="{ id: eventID, eventType, resemble } in run.events"
+          :key="eventID"
+          @click="$router.push({ name: 'Event', params: { eventID }})"
+        >
+          <div class="id column">{{ eventID }}</div>
+          <div class="type column">{{ eventType }}</div>
+          <div class="mismatch column">{{ resemble && resemble.misMatchPercentage }}%</div>
+          <div class="comparison column">
+            <img class="after" :src="(`runs/${$route.params.run}/snapshots/${eventID}/comparison_chrome_vs_firefox_after.png`)">
+          </div>
         </div>
       </div>
-    </div>
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
+    </template>
   </div>
 </template>
 
@@ -39,18 +48,47 @@ export default {
   name: 'Run',
   data() {
     return {
+      loading: true,
+      run: null,
+      error: null,
     };
+  },
+  computed: {
+    testedBrowsers() {
+      return this.run.browsers.join(',');
+    },
+  },
+  methods: {
+    retryLoading() {
+      this.loading = true;
+      this.loadRun();
+    },
+    async loadRun() {
+      const { run } = this.$route.params;
+      try {
+        const response = await fetch(`runs/${run}/run.json`);
+        this.run = await response.json();
+      } catch (error) {
+        console.error(error);
+        this.error = error;
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
+  async mounted() {
+    await this.loadRun();
   },
 };
 </script>
 
 <style scoped>
-.home {
+.run-container {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  margin: 8px 24px;
+  width: 100%;
 }
 
 h1 {
