@@ -3,52 +3,9 @@
     <div class="topbar">
       <h1 class="title">Test report visualizer 👨‍💻️</h1>
     </div>
-    <div v-if="loading">
-      Loading...
-    </div>
-    <div v-else-if="error">
-      <span>There was an error loading the runs: {{error}}</span>
-      <button @click="retryLoading">Retry</button>
-    </div>
-    <router-view v-else/>
+    <router-view />
   </div>
 </template>
-
-<script>
-export default {
-  data() {
-    return {
-      loading: true,
-      runs: {},
-      error: null,
-    };
-  },
-  methods: {
-    async loadRunData() {
-      try {
-        const response = await fetch('runs/runs.json');
-        this.runs = await response.json();
-
-        if (this.runs.currentRun) {
-          this.$router.push({ name: 'Run', params: { run: this.runs.currentRun } });
-        }
-      } catch (error) {
-        console.error(error);
-        this.error = error;
-      } finally {
-        this.loading = false;
-      }
-    },
-    retryLoading() {
-      this.loading = true;
-      this.loadRunData();
-    },
-  },
-  async mounted() {
-    await this.loadRunData();
-  },
-};
-</script>
 
 <style>
 #app {
