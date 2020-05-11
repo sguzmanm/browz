@@ -1,11 +1,10 @@
 <template>
   <div class="home">
-    <h1>Test report visualizer 👨‍💻️</h1>
     <div class="run-info">
+      <span><b>Run date:</b> {{ date.toLocaleString() }} </span>
       <span><b>Seed:</b> 54319902875 </span>
       <span><b>Base browser:</b> Chrome </span>
       <span><b>Browsers tested:</b> Chrome, Firefox </span>
-      <span><b>Run date:</b> {{ date.toLocaleString() }} </span>
     </div>
     <hr>
     <h2>Event list</h2>
@@ -36,32 +35,11 @@
 </template>
 
 <script>
-// @ is an alias to /src
-//
-import run from '@/../public/runs.json';
-
 export default {
-  name: 'Home',
+  name: 'Run',
   data() {
     return {
-      eventIDs: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
-      date: new Date(),
-      run,
     };
-  },
-  components: {
-    // HelloWorld,
-  },
-  mounted() {
-    this.run.events.forEach(async ({ id: eventID }, i) => {
-      const response = await fetch(`snapshots/${eventID}/comparison.json`);
-      try {
-        const { resemble } = await response.json();
-        run.events[i].resemble = resemble;
-      } catch (error) {
-        console.error(eventID, error);
-      }
-    });
   },
 };
 </script>

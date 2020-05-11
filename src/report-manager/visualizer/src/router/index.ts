@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import Home from '../views/Home.vue';
+import History from '../views/History.vue';
+import Run from '../views/Run.vue';
 import Event from '../views/Event.vue';
 
 Vue.use(VueRouter);
@@ -8,11 +9,16 @@ Vue.use(VueRouter);
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    name: 'History',
+    component: History,
   },
   {
-    path: '/event/:eventID',
+    path: '/run/:run',
+    name: 'Run',
+    component: Run,
+  },
+  {
+    path: '/run/:run/event/:eventID',
     name: 'Event',
     component: Event,
   },
