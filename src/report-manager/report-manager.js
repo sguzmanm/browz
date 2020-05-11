@@ -57,14 +57,21 @@ module.exports.createReportData = async (imagesDestination) => {
     const resultFiles = await moveReportSnapshots(imagesDestination, runsPath);
 
     const isRunCreated = await existsFile(`${runsPath}/runs.json`);
-    let runs = [];
+    let runs = {
+      currentRun: '',
+      runs: [],
+    };
+
     if (isRunCreated) {
       const runContent = await readFile(`${runsPath}/runs.json`);
       runs = JSON.parse(runContent);
     }
 
     resultFiles.forEach((file) => {
-      if (!runs.includes(file)) { runs.push(file); }
+      if (!runs.runs.includes(file)) {
+        runs.currentRun = file;
+        runs.runs.push(file);
+      }
     });
 
     await writeFile(`${runsPath}/runs.json`, JSON.stringify(runs));

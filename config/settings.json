@@ -1,5 +1,5 @@
 {
-  "baseUrl": "https://amazon.com/",
+  "baseUrl": "http://localhost:8080/",
   "container": {
     "name": "sguzmanm/linux_cypress_tests:lite",
     "httpAppDir": "/tmp/app",
