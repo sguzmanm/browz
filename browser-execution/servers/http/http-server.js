@@ -23,7 +23,7 @@ module.exports.start = () => {
 
   server.on('error', (error) => {
     logger.logError('Http Server Error:', error);
-    throw new Error('Http Server Error:', error.message);
+    throw error;
   });
 
   server.listen(port, () => {

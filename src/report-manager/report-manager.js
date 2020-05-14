@@ -94,7 +94,7 @@ module.exports.visualize = () => {
 
   server.on('error', (error) => {
     logger.logError('Visualizer Server Error:', error);
-    throw new Error('Visualizer Server Error:', error.message);
+    throw error;
   });
 
   server.listen(port, () => {

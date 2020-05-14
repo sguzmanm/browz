@@ -34,9 +34,9 @@ module.exports.start = (dateString) => {
     logger.logInfo('Snapshot Server started on port...', port);
   });
 
-  server.on('error', (err) => {
-    logger.logError(`Server Error: ${err}`);
-    throw new Error(`Server Error: ${err.message}`);
+  server.on('error', (error) => {
+    logger.logError(`Server Error: ${error}`);
+    throw error;
   });
 };
 
