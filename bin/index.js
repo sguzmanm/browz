@@ -4,12 +4,14 @@ const fs = require('fs');
 // Setup logging
 const { setLevelWithFlags, newInstance } = require('../shared/logger');
 
-setLevelWithFlags(process.argv);
-const logger = newInstance();
 
 // Two main params, http source and image destination
 const { setupDocker, runDocker, killDocker } = require('../src/docker-manager/docker-manager');
 const { createReportData, visualize } = require('../src/report-manager/report-manager');
+
+const flags = process.argv.filter((el) => el.startsWith('--'));
+setLevelWithFlags(flags);
+const logger = newInstance();
 
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';
 
@@ -43,6 +45,8 @@ if (!imagesDestination || imagesDestination.trim() === '') {
   }
 }
 
+const shouldSkipVisualization = flags.includes('--skip-report');
+
 const finishProcess = async (success) => {
   try {
     await killDocker();
@@ -65,6 +69,11 @@ const main = async () => {
     await createReportData(imagesDestination);
     logger.logInfo('-----Stop docker container-------');
     await finishProcess(true);
+
+    if (shouldSkipVisualization) {
+      return;
+    }
+
     logger.logInfo('-----Visualize report information-------');
     visualize();
   } catch (error) {
