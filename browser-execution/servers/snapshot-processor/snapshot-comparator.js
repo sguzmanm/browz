@@ -46,7 +46,7 @@ const compareSnapshots = async (original, modified, dateString) => {
   const resultPath = `${idBasePath}comparison_${baseBrowser}_vs_${fileSeparation[fileSeparation.length - 1]}`;
   await writeFile(resultPath, data.getBuffer());
 
-  logger.logDebug(`Comparison result saved at ${resultPath}`);
+  logger.logInfo(`Comparison for ${idBasePath} ${isBefore ? 'before' : 'after'} the given event was saved at ${resultPath}`);
 };
 
 // Browser comparison of snapshots
@@ -69,7 +69,6 @@ const compareBrowsers = async (snapshotMap, dateString) => {
       });
 
       await Promise.all(stageResults);
-      logger.logDebug(`Comparison process finished between ${baseBrowser} vs ${browser}`);
     });
 
     await Promise.all(comparisonResults);
@@ -79,6 +78,10 @@ const compareBrowsers = async (snapshotMap, dateString) => {
 };
 
 const makeIdComparison = async (id, event, dateString) => {
+  if (activeBrowsers.length <= 1) {
+    logger.logWarning(`Browser length below the necessary to compare using length ${activeBrowsers.length}. [${activeBrowsers}]`);
+  }
+
   if (Object.keys(imageMap[id]).length !== activeBrowsers.length) {
     return;
   }

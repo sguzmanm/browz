@@ -21,22 +21,20 @@
         <div class="row-container">
           <div class="id column">Event ID</div>
           <div class="type column">Event type</div>
-          <div class="mismatch column">Mismatch percentage</div>
-          <div class="comparison column">Comparison</div>
+          <div class="mismatch column">Mismatch percentage (before)</div>
+          <div class="mismatch column">Mismatch percentage (after)</div>
         </div>
         <!-- eslint-disable-next-line max-len -->
         <div
           class="row-container event"
-          v-for="{ id: eventID, eventType, resemble } in run.events"
+          v-for="{ id: eventID, eventType, before, after } in run.events"
           :key="eventID"
           @click="$router.push({ name: 'Event', params: { eventID }})"
         >
           <div class="id column">{{ eventID }}</div>
           <div class="type column">{{ eventType }}</div>
-          <div class="mismatch column">{{ resemble && resemble.misMatchPercentage }}%</div>
-          <div class="comparison column">
-            <img class="after" :src="(`runs/${$route.params.run}/snapshots/${eventID}/comparison_chrome_vs_firefox_after.png`)">
-          </div>
+          <div :class="mismatchFormat(before)">{{ before }}%</div>
+          <div :class="mismatchFormat(after)">{{ after }}%</div>
         </div>
       </div>
     </template>
@@ -59,6 +57,14 @@ export default {
     },
   },
   methods: {
+    mismatchFormat(rawPercentage) {
+      const percentage = parseFloat(rawPercentage, 10);
+      if (percentage > 10) {
+        return ['mismatch', 'column', 'over-threshold'];
+      }
+
+      return ['mismatch', 'column'];
+    },
     retryLoading() {
       this.loading = true;
       this.loadRun();
@@ -68,6 +74,20 @@ export default {
       try {
         const response = await fetch(`runs/${run}/run.json`);
         this.run = await response.json();
+        this.run.events.forEach(async ({ id: eventID }, i) => {
+          try {
+            const beforeResponse = await fetch(`runs/${run}/snapshots/${eventID}/comparison_before.json`);
+            const afterResponse = await fetch(`runs/${run}/snapshots/${eventID}/comparison_after.json`);
+            const before = await beforeResponse.json();
+            const after = await afterResponse.json();
+
+            this.run.events[i].before = before.resemble.misMatchPercentage;
+            this.run.events[i].after = after.resemble.misMatchPercentage;
+            this.$forceUpdate(); // TODO improve, this is machete
+          } catch (error) {
+            console.error(`Error fetching event[${eventID}] details: `, error);
+          }
+        });
       } catch (error) {
         console.error(error);
         this.error = error;
@@ -146,6 +166,10 @@ h2 {
   border-bottom: 0;
 }
 
+.row-container:last-of-type .column {
+  border-bottom: 1px solid lightgray;
+}
+
 .id {
   flex: 1;
 }
@@ -164,5 +188,9 @@ h2 {
 
 .after {
   height: 240px;
+}
+
+.over-threshold {
+  background-color: rgb(255, 158, 158);
 }
 </style>
