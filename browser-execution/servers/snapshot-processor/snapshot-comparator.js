@@ -78,11 +78,7 @@ const compareBrowsers = async (snapshotMap, dateString) => {
 };
 
 const makeIdComparison = async (id, event, dateString) => {
-  if (activeBrowsers.length <= 1) {
-    logger.logWarning(`Browser length below the necessary to compare using length ${activeBrowsers.length}. [${activeBrowsers}]`);
-  }
-
-  if (Object.keys(imageMap[id]).length !== activeBrowsers.length) {
+  if (Object.keys(imageMap[id]).length !== activeBrowsers.length || activeBrowsers.length <= 1) {
     return;
   }
 
