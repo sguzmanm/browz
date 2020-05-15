@@ -31,19 +31,19 @@ const defaultConfig = {
 const defaultActiveBrowsers = [browsers.CHROME, browsers.FIREFOX];
 
 module.exports.getHostConfig = () => {
-  logger.logInfo(`Current host config: ${JSON.stringify(hostConfig)}`);
+  logger.logDebug(`Current host config: ${JSON.stringify(hostConfig)}`);
   if (hostConfig) {
     return hostConfig;
   }
 
   if (!fs.existsSync(hostConfigPath)) {
     hostConfig = defaultConfig;
-    logger.logInfo(`Using default host config: ${JSON.stringify(defaultConfig)}`);
+    logger.logDebug(`Using default host config: ${JSON.stringify(defaultConfig)}`);
     return hostConfig;
   }
 
   hostConfig = JSON.parse(fs.readFileSync(hostConfigPath));
-  logger.logInfo(`Using settings host config file ${hostConfigPath}: ${JSON.stringify(hostConfig)}`);
+  logger.logDebug(`Using settings host config file ${hostConfigPath}: ${JSON.stringify(hostConfig)}`);
 
   return hostConfig;
 };
@@ -69,7 +69,7 @@ const cleanBrowsers = (configBrowsers) => {
 };
 
 module.exports.getContainerConfig = () => {
-  logger.logInfo(`Current container config: ${JSON.stringify(containerConfig)}`);
+  logger.logDebug(`Current container config: ${JSON.stringify(containerConfig)}`);
   if (containerConfig) {
     return containerConfig;
   }
@@ -77,13 +77,13 @@ module.exports.getContainerConfig = () => {
   if (!fs.existsSync(containerConfigPath)) {
     containerConfig = this.getHostConfig();
     containerConfig.browsers = cleanBrowsers(containerConfig.browsers);
-    logger.logInfo(`Using default container config: ${JSON.stringify(containerConfig)}`);
+    logger.logDebug(`Using default container config: ${JSON.stringify(containerConfig)}`);
     return containerConfig;
   }
 
   containerConfig = JSON.parse(fs.readFileSync(containerConfigPath));
   containerConfig.browsers = cleanBrowsers(containerConfig.browsers);
-  logger.logInfo(`Using settings container config file ${containerConfigPath}: ${JSON.stringify(containerConfig)}`);
+  logger.logDebug(`Using settings container config file ${containerConfigPath}: ${JSON.stringify(containerConfig)}`);
 
   return containerConfig;
 };

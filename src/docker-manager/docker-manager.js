@@ -79,7 +79,7 @@ module.exports.setupDocker = async () => {
     unit = 'GB';
   }
 
-  logger.logInfo(`The image will occupy at least ${approximateImageMem} ${unit} of your disk`);
+  logger.logInfo(`The image will occupy at least ${approximateImageMem.toFixed(2)} ${unit} of your disk`);
 
   await pullImage();
 };

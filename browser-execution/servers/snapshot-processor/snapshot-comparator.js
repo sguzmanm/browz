@@ -16,10 +16,22 @@ const baseBrowser = config.baseBrowser || 'chrome';
 const browserWaitingTime = config.browserWaitingResponseTime
   ? parseInt(config.browserWaitingResponseTime, 10) : 30000;
 
-const activeBrowsers = [...config.browsers];
+let activeBrowsers = [...config.browsers];
 
 // Logging
 const events = [];
+
+
+const removeActiveBrowser = (browser) => {
+  const index = activeBrowsers.indexOf(browser);
+  activeBrowsers.splice(index, 1);
+  logger.logDebug(`Deactivating browser... ${browser}`);
+
+  if (browser === baseBrowser) {
+    logger.logWarning('Base browser deactivated. Nothing more to compare');
+    activeBrowsers = [];
+  }
+};
 
 // Maps to handle race condition of snapshot processor
 const timeoutMap = {}; // Map: Browser(String)->Function
@@ -94,15 +106,7 @@ const makeIdComparison = async (id, event, dateString) => {
 };
 
 const deactivateBrowser = async (browser, event, requestData) => {
-  const index = activeBrowsers.indexOf(browser);
-  activeBrowsers.splice(index, 1);
-  logger.logDebug(`Deactivating browser... ${browser}`);
-
-  if (browser === baseBrowser) {
-    logger.logWarning('Base browser deactivated. Nothing more to compare');
-    return;
-  }
-
+  removeActiveBrowser(browser);
   // Check images sent by remaining browsers if complete
   const keys = Object.keys(imageMap);
   const results = keys.map(async (id) => {
@@ -122,9 +126,8 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
     eventName,
   };
 
-  if (!activeBrowsers.includes(baseBrowser) || activeBrowsers.length === 1) {
-    logger.logError(`There are no browsers to compare. Currently active browsers: ${activeBrowsers.length === 0 ? 'None' : activeBrowsers}`);
-    throw new Error(`There are no browsers to compare. Currently active browsers: ${activeBrowsers.length === 0 ? 'None' : activeBrowsers}`);
+  if (activeBrowsers.length === 0) {
+    logger.logWarning(`There are no browsers to compare. Currently active browsers: ${activeBrowsers.length === 0 ? 'None' : activeBrowsers}`);
   }
 
   if (!activeBrowsers.includes(browser)) {
@@ -132,12 +135,13 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
     throw new Error(`Inactive browser requested: ${browser}`);
   }
 
-  clearTimeout(timeoutMap[browser]);
 
   // Set waiting timeout for image from browser
+  clearTimeout(timeoutMap[browser]);
   timeoutMap[browser] = setTimeout(() => {
     deactivateBrowser(browser, event, requestData);
   }, browserWaitingTime);
+
 
   if (!imageMap[id]) {
     imageMap[id] = {};

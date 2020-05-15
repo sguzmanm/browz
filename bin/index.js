@@ -77,7 +77,7 @@ const main = async () => {
     logger.logInfo('-----Visualize report information-------');
     visualize();
   } catch (error) {
-    logger.logError('Error during report process:', error);
+    logger.logError(`Error during report process: ${error}`);
     throw error;
   }
 };
