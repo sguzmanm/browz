@@ -66,12 +66,11 @@ module.exports.newInstance = (context) => {
   const loggingContext = context || 'Default';
 
   return {
-    context,
     level,
     log,
-    logDebug: (messages) => (level <= DEBUG ? logDebug(loggingContext, messages) : undefined),
-    logInfo: (messages) => (level <= INFO ? logInfo(loggingContext, messages) : undefined),
-    logWarning: (messages) => (level <= WARNING ? logWarning(loggingContext, messages) : undefined),
-    logError: (messages) => (level <= ERROR ? logError(loggingContext, messages) : undefined),
+    logDebug: (...messages) => (level <= DEBUG ? logDebug(loggingContext, ...messages) : undefined),
+    logInfo: (...messages) => (level <= INFO ? logInfo(loggingContext, ...messages) : undefined),
+    logWarning: (...messages) => (level <= WARNING ? logWarning(loggingContext, ...messages) : undefined),
+    logError: (...messages) => (level <= ERROR ? logError(loggingContext, ...messages) : undefined),
   };
 };
