@@ -2,16 +2,16 @@ const path = require('path');
 const fs = require('fs');
 
 // Setup logging
-const { newInstance } = require('../shared/logger');
+const { setLevelWithFlags, newInstance } = require('../shared/logger');
 
+const flags = process.argv.filter((el) => el.startsWith('--'));
+setLevelWithFlags(flags);
+const logger = newInstance();
 
 // Two main params, http source and image destination
 const { setupDocker, runDocker, killDocker } = require('../src/docker-manager/docker-manager');
 const { createReportData, visualize } = require('../src/report-manager/report-manager');
 
-const flags = process.argv.filter((el) => el.startsWith('--'));
-const logger = newInstance();
-logger.setLevelWithFlags(flags);
 
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';
 

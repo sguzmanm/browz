@@ -107,6 +107,7 @@ const makeIdComparison = async (id, event, dateString) => {
 
 const deactivateBrowser = async (browser, event, requestData) => {
   removeActiveBrowser(browser);
+
   // Check images sent by remaining browsers if complete
   const keys = Object.keys(imageMap);
   const results = keys.map(async (id) => {
@@ -127,7 +128,7 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
   };
 
   if (activeBrowsers.length === 0) {
-    logger.logWarning(`There are no browsers to compare. Currently active browsers: ${activeBrowsers.length === 0 ? 'None' : activeBrowsers}`);
+    logger.logWarning('There are no browsers to compare.');
   }
 
   if (!activeBrowsers.includes(browser)) {
