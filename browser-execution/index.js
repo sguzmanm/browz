@@ -2,10 +2,10 @@ require('dotenv').config();
 
 const { startServers, writeResults } = require('./servers/servers');
 const { exploreApp } = require('./exploration/exploration');
-const { setLevel, newInstance } = require('../shared/logger');
+const { newInstance } = require('../shared/logger');
 
-setLevel(process.env.LEVEL);
 const logger = newInstance('Browser Execution');
+logger.setLevel(process.env.LEVEL);
 
 const calculateDateString = (date) => {
   const dateOptions = {

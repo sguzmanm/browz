@@ -26,13 +26,12 @@ const argsFromLevel = {
 
 let level = INFO;
 
-module.exports.setLevel = (currentLevel) => {
-  console.log('Current level'.currentLevel);
+const setLevel = (currentLevel) => {
   if (!validLevels[currentLevel]) { return; }
   level = currentLevel;
 };
 
-module.exports.setLevelWithFlags = (args) => {
+const setLevelWithFlags = (args) => {
   let currentLevel;
   args.forEach((arg) => {
     if (argsFromLevel[arg] && !currentLevel) {
@@ -67,6 +66,8 @@ module.exports.newInstance = (context) => {
 
   return {
     level,
+    setLevel,
+    setLevelWithFlags,
     log,
     logDebug: (...messages) => (level <= DEBUG ? logDebug(loggingContext, ...messages) : undefined),
     logInfo: (...messages) => (level <= INFO ? logInfo(loggingContext, ...messages) : undefined),
