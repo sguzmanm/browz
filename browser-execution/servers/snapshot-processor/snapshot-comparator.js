@@ -15,6 +15,7 @@ const snapshotDestinationDir = containerConfig && containerConfig.snapshotDestin
 const baseBrowser = config.baseBrowser || 'chrome';
 const browserWaitingTime = config.browserWaitingResponseTime
   ? parseInt(config.browserWaitingResponseTime, 10) : 30000;
+const startupWaitingTime = 5 * 60 * 1000; // 5min
 
 let activeBrowsers = [...config.browsers];
 
@@ -36,6 +37,13 @@ const removeActiveBrowser = (browser) => {
 // Maps to handle race condition of snapshot processor
 const timeoutMap = {}; // Map: Browser(String)->Function
 const imageMap = {}; // Map: Id(String)-> [Map:Browser(String)->Filenames(Array) ]
+
+activeBrowsers.forEach((browser) => {
+  timeoutMap[browser] = setTimeout(() => {
+    logger.logInfo('Deactivating browser on startup');
+    removeActiveBrowser(browser);
+  }, startupWaitingTime);
+});
 
 const compareSnapshots = async (original, modified, dateString) => {
   const data = await compareImages(
