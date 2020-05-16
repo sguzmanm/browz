@@ -75,6 +75,7 @@ export default {
   border: 1px solid lightblue;
   border-width: 1px 0;
   cursor: pointer;
+  width: 100%;
 }
 
 .run-container:hover {
