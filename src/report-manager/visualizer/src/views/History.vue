@@ -37,10 +37,6 @@ export default {
       try {
         const response = await fetch('runs/runs.json');
         this.runs = await response.json();
-
-        if (this.runs.currentRun) {
-          this.$router.push({ name: 'Run', params: { run: this.runs.currentRun } });
-        }
       } catch (error) {
         console.error(error);
         this.error = error;

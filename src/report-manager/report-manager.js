@@ -56,23 +56,23 @@ module.exports.createReportData = async (imagesDestination) => {
 
     const resultFiles = await moveReportSnapshots(imagesDestination, runsPath);
 
-    const isRunCreated = await existsFile(`${runsPath}/runs.json`);
+    const isRunsFileCreated = await existsFile(`${runsPath}/runs.json`);
     let runs = {
-      currentRun: '',
       runs: [],
     };
 
-    if (isRunCreated) {
+    if (isRunsFileCreated) {
       const runContent = await readFile(`${runsPath}/runs.json`);
       runs = JSON.parse(runContent);
     }
 
     resultFiles.forEach((file) => {
       if (!runs.runs.includes(file)) {
-        runs.currentRun = file;
         runs.runs.push(file);
       }
     });
+
+    latestRun = getLatestRun(resultFiles);
 
     await writeFile(`${runsPath}/runs.json`, JSON.stringify(runs));
   } catch (e) {
@@ -80,7 +80,7 @@ module.exports.createReportData = async (imagesDestination) => {
   }
 };
 
-module.exports.visualize = () => {
+module.exports.visualize = (currentRun = '') => {
   if (!fs.existsSync(`${visualizerPath}/index.html`)) {
     logger.logError('No index.html found for the visualization path');
     throw new Error('No index.html found for the visualization path');
@@ -98,6 +98,6 @@ module.exports.visualize = () => {
   });
 
   server.listen(port, () => {
-    logger.logInfo(`Visualizer Server started on http://localhost:${port}`);
+    logger.logInfo(`Visualizer Server started on http://localhost:${port}/${currentRun}`);
   });
 };

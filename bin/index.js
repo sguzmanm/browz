@@ -46,6 +46,7 @@ if (!imagesDestination || imagesDestination.trim() === '') {
 }
 
 const shouldSkipVisualization = flags.includes('--skip-report');
+const shouldOnlyVisualize = flags.includes('--visualize');
 
 const finishProcess = async (success) => {
   try {
@@ -60,6 +61,11 @@ const finishProcess = async (success) => {
 };
 
 const main = async () => {
+  if (shouldOnlyVisualize) {
+    visualize();
+    return;
+  }
+
   try {
     logger.logInfo('-----Setup Container-----');
     await setupDocker();
