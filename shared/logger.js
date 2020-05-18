@@ -34,7 +34,6 @@ module.exports.setLevel = (currentLevel) => {
 module.exports.setLevelWithFlags = (args) => {
   let currentLevel;
   args.forEach((arg) => {
-    console.log(arg, argsFromLevel[arg]);
     if (argsFromLevel[arg] !== undefined && !currentLevel) {
       currentLevel = argsFromLevel[arg];
     }

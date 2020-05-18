@@ -716,7 +716,8 @@ describe(`${appName} under smarter monkeys`, function () {
   it(`visits ${appName} and survives smarter monkeys`, function () {
     if (!seed) seed = Math.ceil(Math.random() * Number.MAX_SAFE_INTEGER);
 
-    cy.task('logStart', { type: 'monkey', url: url, seed: seed });
+    cy.task('logStart', { type: 'monkey', url: url, seed: seed, browser: Cypress.browser.name });
+    cy.log(`Browser: ${Cypress.browser.name}`)
     cy.log(`Seed: ${seed}`);
     cy.task('genericLog', { message: `Seed: ${seed}` });
 

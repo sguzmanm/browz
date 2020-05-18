@@ -5,6 +5,7 @@ const { setLevel, newInstance } = require('../shared/logger');
 setLevel(process.env.LEVEL);
 const logger = newInstance('Browser Execution');
 
+
 const { startServers, writeResults } = require('./servers/servers');
 const { exploreApp } = require('./exploration/exploration');
 
