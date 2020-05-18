@@ -72,7 +72,7 @@ const main = async () => {
     logger.logInfo('----Run Container-------');
     await runDocker(httpSource, imagesDestination, logger.level);
     logger.logInfo('-----Create Report--------');
-    await createReportData(imagesDestination);
+    const latestRun = await createReportData(imagesDestination);
     logger.logInfo('-----Stop docker container-------');
     await finishProcess(true);
 
@@ -81,7 +81,7 @@ const main = async () => {
     }
 
     logger.logInfo('-----Visualize report information-------');
-    visualize();
+    visualize(latestRun);
   } catch (error) {
     logger.logError(`Error during report process: ${error}`);
     throw error;

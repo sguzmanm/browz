@@ -45,6 +45,23 @@ const moveReportSnapshots = async (imagesDestination, runsPath) => {
   return movedFiles;
 };
 
+const getLatestRun = async (runsPath, resultFiles) => {
+  let runContent;
+  let latestTimestamp = 0;
+  let latestRun;
+
+  for (let i = 0; i < resultFiles.length; i += 1) {
+    // eslint-disable-next-line no-await-in-loop
+    runContent = await readFile(`${runsPath}/${resultFiles[i]}/run.json`);
+    const { startTImestamp } = JSON.parse(runContent);
+    if (startTImestamp > latestTimestamp) {
+      latestRun = resultFiles[i];
+      latestTimestamp = startTImestamp;
+    }
+  }
+
+  return latestRun;
+};
 
 module.exports.createReportData = async (imagesDestination) => {
   try {
@@ -66,15 +83,16 @@ module.exports.createReportData = async (imagesDestination) => {
       runs = JSON.parse(runContent);
     }
 
-    resultFiles.forEach((file) => {
+    await Promise.all(resultFiles.map(async (file) => {
       if (!runs.runs.includes(file)) {
         runs.runs.push(file);
       }
-    });
-
-    latestRun = getLatestRun(resultFiles);
+    }));
 
     await writeFile(`${runsPath}/runs.json`, JSON.stringify(runs));
+
+    const latestRun = await getLatestRun(runsPath, resultFiles);
+    return latestRun;
   } catch (e) {
     logger.logError(`Error moving report files: ${e}`);
   }
