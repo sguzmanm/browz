@@ -53,10 +53,10 @@ const getLatestRun = async (runsPath, resultFiles) => {
   for (let i = 0; i < resultFiles.length; i += 1) {
     // eslint-disable-next-line no-await-in-loop
     runContent = await readFile(`${runsPath}/${resultFiles[i]}/run.json`);
-    const { startTImestamp } = JSON.parse(runContent);
-    if (startTImestamp > latestTimestamp) {
+    runContent = JSON.parse(runContent);
+    if (parseInt(runContent.startTimestamp, 10) > latestTimestamp) {
       latestRun = resultFiles[i];
-      latestTimestamp = startTImestamp;
+      latestTimestamp = runContent.startTimestamp;
     }
   }
 
@@ -118,6 +118,6 @@ module.exports.visualize = (currentRun = '') => {
   });
 
   server.listen(port, () => {
-    logger.logInfo(`Visualizer Server started on http://localhost:${port}/${currentRun}`);
+    logger.logInfo(`Visualizer Server started on http://localhost:${port}/${currentRun !== '' ? `#/run/${currentRun}` : ''}`);
   });
 };
