@@ -60,6 +60,7 @@ const getLatestRun = async (runsPath, resultFiles) => {
     }
   }
 
+  logger.logDebug('Latest run', latestRun, latestTimestamp);
   return latestRun;
 };
 
@@ -95,6 +96,7 @@ module.exports.createReportData = async (imagesDestination) => {
     return latestRun;
   } catch (e) {
     logger.logError(`Error moving report files: ${e}`);
+    return undefined;
   }
 };
 
