@@ -1,0 +1,30 @@
+{
+  "startDate": "May 24, 2020, 738 PM",
+  "startTimestamp": 1590349123630,
+  "endDate": "May 24, 2020, 741 PM",
+  "baseBrowser": "chrome",
+  "browsers": [
+    "chrome",
+    "firefox"
+  ],
+  "events": [
+    {
+      "id": "1",
+      "eventType": "Selector focus",
+      "eventName": "randHover",
+      "timestamp": 1590349201898
+    },
+    {
+      "id": "2",
+      "eventType": "Random click",
+      "eventName": "randClick",
+      "timestamp": 1590349215674
+    },
+    {
+      "id": "3",
+      "eventType": "Random click",
+      "eventName": "randClick",
+      "timestamp": 1590349226827
+    }
+  ]
+}
