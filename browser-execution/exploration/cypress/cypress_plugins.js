@@ -96,6 +96,17 @@ module.exports = (on, config) => {
         if (err) throw err
         logger.logDebug(`${currentBrowser}: Finished logging`)
       })
+
+      // Send logs to snapshot client
+      Client.sendConsoleLog({
+        type: event.type,
+        browser: currentBrowser,
+        message: event.args.map(arg => {
+          if (arg.type === "string") {
+            return arg.value
+          }
+        }).join("\n")
+      })
     }
 
     return true;

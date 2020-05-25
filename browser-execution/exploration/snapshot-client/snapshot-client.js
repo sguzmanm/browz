@@ -59,3 +59,31 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
     logger.logError('Error sending images to snapshot server: ', error);
   }
 };
+
+module.exports.sendConsoleLog = async (log) => {
+  try {
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: log,
+    };
+
+    const response = await fetch('http://localhost:8081/logs', options);
+    if (response.status === 400) {
+      logger.logWarning(`${ERR_SERVER_STOPPED_PROCESSING_REQUESTS}`);
+      throw ERR_SERVER_STOPPED_PROCESSING_REQUESTS;
+    }
+
+    if (response.status !== 200) {
+      logger.logWarning(`Snapshot server returned unknown status: ${response.status}`);
+    }
+  } catch (error) {
+    if (error === ERR_SERVER_STOPPED_PROCESSING_REQUESTS) {
+      throw ERR_SERVER_STOPPED_PROCESSING_REQUESTS;
+    }
+
+    logger.logError('Error sending logs to snapshot server: ', error);
+  }
+};

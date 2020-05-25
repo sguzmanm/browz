@@ -5,6 +5,7 @@ const express = require('express');
 const multer = require('multer');
 
 const { registerImage } = require('./snapshot-comparator');
+const { saveLog } = require('./snapshot-log-storage');
 const logger = require('../../../shared/logger').newInstance('Snapshot Processor Router');
 const { container } = require('../../../shared/config.js').getContainerConfig();
 
@@ -100,6 +101,24 @@ router.post('/', upload.any(), async (req, res, next) => {
         getFile(req.files, AFTER_IMAGE).filename,
       ],
     });
+    res.json({ status: 'OK' });
+  } catch (err) {
+    logger.logError(`${err}`);
+    next(err);
+  }
+});
+
+// Post new log
+/*
+{
+  type: String,
+  browser:String,
+  message:String
+}
+*/
+router.post('/logs', (req, res, next) => {
+  try {
+    saveLog(req.body);
     res.json({ status: 'OK' });
   } catch (err) {
     logger.logError(`${err}`);
