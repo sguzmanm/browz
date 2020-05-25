@@ -117,6 +117,7 @@ router.post('/', upload.any(), async (req, res, next) => {
 }
 */
 router.post('/logs', (req, res, next) => {
+  logger.logDebug('Save log request', req.body);
   try {
     saveLog(req.body);
     res.json({ status: 'OK' });

@@ -30,7 +30,7 @@
         <!-- eslint-disable-next-line max-len -->
         <div
           class="row-container event"
-          v-for="{ id: eventID, eventType, before, after } in run.events"
+          v-for="{ id: eventID, eventType, before, after, browsers } in run.events"
           :key="eventID"
         >
           <div class="id column">{{ eventID }}</div>
@@ -38,7 +38,7 @@
           <div :class="mismatchFormat(before)">{{ before }}%</div>
           <div :class="mismatchFormat(after)">{{ after }}%</div>
           <div class="actions column">
-            <button @click="$router.push({ name: 'Event', params: { eventID }})">
+            <button @click="$router.push({ name: 'Event', params: { eventID, browsers }})">
               <img src="icons/details.svg" alt="Details icon"/> Check
             </button>
           </div>
@@ -67,7 +67,6 @@ export default {
   methods: {
     mismatchFormat(rawPercentage) {
       const percentage = parseFloat(rawPercentage, 10);
-      console.log(this.threshold);
       if (percentage > this.threshold) {
         return ['mismatch', 'column', 'over-threshold'];
       }

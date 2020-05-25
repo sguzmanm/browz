@@ -91,7 +91,7 @@ module.exports.setupDocker = async () => {
  * --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js
  */
 module.exports.runDocker = (httpSource, imageDestination, level) => {
-  const branchCommand = branch !== 'master' ? `&& git fetch origin ${branch} && git checkout ${branch} && git pull origin ${branch}` : '';
+  const branchCommand = branch !== 'master' ? `&& git fetch origin ${branch} && git checkout ${branch}` : '';
   const commands = [
     'run',
     '--shm-size=512m',
@@ -110,8 +110,9 @@ module.exports.runDocker = (httpSource, imageDestination, level) => {
     linuxContainer,
     'sh',
     '-c',
-    `cd /tmp/thesis && git reset --hard HEAD ${branchCommand} && cd browser-execution && npm install && node index.js`,
+    `cd /tmp/thesis && git reset --hard HEAD ${branchCommand} && git pull origin ${branch} && cd browser-execution && npm install && node index.js`,
   ];
+
 
   logger.logDebug('Run docker image command');
   logger.logDebug(commands.join(' '));
