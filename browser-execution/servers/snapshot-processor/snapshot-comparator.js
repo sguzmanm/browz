@@ -167,16 +167,3 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
 };
 
 module.exports.getEvents = () => events;
-
-module.exports.writeResults = async (logs, startDateTimestamp, startDateString, endDateString) => {
-  const runPath = `${snapshotDestinationDir}/${startDateString}/run.json`;
-  await writeFile(runPath, JSON.stringify({
-    seed: containerConfig.seed,
-    startDate: startDateString,
-    startTimestamp: startDateTimestamp,
-    endDate: endDateString,
-    baseBrowser,
-    browsers: config.browsers,
-    events,
-  }));
-};

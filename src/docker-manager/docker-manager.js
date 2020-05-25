@@ -2,13 +2,14 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const logger = require('../../shared/logger').newInstance('Docker Manager');
-const { container } = require('../../shared/config.js').getHostConfig();
+const { container, repository } = require('../../shared/config.js').getHostConfig();
 const { getDockerErrorCodeMessage, getWrongOutputMessage } = require('./error-outputs');
 
 const linuxContainer = container && container.name ? container.name : 'sguzmanm/linux_cypress_tests:lite';
 const httpAppDir = container && container.httpAppDir ? container.httpAppDir : '/tmp/app';
 const snapshotDir = container && container.snapshotDestinationDir ? container.snapshotDestinationDir : '/tmp/runs';
 const containerConfigDir = container && container.configDir ? container.configDir : '/tmp/config';
+const branch = repository && repository.branch ? repository.branch : 'master';
 
 const hostConfigDir = path.join(__dirname, '../../config');
 
@@ -90,6 +91,7 @@ module.exports.setupDocker = async () => {
  * --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js
  */
 module.exports.runDocker = (httpSource, imageDestination, level) => {
+  const branchCommand = branch !== 'master' ? `&& git fetch origin ${branch} && git checkout ${branch} && git pull origin ${branch}` : '';
   const commands = [
     'run',
     '--shm-size=512m',
@@ -108,7 +110,7 @@ module.exports.runDocker = (httpSource, imageDestination, level) => {
     linuxContainer,
     'sh',
     '-c',
-    'cd /tmp/thesis && git reset --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js',
+    `cd /tmp/thesis && git reset --hard HEAD ${branchCommand} && cd browser-execution && npm install && node index.js`,
   ];
 
   logger.logDebug('Run docker image command');

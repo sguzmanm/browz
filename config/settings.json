@@ -20,6 +20,9 @@
     "chrome",
     "firefox"
   ],
+  "repository": {
+    "branch": "master"
+  },
   "browserWaitingResponseTime": "15000",
   "seed": "3120531319383398",
   "resemble": {
