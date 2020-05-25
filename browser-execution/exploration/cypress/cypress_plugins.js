@@ -99,6 +99,7 @@ module.exports = (on, config) => {
       // Send logs to snapshot client
       Client.sendConsoleLog({
         type: event.type,
+        timestamp: event.timestamp,
         browser: currentBrowser,
         message: event.args.map(arg => {
           if (arg.type === "string") {

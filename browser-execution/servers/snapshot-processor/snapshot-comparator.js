@@ -160,7 +160,7 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
   }
 
   imageMap[id][browser] = {
-    timestamp: imageRequestBody.timestamp ? imageRequestBody.timestamp : new Date().getTime(),
+    timestamp: imageRequestBody.timestamp ? parseInt(imageRequestBody.timestamp, 10) : new Date().getTime(),
     fileNames: requestData.fileNames,
   };
   await makeIdComparison(id, event, requestData.dateString);

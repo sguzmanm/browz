@@ -57,8 +57,9 @@ module.exports.start = (dateString) => {
 const getEventWithId = (id, events) => events.find((el) => el.id === id);
 
 const getEventWithClosestTimestamp = (log, events) => {
-  const { browser } = log;
   const timestamp = parseInt(log.timestamp, 10);
+  const browserName = log.browser;
+
   let closestTimestampDifference = timestamp;
   let chosenEvent;
   let browserTimestamp;
@@ -68,11 +69,11 @@ const getEventWithClosestTimestamp = (log, events) => {
   // eslint-disable-next-line no-restricted-syntax
   for (const event of events) {
     logger.logDebug(event.browsers);
-    const browserData = event.browsers[browser];
+    const browserData = event.browsers.find((browser) => browser.name === browserName);
     // eslint-disable-next-line no-continue
     if (!browserData || !browserData.timestamp) { continue; }
 
-    browserTimestamp = parseInt(browserData.timestamp, 10);
+    browserTimestamp = browserData.timestamp;
     if (Math.abs(timestamp - browserTimestamp) < closestTimestampDifference) {
       closestTimestampDifference = browserTimestamp;
       chosenEvent = event;
@@ -89,16 +90,17 @@ module.exports.writeResults = async (startDateTimestamp, startDateString, endDat
   const events = getEvents();
 
   logs.forEach((log) => {
+    logger.logDebug('Log', log);
     const chosenEvent = log.id ? getEventWithId(log.id, events) : getEventWithClosestTimestamp(log, events);
     if (!chosenEvent) {
       return;
     }
 
-    chosenEvent.browsers[log.browser].log = log;
+    chosenEvent.browsers.find((browser) => browser.name === log.browser).log = log;
     logger.logDebug('Modified chosen event', chosenEvent);
   });
 
-  logger.logEvent('Snapshot events', events);
+  logger.logInfo('Console logs compared with browser events...');
 
   const runPath = `${snapshotDestinationDir}/${startDateString}/run.json`;
   await writeFile(runPath, JSON.stringify({
