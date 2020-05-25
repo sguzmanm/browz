@@ -67,7 +67,7 @@ module.exports.sendConsoleLog = async (log) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: log,
+      body: JSON.stringify(log),
     };
 
     const response = await fetch('http://localhost:8081/logs', options);

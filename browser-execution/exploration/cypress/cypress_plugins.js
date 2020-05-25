@@ -83,7 +83,6 @@ module.exports = (on, config) => {
 
   require('cypress-log-to-output').install(on, (type, event) => {
     logger.logDebug(`Cypress event ${type}`)
-    logger.logDebug(event)
 
     if (type === 'browser') {
       fs.appendFile(LOG_FILENAME, `<p><strong>Browser event (source: ${event.source}): </strong>${event.text}</p>`, (err) => {

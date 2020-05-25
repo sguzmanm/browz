@@ -1,5 +1,7 @@
 require('dotenv').config();
 const express = require('express');
+const bodyParser = require('body-parser');
+
 const util = require('util');
 const fs = require('fs');
 
@@ -17,7 +19,10 @@ const logger = require('../../../shared/logger').newInstance('Snapshot Processor
 
 const snapshotDestinationDir = container && container.snapshotDestinationDir ? container.snapshotDestinationDir : '/tmp/runs';
 const port = snapshotProcessorServerConfig && snapshotProcessorServerConfig.port ? snapshotProcessorServerConfig.port : '8081';
+
 const app = express();
+app.use(bodyParser.json());
+
 
 const errorHandler = (err, req, res, next) => {
   if (res.headersSent) {
@@ -52,18 +57,24 @@ module.exports.start = (dateString) => {
 const getEventWithId = (id, events) => events.find((el) => el.id === id);
 
 const getEventWithClosestTimestamp = (log, events) => {
-  const { timestamp, browser } = log;
-  let closestTimestamp = 0;
+  const { browser } = log;
+  const timestamp = parseInt(log.timestamp, 10);
+  let closestTimestampDifference = timestamp;
   let chosenEvent;
+  let browserTimestamp;
 
+  logger.logDebug(log);
+  logger.logDebug(events);
   // eslint-disable-next-line no-restricted-syntax
   for (const event of events) {
+    logger.logDebug(event.browsers);
     const browserData = event.browsers[browser];
     // eslint-disable-next-line no-continue
     if (!browserData || !browserData.timestamp) { continue; }
 
-    if (Math.abs(timestamp - browserData.timestamp) < closestTimestamp) {
-      closestTimestamp = browserData.timestamp;
+    browserTimestamp = parseInt(browserData.timestamp, 10);
+    if (Math.abs(timestamp - browserTimestamp) < closestTimestampDifference) {
+      closestTimestampDifference = browserTimestamp;
       chosenEvent = event;
     }
   }
