@@ -13,4 +13,4 @@ module.exports.saveLog = (log) => {
   logs.push(log);
 };
 
-module.exports.logs = logs;
+module.exports.getLogs = () => logs;

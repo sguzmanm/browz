@@ -166,7 +166,9 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
   await makeIdComparison(id, event, requestData.dateString);
 };
 
-module.exports.writeResults = async (startDateTimestamp, startDateString, endDateString) => {
+module.exports.getEvents = () => events;
+
+module.exports.writeResults = async (logs, startDateTimestamp, startDateString, endDateString) => {
   const runPath = `${snapshotDestinationDir}/${startDateString}/run.json`;
   await writeFile(runPath, JSON.stringify({
     seed: containerConfig.seed,
