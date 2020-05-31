@@ -83,7 +83,6 @@ module.exports = (on, config) => {
 
   require('cypress-log-to-output').install(on, (type, event) => {
     logger.logDebug(`Cypress event ${type}`)
-    logger.logDebug(event)
 
     if (type === 'browser') {
       fs.appendFile(LOG_FILENAME, `<p><strong>Browser event (source: ${event.source}): </strong>${event.text}</p>`, (err) => {
@@ -95,6 +94,18 @@ module.exports = (on, config) => {
       fs.appendFile(LOG_FILENAME, `<p><strong>Console ${event.type} event. Trace: </strong>${(!!event.stackTrace) ? event.stackTrace.description : "none"}</p>`, (err) => {
         if (err) throw err
         logger.logDebug(`${currentBrowser}: Finished logging`)
+      })
+
+      // Send logs to snapshot client
+      Client.sendConsoleLog({
+        type: event.type,
+        timestamp: event.timestamp,
+        browser: currentBrowser,
+        message: event.args.map(arg => {
+          if (arg.type === "string") {
+            return arg.value
+          }
+        }).join("\n")
       })
     }
 

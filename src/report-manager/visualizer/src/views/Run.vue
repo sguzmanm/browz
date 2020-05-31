@@ -14,6 +14,8 @@
         <span><b>Seed:</b> 54319902875 </span>
         <span><b>Base browser:</b> {{ run.baseBrowser }} </span>
         <span><b>Browsers tested:</b> {{ testedBrowsers }} </span>
+        <label for="threshold-slider"> <b>Threshold:</b> {{threshold}}% </label>
+        <input id="threshold-slider" type="range" min="1" max="100" v-model="threshold"/>
       </div>
       <hr>
       <h2>Event list</h2>
@@ -23,18 +25,23 @@
           <div class="type column">Event type</div>
           <div class="mismatch column">Mismatch percentage (before)</div>
           <div class="mismatch column">Mismatch percentage (after)</div>
+          <div class="actions column">Actions</div>
         </div>
         <!-- eslint-disable-next-line max-len -->
         <div
           class="row-container event"
-          v-for="{ id: eventID, eventType, before, after } in run.events"
+          v-for="{ id: eventID, eventType, before, after, browsers } in run.events"
           :key="eventID"
-          @click="$router.push({ name: 'Event', params: { eventID }})"
         >
           <div class="id column">{{ eventID }}</div>
           <div class="type column">{{ eventType }}</div>
           <div :class="mismatchFormat(before)">{{ before }}%</div>
           <div :class="mismatchFormat(after)">{{ after }}%</div>
+          <div class="actions column">
+            <button @click="$router.push({ name: 'Event', params: { eventID, browsers }})">
+              <img src="icons/details.svg" alt="Details icon"/> Check
+            </button>
+          </div>
         </div>
       </div>
     </template>
@@ -49,6 +56,7 @@ export default {
       loading: true,
       run: null,
       error: null,
+      threshold: 10,
     };
   },
   computed: {
@@ -59,7 +67,7 @@ export default {
   methods: {
     mismatchFormat(rawPercentage) {
       const percentage = parseFloat(rawPercentage, 10);
-      if (percentage > 10) {
+      if (percentage > this.threshold) {
         return ['mismatch', 'column', 'over-threshold'];
       }
 
@@ -148,10 +156,6 @@ h2 {
   width: 100%;
 }
 
-.event {
-  cursor: pointer;
-}
-
 .event:hover {
   background-color: rgb(235, 235, 235);
 }
@@ -184,6 +188,25 @@ h2 {
 
 .mismatch {
   flex: 4;
+}
+
+.actions{
+  display:flex;
+  flex-direction: column;
+  flex:1;
+}
+
+.actions > button{
+  border:solid 1px black;
+  background: rgb(159, 211, 86);
+
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+
+  cursor:pointer;
 }
 
 .after {

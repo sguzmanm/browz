@@ -1,4 +1,3 @@
-require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
@@ -36,7 +35,7 @@ const removeActiveBrowser = (browser) => {
 
 // Maps to handle race condition of snapshot processor
 const timeoutMap = {}; // Map: Browser(String)->Function
-const imageMap = {}; // Map: Id(String)-> [Map:Browser(String)->Filenames(Array) ]
+const imageMap = {}; // Map: Id(String)-> [Map:Browser(String)->Object {timestamp:long,fileNames:Array} ]
 
 activeBrowsers.forEach((browser) => {
   timeoutMap[browser] = setTimeout(() => {
@@ -71,7 +70,7 @@ const compareSnapshots = async (original, modified, dateString) => {
 
 // Browser comparison of snapshots
 const compareBrowsers = async (snapshotMap, dateString) => {
-  const baseImages = snapshotMap[baseBrowser];
+  const baseImages = snapshotMap[baseBrowser].fileNames;
 
   try {
     const comparisonResults = activeBrowsers.map(async (browser) => {
@@ -80,7 +79,7 @@ const compareBrowsers = async (snapshotMap, dateString) => {
       }
 
       const stageResults = baseImages.map(async (baseBrowserImage, i) => {
-        const comparableBrowserImage = snapshotMap[browser][i];
+        const comparableBrowserImage = snapshotMap[browser].fileNames[i];
         await compareSnapshots(
           `${snapshotDestinationDir}/${dateString}/snapshots/${baseBrowserImage}`,
           `${snapshotDestinationDir}/${dateString}/snapshots/${comparableBrowserImage}`,
@@ -110,6 +109,10 @@ const makeIdComparison = async (id, event, dateString) => {
     eventType,
     eventName,
     timestamp: new Date().getTime(),
+    browsers: Object.keys(imageMap[id]).map((browser) => ({
+      name: browser,
+      timestamp: imageMap[id][browser].timestamp,
+    })),
   });
 };
 
@@ -156,19 +159,11 @@ module.exports.registerImage = async (imageRequestBody, requestData) => {
     imageMap[id] = {};
   }
 
-  imageMap[id][browser] = requestData.fileNames;
+  imageMap[id][browser] = {
+    timestamp: imageRequestBody.timestamp ? parseInt(imageRequestBody.timestamp, 10) : new Date().getTime(),
+    fileNames: requestData.fileNames,
+  };
   await makeIdComparison(id, event, requestData.dateString);
 };
 
-module.exports.writeResults = async (startDateTimestamp, startDateString, endDateString) => {
-  const runPath = `${snapshotDestinationDir}/${startDateString}/run.json`;
-  await writeFile(runPath, JSON.stringify({
-    seed: containerConfig.seed,
-    startDate: startDateString,
-    startTimestamp: startDateTimestamp,
-    endDate: endDateString,
-    baseBrowser,
-    browsers: config.browsers,
-    events,
-  }));
-};
+module.exports.getEvents = () => events;

@@ -1,14 +1,28 @@
 require('dotenv').config();
 const express = require('express');
+const bodyParser = require('body-parser');
+
+const util = require('util');
+const fs = require('fs');
+
+const writeFile = util.promisify(fs.writeFile);
 
 const { setDate, router } = require('./snapshot-router');
-const { writeResults } = require('./snapshot-comparator');
+const { getLogs } = require('./snapshot-log-storage');
+const { getEvents } = require('./snapshot-comparator');
 
-const { snapshotProcessorServerConfig } = require('../../../shared/config.js').getContainerConfig();
-const logger = require('../../../shared/logger').newInstance('Snapshot Processor Server');
 
+const {
+  snapshotProcessorServerConfig, container, baseBrowser, browsers,
+} = require('../../../shared/config.js').getContainerConfig();
+const logger = require('../../../shared/logger').newInstance('Snapshot Processor');
+
+const snapshotDestinationDir = container && container.snapshotDestinationDir ? container.snapshotDestinationDir : '/tmp/runs';
 const port = snapshotProcessorServerConfig && snapshotProcessorServerConfig.port ? snapshotProcessorServerConfig.port : '8081';
+
 const app = express();
+app.use(bodyParser.json());
+
 
 const errorHandler = (err, req, res, next) => {
   if (res.headersSent) {
@@ -40,4 +54,62 @@ module.exports.start = (dateString) => {
   });
 };
 
-module.exports.writeResults = writeResults;
+const getEventWithId = (id, events) => events.find((el) => el.id === id);
+
+const getEventWithClosestTimestamp = (log, events) => {
+  const timestamp = parseInt(log.timestamp, 10);
+  const browserName = log.browser;
+
+  let closestTimestampDifference = timestamp;
+  let chosenEvent;
+  let browserTimestamp;
+
+  logger.logDebug(log);
+  logger.logDebug(events);
+  // eslint-disable-next-line no-restricted-syntax
+  for (const event of events) {
+    logger.logDebug(event.browsers);
+    const browserData = event.browsers.find((browser) => browser.name === browserName);
+    // eslint-disable-next-line no-continue
+    if (!browserData || !browserData.timestamp) { continue; }
+
+    browserTimestamp = browserData.timestamp;
+    if (Math.abs(timestamp - browserTimestamp) < closestTimestampDifference) {
+      closestTimestampDifference = browserTimestamp;
+      chosenEvent = event;
+    }
+  }
+
+  logger.logDebug('Closest event to log', chosenEvent);
+
+  return chosenEvent;
+};
+
+module.exports.writeResults = async (startDateTimestamp, startDateString, endDateString) => {
+  const logs = getLogs();
+  const events = getEvents();
+
+  logs.forEach((log) => {
+    logger.logDebug('Log', log);
+    const chosenEvent = log.id ? getEventWithId(log.id, events) : getEventWithClosestTimestamp(log, events);
+    if (!chosenEvent) {
+      return;
+    }
+
+    chosenEvent.browsers.find((browser) => browser.name === log.browser).log = log;
+    logger.logDebug('Modified chosen event', chosenEvent);
+  });
+
+  logger.logInfo('Console logs compared with browser events...');
+
+  const runPath = `${snapshotDestinationDir}/${startDateString}/run.json`;
+  await writeFile(runPath, JSON.stringify({
+    seed: container.seed,
+    startDate: startDateString,
+    startTimestamp: startDateTimestamp,
+    endDate: endDateString,
+    baseBrowser: baseBrowser || 'chrome',
+    browsers,
+    events,
+  }));
+};

@@ -4,6 +4,7 @@
   "description": "",
   "main": "main.js",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "cypress": "^4.2.0",
     "cypress-log-to-output": "^1.0.8",
     "cypress-plugin-tab": "^1.0.5",
