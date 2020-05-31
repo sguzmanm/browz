@@ -54,8 +54,6 @@ module.exports.start = (dateString) => {
   });
 };
 
-const getEventWithId = (id, events) => events.find((el) => el.id === id);
-
 const getEventWithClosestTimestamp = (log, events) => {
   const timestamp = parseInt(log.timestamp, 10);
   const browserName = log.browser;
@@ -91,7 +89,7 @@ module.exports.writeResults = async (startDateTimestamp, startDateString, endDat
 
   logs.forEach((log) => {
     logger.logDebug('Log', log);
-    const chosenEvent = log.id ? getEventWithId(log.id, events) : getEventWithClosestTimestamp(log, events);
+    const chosenEvent = getEventWithClosestTimestamp(log, events); // TODO: Make more general solution
     if (!chosenEvent) {
       return;
     }

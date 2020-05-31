@@ -105,7 +105,7 @@ module.exports = (on, config) => {
           if (arg.type === "string") {
             return arg.value
           }
-        }).join("\n")
+        })
       })
     }
 
