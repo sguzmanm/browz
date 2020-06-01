@@ -14,7 +14,7 @@ const getBrowser = (path) => {
 
 module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
   const { path: beforePath } = beforeSnapshot;
-  const { path: afterPath } = afterSnapshot;
+  const { path: afterPath, takenAt } = afterSnapshot;
 
   const [id, eventType, event] = beforePath.split('/')[beforePath.split('/').length - 1].split('.')[0].split('-');
   const browser = getBrowser(beforePath);
@@ -31,7 +31,7 @@ module.exports.sendSnapshot = async ([beforeSnapshot, afterSnapshot]) => {
     form.append('id', id);
     form.append('eventType', eventType);
     form.append('eventName', event);
-    form.append('timestamp', new Date().getTime());
+    form.append('timestamp', new Date(takenAt).getTime());
 
     form.append('before', beforeImage, { contentType: 'image/png', filename: 'before.png' });
     form.append('after', afterImage, { contentType: 'image/png', filename: 'after.png' });

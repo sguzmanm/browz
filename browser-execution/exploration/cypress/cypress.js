@@ -43,6 +43,7 @@ const browserOptions = (browser) => {
     screenshotsFolder: path(`runs/${dateString}/${browser}/screenshots`),
     env: {
       seed: containerConfig.seed,
+      events: containerConfig.numEvents,
     },
   };
 

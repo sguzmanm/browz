@@ -24,6 +24,7 @@
     "branch": "master"
   },
   "browserWaitingResponseTime": "15000",
+  "numEvents": 30,
   "seed": "3120531319383398",
   "resemble": {
     "output": {

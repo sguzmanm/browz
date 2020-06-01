@@ -45,7 +45,7 @@ const moveReportSnapshots = async (imagesDestination, runsPath) => {
   return movedFiles;
 };
 
-const getLatestRun = async (runsPath, resultFiles) => {
+const getLatestRun = async (appDirname, runsPath, resultFiles) => {
   let runContent;
   let latestTimestamp = 0;
   let latestRun;
@@ -60,11 +60,16 @@ const getLatestRun = async (runsPath, resultFiles) => {
     }
   }
 
+  // Set app dirname
+  latestRun.appDirname = appDirname;
+
   logger.logDebug('Latest run', latestRun, latestTimestamp);
+  await writeFile(`${runsPath}/${latestRun}/run.json`, JSON.stringify(latestRun));
+
   return latestRun;
 };
 
-module.exports.createReportData = async (imagesDestination) => {
+module.exports.createReportData = async (appDirname, imagesDestination) => {
   try {
     const runsPath = `${visualizerPath}/runs`;
     const isRunVisualizerDirCreated = await existsFile(runsPath);
@@ -92,7 +97,7 @@ module.exports.createReportData = async (imagesDestination) => {
 
     await writeFile(`${runsPath}/runs.json`, JSON.stringify(runs));
 
-    const latestRun = await getLatestRun(runsPath, resultFiles);
+    const latestRun = await getLatestRun(appDirname, runsPath, resultFiles);
     return latestRun;
   } catch (e) {
     logger.logError(`Error moving report files: ${e}`);

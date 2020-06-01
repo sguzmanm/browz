@@ -103,6 +103,7 @@ module.exports.writeResults = async (startDateTimestamp, startDateString, endDat
   const runPath = `${snapshotDestinationDir}/${startDateString}/run.json`;
   await writeFile(runPath, JSON.stringify({
     seed: container.seed,
+    numEvents: container.numEvents ? container.numEvents : 30,
     startDate: startDateString,
     startTimestamp: startDateTimestamp,
     endDate: endDateString,
