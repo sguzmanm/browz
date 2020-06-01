@@ -42,6 +42,6 @@ h2, h3, h4 ,h5, h6 {
 }
 
 h2 {
-  font-size: 1.8rem;
+  font-size: 2.32rem;
 }
 </style>
