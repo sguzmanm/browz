@@ -72,7 +72,7 @@ const main = async () => {
     logger.logInfo('----Run Container-------');
     await runDocker(httpSource, imagesDestination, logger.level);
     logger.logInfo('-----Create Report--------');
-    const latestRun = await createReportData(imagesDestination);
+    const latestRun = await createReportData(httpSource, imagesDestination);
     logger.logInfo('-----Stop docker container-------');
     await finishProcess(true);
 

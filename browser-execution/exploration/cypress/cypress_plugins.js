@@ -104,7 +104,7 @@ module.exports = (on, config) => {
             return arg.value
           }
 
-          return JSON.stringify(arg.value)
+          return JSON.stringify(arg.value ? arg.value : arg)
         })
       }
 
@@ -112,7 +112,7 @@ module.exports = (on, config) => {
         type: event.type,
         timestamp: event.timestamp,
         browser: currentBrowser,
-        message: logArgs
+        messages: logArgs
       })
     }
 
