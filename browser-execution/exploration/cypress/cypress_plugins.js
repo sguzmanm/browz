@@ -97,15 +97,22 @@ module.exports = (on, config) => {
       })
 
       // Send logs to snapshot client
+      let logArgs = [];
+      if (event.args) {
+        logArgs = event.args.map(arg => {
+          if (arg.type === "string") {
+            return arg.value
+          }
+
+          return JSON.stringify(arg.value)
+        })
+      }
+
       Client.sendConsoleLog({
         type: event.type,
         timestamp: event.timestamp,
         browser: currentBrowser,
-        message: event.args.map(arg => {
-          if (arg.type === "string") {
-            return arg.value
-          }
-        })
+        message: logArgs
       })
     }
 
