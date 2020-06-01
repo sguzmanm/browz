@@ -125,6 +125,7 @@ module.exports.visualize = (currentRun = '') => {
   });
 
   server.listen(port, () => {
-    logger.logInfo(`Visualizer Server started on http://localhost:${port}/${currentRun !== '' ? `#/run/${currentRun}` : ''}`);
+    const visualizerURL = `http://localhost:${port}/${currentRun !== '' ? `#/run/${currentRun}` : ''}`;
+    logger.logInfo(`Visualizer Server started on ${logger.underline(visualizerURL)}`);
   });
 };

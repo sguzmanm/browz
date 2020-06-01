@@ -61,6 +61,8 @@ const logError = (context, ...messages) => {
   console.error(`${context}>>[ERROR]:${getMessage(messages)}`);
 };
 
+const underline = (...messages) => messages.map((message) => `\u001B[4m${message}\u001B[24m`).join('\n');
+
 module.exports.newInstance = (context) => {
   const loggingContext = context || 'Default';
 
@@ -71,5 +73,6 @@ module.exports.newInstance = (context) => {
     logInfo: (...messages) => (level <= INFO ? logInfo(loggingContext, ...messages) : undefined),
     logWarning: (...messages) => (level <= WARNING ? logWarning(loggingContext, ...messages) : undefined),
     logError: (...messages) => (level <= ERROR ? logError(loggingContext, ...messages) : undefined),
+    underline,
   };
 };
