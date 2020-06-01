@@ -38,7 +38,7 @@ export default {
   data() {
     return {
       loading: true,
-      runs: {},
+      runs: [],
       error: null,
     };
   },
@@ -46,7 +46,13 @@ export default {
     async loadRunData() {
       try {
         const response = await fetch('runs/runs.json');
-        this.runs = await response.json();
+        const { runs } = await response.json();
+
+        runs.forEach(async (run) => {
+          const runResponse = await fetch(`runs/${run}/run.json`);
+          this.runs.push(await runResponse.json());
+          this.$forceUpdate();
+        });
       } catch (error) {
         console.error(error);
         this.error = error;
