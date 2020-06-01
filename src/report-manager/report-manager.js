@@ -64,11 +64,11 @@ const getLatestRun = async (appDirname, runsPath, resultFiles) => {
 
   // Set app dirname
   latestRun.appDirname = appDirname;
-  logger.logDebug('Latest run', latestRun);
+  logger.logDebug('Latest run', latestRunDate, latestRun.startDate, latestRun.appDirname);
 
   await writeFile(`${runsPath}/${latestRunDate}/run.json`, JSON.stringify(latestRun));
 
-  return latestRun;
+  return latestRunDate;
 };
 
 module.exports.createReportData = async (appDirname, imagesDestination) => {
@@ -125,6 +125,7 @@ module.exports.visualize = (currentRun = '') => {
   });
 
   server.listen(port, () => {
-    logger.logInfo(`Visualizer Server started on http://localhost:${port}/${currentRun !== '' ? `#/run/${currentRun}` : ''}`);
+    const visualizerURL = `http://localhost:${port}/${currentRun !== '' ? `#/run/${currentRun}` : ''}`;
+    logger.logInfo(`Visualizer Server started on ${logger.underline(visualizerURL)}`);
   });
 };

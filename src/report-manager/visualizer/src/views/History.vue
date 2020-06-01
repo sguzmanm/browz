@@ -9,14 +9,24 @@
     </div>
     <template v-else>
       <h2>Run history</h2>
-      <div class="run-list-container">
+      <span>Here will be displayed all the cross-browser test runs that are stored locally</span>
+      <div class="run-list-table">
+        <div class="run-list-row">
+          <span class="table-header date-cell">Date</span>
+          <span class="table-header path-cell">Built files path</span>
+        </div>
         <div
-          class="run-container"
+          class="run-list-row"
           v-for="run in runs.runs"
           :key="run"
           @click="$router.push({ name: 'Run', params: { run } })"
         >
-          {{ run }}
+          <div class="date-cell">
+            {{ run }}
+          </div>
+          <div class="path-cell">
+            xddd
+          </div>
         </div>
       </div>
     </template>
@@ -56,25 +66,58 @@ export default {
 </script>
 
 <style scoped>
-.run-list-container {
+.history-container{
+  padding: 0 64px;
+  padding-top: 32px;
+  min-width: 64vw;
+}
+
+.run-list-table {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  margin-top: 16px;
+  margin-bottom: 32px;
 }
 
-.run-container {
+.run-list-row {
   display: flex;
   flex-direction: row;
-  margin: 0px;
-  padding: 4px;
-  border: 1px solid lightblue;
-  border-width: 1px 0;
+  justify-content: space-around;
+  align-items: center;
   cursor: pointer;
   width: 100%;
+  background-color: white;
+  padding: 4px 0;
+  transition: 0.16s all ease-in-out;
 }
 
-.run-container:hover {
-  background-color: lightgray;
+.run-list-row:nth-of-type(2n) {
+  background-color: rgb(226, 226, 226);
+}
+
+.run-list-row:hover {
+  background-color: rgb(163, 187, 221);
+}
+
+.run-list-row:first-of-type:hover {
+  background-color: white;
+  cursor: auto;
+}
+
+.table-header {
+  font-weight: bold;
+  text-align: center;
+}
+
+.date-cell {
+  flex: 2;
+  padding: 0 24px;
+}
+
+.path-cell {
+  flex: 4;
+  padding: 0 24px;
 }
 </style>

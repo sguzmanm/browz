@@ -62,11 +62,8 @@ const getEventWithClosestTimestamp = (log, events) => {
   let chosenEvent;
   let browserTimestamp;
 
-  logger.logDebug(log);
-  logger.logDebug(events);
   // eslint-disable-next-line no-restricted-syntax
   for (const event of events) {
-    logger.logDebug(event.browsers);
     const browserData = event.browsers.find((browser) => browser.name === browserName);
     // eslint-disable-next-line no-continue
     if (!browserData || !browserData.timestamp) { continue; }
@@ -77,8 +74,6 @@ const getEventWithClosestTimestamp = (log, events) => {
       chosenEvent = event;
     }
   }
-
-  logger.logDebug('Closest event to log', chosenEvent);
 
   return chosenEvent;
 };
@@ -99,13 +94,12 @@ module.exports.writeResults = async (startDateTimestamp, startDateString, endDat
 
     logsOutput[browser].push(storedLog);
 
-    const chosenEvent = getEventWithClosestTimestamp(log, events); // TODO: Make more general solution
+    const chosenEvent = getEventWithClosestTimestamp(log, events); // TODO:Make more generalsolution
     if (!chosenEvent) {
       return;
     }
 
     chosenEvent.browsers.find((eventBrowser) => eventBrowser.name === browser).log = log;
-    logger.logDebug('Modified chosen event', chosenEvent);
   });
 
   logger.logInfo('Console logs compared with browser events...');

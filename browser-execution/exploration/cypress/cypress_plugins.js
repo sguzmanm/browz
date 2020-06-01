@@ -104,7 +104,7 @@ module.exports = (on, config) => {
             return arg.value
           }
 
-          return JSON.stringify(arg.value)
+          return JSON.stringify(arg.value ? arg.value : arg)
         })
       }
 
