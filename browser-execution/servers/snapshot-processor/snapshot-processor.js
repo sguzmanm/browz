@@ -87,21 +87,31 @@ module.exports.writeResults = async (startDateTimestamp, startDateString, endDat
   const logs = getLogs();
   const events = getEvents();
 
+  const logsOutput = {}; // Store the whole output of te different browsers
+
   logs.forEach((log) => {
-    logger.logDebug('Log', log);
+    const { browser, messages, ...storedLog } = log;
+    storedLog.message = messages.join('\n');
+
+    if (!logsOutput[browser]) {
+      logsOutput[browser] = [];
+    }
+
+    logsOutput[browser].push(storedLog);
+
     const chosenEvent = getEventWithClosestTimestamp(log, events); // TODO: Make more general solution
     if (!chosenEvent) {
       return;
     }
 
-    chosenEvent.browsers.find((browser) => browser.name === log.browser).log = log;
+    chosenEvent.browsers.find((eventBrowser) => eventBrowser.name === browser).log = log;
     logger.logDebug('Modified chosen event', chosenEvent);
   });
 
   logger.logInfo('Console logs compared with browser events...');
 
-  const runPath = `${snapshotDestinationDir}/${startDateString}/run.json`;
-  await writeFile(runPath, JSON.stringify({
+  const runBasePath = `${snapshotDestinationDir}/${startDateString}`;
+  await writeFile(`${runBasePath}/run.json`, JSON.stringify({
     seed: container.seed,
     numEvents: container.numEvents ? container.numEvents : 30,
     startDate: startDateString,
@@ -111,4 +121,6 @@ module.exports.writeResults = async (startDateTimestamp, startDateString, endDat
     browsers,
     events,
   }));
+
+  await writeFile(`${runBasePath}/log.json`, JSON.stringify(logsOutput));
 };

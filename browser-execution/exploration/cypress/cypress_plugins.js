@@ -112,7 +112,7 @@ module.exports = (on, config) => {
         type: event.type,
         timestamp: event.timestamp,
         browser: currentBrowser,
-        message: logArgs
+        messages: logArgs
       })
     }
 

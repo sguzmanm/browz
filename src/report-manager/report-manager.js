@@ -48,6 +48,7 @@ const moveReportSnapshots = async (imagesDestination, runsPath) => {
 const getLatestRun = async (appDirname, runsPath, resultFiles) => {
   let runContent;
   let latestTimestamp = 0;
+  let latestRunDate;
   let latestRun;
 
   for (let i = 0; i < resultFiles.length; i += 1) {
@@ -55,16 +56,17 @@ const getLatestRun = async (appDirname, runsPath, resultFiles) => {
     runContent = await readFile(`${runsPath}/${resultFiles[i]}/run.json`);
     runContent = JSON.parse(runContent);
     if (parseInt(runContent.startTimestamp, 10) > latestTimestamp) {
-      latestRun = resultFiles[i];
+      latestRun = runContent;
+      latestRunDate = resultFiles[i];
       latestTimestamp = runContent.startTimestamp;
     }
   }
 
   // Set app dirname
   latestRun.appDirname = appDirname;
+  logger.logDebug('Latest run', latestRun);
 
-  logger.logDebug('Latest run', latestRun, latestTimestamp);
-  await writeFile(`${runsPath}/${latestRun}/run.json`, JSON.stringify(latestRun));
+  await writeFile(`${runsPath}/${latestRunDate}/run.json`, JSON.stringify(latestRun));
 
   return latestRun;
 };
