@@ -108,10 +108,10 @@ const makeIdComparison = async (id, event, dateString) => {
     id,
     eventType,
     eventName,
-    timestamp: new Date().getTime(),
+    comparisonTimestamp: new Date().getTime(),
     browsers: Object.keys(imageMap[id]).map((browser) => ({
       name: browser,
-      timestamp: imageMap[id][browser].timestamp,
+      sentSnapshotTimestamp: imageMap[id][browser].timestamp,
     })),
   });
 };

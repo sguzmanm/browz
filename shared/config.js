@@ -18,7 +18,7 @@ const defaultConfig = {
         green: 0,
         blue: 255,
       },
-      errorType: 'movement',
+      errorType: 'flat',
       transparency: 0.6,
       largeImageThreshold: 0,
       outputDiff: true,

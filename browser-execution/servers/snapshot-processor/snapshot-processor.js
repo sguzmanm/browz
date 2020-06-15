@@ -13,7 +13,7 @@ const { getEvents } = require('./snapshot-comparator');
 
 
 const {
-  snapshotProcessorServerConfig, container, baseBrowser, browsers,
+  snapshotProcessorServerConfig, container, baseBrowser, browsers, resemble,
 } = require('../../../shared/config.js').getContainerConfig();
 const logger = require('../../../shared/logger').newInstance('Snapshot Processor');
 
@@ -114,6 +114,9 @@ module.exports.writeResults = async (startDateTimestamp, startDateString, endDat
     baseBrowser: baseBrowser || 'chrome',
     browsers,
     events,
+    runDetails: {
+      resemble,
+    },
   }));
 
   await writeFile(`${runBasePath}/log.json`, JSON.stringify(logsOutput));
