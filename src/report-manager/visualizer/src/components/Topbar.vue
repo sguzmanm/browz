@@ -33,8 +33,18 @@ export default {
         this.breadcrumbLevels = [];
         return;
       }
+
       if (name === 'Run') {
         this.breadcrumbLevels = ['Run history', this.$route.params.run];
+        return;
+      }
+
+      if (name === 'Event') {
+        this.breadcrumbLevels = [
+          'Run history',
+          this.$route.params.run,
+          `Event #${this.$route.params.eventID}`,
+        ];
       }
     },
   },
@@ -67,7 +77,7 @@ h1 {
   margin-top: 32px;
   margin-bottom: 0;
   color: whitesmoke;
-  font-size: 2.4rem;
+  font-size: 2.48rem;
 }
 
 .breadcrumb-container {

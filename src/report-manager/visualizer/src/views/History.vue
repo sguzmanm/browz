@@ -17,15 +17,15 @@
         </div>
         <div
           class="run-list-row"
-          v-for="run in runs.runs"
-          :key="run"
-          @click="$router.push({ name: 'Run', params: { run } })"
+          v-for="run in runs"
+          :key="run.startDate"
+          @click="$router.push({ name: 'Run', params: { run: run.startDate } })"
         >
           <div class="date-cell">
-            {{ run }}
+            {{ run.startDate }}
           </div>
           <div class="path-cell">
-            xddd
+            {{ run.appDirname }}
           </div>
         </div>
       </div>
@@ -75,7 +75,7 @@ export default {
 .history-container{
   padding: 0 64px;
   padding-top: 32px;
-  min-width: 64vw;
+  min-width: 80vw;
 }
 
 .run-list-table {
@@ -118,7 +118,7 @@ export default {
 }
 
 .date-cell {
-  flex: 2;
+  flex: 1;
   padding: 0 24px;
 }
 

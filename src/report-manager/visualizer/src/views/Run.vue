@@ -8,40 +8,44 @@
       <button @click="rertyLoading">Retry</button>
     </div>
     <template v-else>
+      <h2>Run details</h2>
       <div class="run-info">
-        <span><b>Run start date:</b> {{ run.startDate }} </span>
-        <span><b>Run end date:</b> {{ run.endDate }} </span>
-        <span><b>Seed:</b> 54319902875 </span>
-        <span><b>Base browser:</b> {{ run.baseBrowser }} </span>
-        <span><b>Browsers tested:</b> {{ testedBrowsers }} </span>
-        <label for="threshold-slider"> <b>Threshold:</b> {{threshold}}% </label>
-        <input id="threshold-slider" type="range" min="1" max="100" v-model="threshold"/>
+        <div class="detials-card"><b>Run start date:</b> {{ run.startDate }} </div>
+        <div class="detials-card"><b>Run end date:</b> {{ run.endDate }} </div>
+        <div class="detials-card"><b>Seed:</b> 54319902875 </div>
+        <div class="detials-card"><b>Base browser:</b> {{ run.baseBrowser }} </div>
+        <div class="detials-card"><b>Browsers tested:</b> {{ testedBrowsers }} </div>
       </div>
-      <hr>
-      <h2>Event list</h2>
+      <h2>Logs</h2>
+      <div @click="showLogs = !showLogs" class="log-show-button">
+        <i class="material-icons">{{ showLogs ? 'expand_less' : 'expand_more' }}</i>
+        {{ showLogs ? 'Hide' : 'Show' }} {{ logs && logs.chrome && logs.chrome.length }} log lines
+      </div>
+      <div class="log-container" v-if="showLogs">
+        <div v-for="(log, i) in logs.chrome" :key="log.timestamp" class="log-line">
+          {{ i+1 }} {{ log.message }}
+        </div>
+      </div>
+      <h2>Events</h2>
+      <label for="threshold-slider"> <b>Alert threshold:</b> {{threshold}}% </label>
+      <input id="threshold-slider" type="range" step="0.05" min="0" max="100" v-model="threshold"/>
       <div class="test-table">
-        <div class="row-container">
+        <div class="row-container header">
           <div class="id column">Event ID</div>
           <div class="type column">Event type</div>
           <div class="mismatch column">Mismatch percentage (before)</div>
           <div class="mismatch column">Mismatch percentage (after)</div>
-          <div class="actions column">Actions</div>
         </div>
-        <!-- eslint-disable-next-line max-len -->
         <div
           class="row-container event"
           v-for="{ id: eventID, eventType, before, after, browsers } in run.events"
+          @click="$router.push({ name: 'Event', params: { eventID, browsers }})"
           :key="eventID"
         >
           <div class="id column">{{ eventID }}</div>
           <div class="type column">{{ eventType }}</div>
           <div :class="mismatchFormat(before)">{{ before }}%</div>
           <div :class="mismatchFormat(after)">{{ after }}%</div>
-          <div class="actions column">
-            <button @click="$router.push({ name: 'Event', params: { eventID, browsers }})">
-              <img src="icons/details.svg" alt="Details icon"/> Check
-            </button>
-          </div>
         </div>
       </div>
     </template>
@@ -57,6 +61,8 @@ export default {
       run: null,
       error: null,
       threshold: 10,
+      showLogs: false,
+      logs: [],
     };
   },
   computed: {
@@ -95,6 +101,9 @@ export default {
           } catch (error) {
             console.error(`Error fetching event[${eventID}] details: `, error);
           }
+
+          const logResponse = await fetch(`runs/${run}/log.json`);
+          this.logs = await logResponse.json();
         });
       } catch (error) {
         console.error(error);
@@ -117,27 +126,54 @@ export default {
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
+  padding: 0 64px;
+  padding-top: 32px;
 }
 
-h1 {
-  margin: 8px 0;
-  font-size: 2.32rem;
+h2 {
+  margin-bottom: 16px;
 }
 
 .run-info {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
-  font-size: 1.2rem;
+}
+
+.detials-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 16px 32px;
+}
+
+.detials-card:first-of-type {
+  margin-left: 0;
+}
+
+
+.log-show-button {
+  text-decoration: underline;
+  margin-bottom: 16px;
+}
+
+.log-container {
+  margin-bottom: 16px;
+}
+
+.log-line {
+  background-color: rgb(42, 42, 42);
+  color: whitesmoke;
 }
 
 hr {
   width: 100%;
 }
 
-h2 {
-  margin: 8px 0 16px 0;
+input {
+  margin-bottom: 16px;
 }
 
 .test-table {
@@ -154,6 +190,11 @@ h2 {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  cursor: pointer;
+}
+
+.row-container.header .column {
+  font-weight: bold;
 }
 
 .event:hover {
@@ -165,13 +206,13 @@ h2 {
   flex-direction: column;
   justify-content: center;
   align-self: stretch;
-  border: 1px solid lightgray;
   padding: 8px;
   border-bottom: 0;
+  text-align: center;
 }
 
-.row-container:last-of-type .column {
-  border-bottom: 1px solid lightgray;
+.row-container:first-of-type .column {
+  cursor: auto;
 }
 
 .id {
