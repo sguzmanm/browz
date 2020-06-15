@@ -6,6 +6,11 @@ const { setLevelWithFlags, newInstance } = require('../shared/logger');
 
 const flags = process.argv.filter((el) => el.startsWith('--'));
 setLevelWithFlags(flags);
+const shouldSkipVisualization = flags.includes('--skip-report');
+const shouldOnlyVisualize = flags.includes('--visualize');
+
+const executionArguments = process.argv.filter((el) => !el.startsWith('--')); // Filter flags
+
 const logger = newInstance();
 
 // Two main params, http source and image destination
@@ -16,6 +21,10 @@ const { createReportData, visualize } = require('../src/report-manager/report-ma
 const EMPTY_DIR_MSG = 'Empty dir provided for server:';
 
 const parseSource = (rawSource) => {
+  if (shouldOnlyVisualize) {
+    return rawSource;
+  }
+
   if (rawSource.startsWith('/')) { // TODO: Define absolute path for windows
     return rawSource; // Absolute path
   }
@@ -23,9 +32,8 @@ const parseSource = (rawSource) => {
   return `${process.cwd()}/${rawSource}`;
 };
 
-const executionArguments = process.argv.filter((el) => !el.startsWith('--')); // Filter flags
 const rawHttpSource = executionArguments[2];
-if (!rawHttpSource || rawHttpSource.trim() === '') {
+if (!shouldOnlyVisualize && (!rawHttpSource || rawHttpSource.trim() === '')) {
   // eslint-disable-next-line no-undef
   logger.logError(EMPTY_DIR_MSG, 'Http');
   process.exit(1);
@@ -45,8 +53,6 @@ if (!imagesDestination || imagesDestination.trim() === '') {
   }
 }
 
-const shouldSkipVisualization = flags.includes('--skip-report');
-const shouldOnlyVisualize = flags.includes('--visualize');
 
 const finishProcess = async (success) => {
   try {
