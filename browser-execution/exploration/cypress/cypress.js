@@ -51,6 +51,7 @@ const browserOptions = (browser) => {
     browser,
     config,
     ...baseOptions,
+    port: 9222,
   };
 };
 
@@ -58,7 +59,7 @@ module.exports.cypressHandler = async () => {
   logger.logInfo('Starting cypress exploration...');
 
   const cypressRuns = [
-    Cypress.run(browserOptions('chrome')),
+    // Cypress.run(browserOptions('chrome')),
     Cypress.run(browserOptions('firefox')),
   ];
 
