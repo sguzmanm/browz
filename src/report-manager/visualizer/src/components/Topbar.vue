@@ -66,7 +66,7 @@ export default {
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding: 0 64px;
+  padding: 0 32px;
   background: linear-gradient(20deg, #2B32B2, #1488CC);
   padding-bottom: 32px;
   transition: all 0.5s;

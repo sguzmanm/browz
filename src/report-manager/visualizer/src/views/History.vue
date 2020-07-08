@@ -73,7 +73,7 @@ export default {
 
 <style scoped>
 .history-container{
-  padding: 0 64px;
+  padding: 0 32px;
   padding-top: 32px;
   min-width: 80vw;
 }
