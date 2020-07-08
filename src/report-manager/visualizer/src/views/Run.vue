@@ -8,24 +8,35 @@
       <button @click="rertyLoading">Retry</button>
     </div>
     <template v-else>
+
       <h2>Run details</h2>
       <div class="run-info">
         <div class="detials-card"><b>Run start date:</b> {{ run.startDate }} </div>
         <div class="detials-card"><b>Run end date:</b> {{ run.endDate }} </div>
         <div class="detials-card"><b>Seed:</b> 54319902875 </div>
+        <div class="detials-card"><b>Events to be tried:</b> {{ run.numEvents }} </div>
         <div class="detials-card"><b>Base browser:</b> {{ run.baseBrowser }} </div>
         <div class="detials-card"><b>Browsers tested:</b> {{ testedBrowsers }} </div>
       </div>
+
       <h2>Logs</h2>
-      <div @click="showLogs = !showLogs" class="log-show-button">
-        <i class="material-icons">{{ showLogs ? 'expand_less' : 'expand_more' }}</i>
-        {{ showLogs ? 'Hide' : 'Show' }} {{ logs && logs.chrome && logs.chrome.length }} log lines
-      </div>
-      <div class="log-container" v-if="showLogs">
-        <div v-for="(log, i) in logs.chrome" :key="log.timestamp" class="log-line">
-          {{ i+1 }} {{ log.message }}
+      <template v-if="logs && logs.chrome && logs.chrome.length > 0">
+        <div @click="showLogs = !showLogs" class="log-show-button">
+          <i :class="['material-icons', showLogs && 'rotated']">expand_more</i>
+          <span>{{ showLogs ? 'Hide' : 'Show' }} {{ logs.chrome.length }} log line{{ logs.chrome.length > 1 ? 's' : '' }}</span>
         </div>
+        <transition name="grow">
+          <div class="log-container" v-if="showLogs">
+            <div v-for="(log, i) in logs.chrome" :key="log.timestamp" class="log-line">
+              {{ i+1 }} {{ log.message }}
+            </div>
+          </div>
+        </transition>
+      </template>
+      <div class="log-container" v-else>
+        There are no logs for this run
       </div>
+
       <h2>Events</h2>
       <label for="threshold-slider"> <b>Alert threshold:</b> {{threshold}}% </label>
       <input id="threshold-slider" type="range" step="0.05" min="0" max="100" v-model="threshold"/>
@@ -48,6 +59,7 @@
           <div :class="mismatchFormat(after)">{{ after }}%</div>
         </div>
       </div>
+
     </template>
   </div>
 </template>
@@ -88,7 +100,7 @@ export default {
       try {
         const response = await fetch(`runs/${run}/run.json`);
         this.run = await response.json();
-        this.run.events.forEach(async ({ id: eventID }, i) => {
+        await Promise.all(this.run.events.map(async ({ id: eventID }, i) => {
           try {
             const beforeResponse = await fetch(`runs/${run}/snapshots/${eventID}/comparison_before.json`);
             const afterResponse = await fetch(`runs/${run}/snapshots/${eventID}/comparison_after.json`);
@@ -97,14 +109,13 @@ export default {
 
             this.run.events[i].before = before.resemble.misMatchPercentage;
             this.run.events[i].after = after.resemble.misMatchPercentage;
-            this.$forceUpdate(); // TODO improve, this is machete
           } catch (error) {
             console.error(`Error fetching event[${eventID}] details: `, error);
           }
 
           const logResponse = await fetch(`runs/${run}/log.json`);
           this.logs = await logResponse.json();
-        });
+        }));
       } catch (error) {
         console.error(error);
         this.error = error;
@@ -126,7 +137,7 @@ export default {
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
-  padding: 0 64px;
+  padding: 0 32px;
   padding-top: 32px;
 }
 
@@ -139,6 +150,8 @@ h2 {
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
+  flex-wrap: wrap;
+  margin-left: -32px;
 }
 
 .detials-card {
@@ -149,18 +162,31 @@ h2 {
   margin: 16px 32px;
 }
 
-.detials-card:first-of-type {
-  margin-left: 0;
+.log-show-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 16px;
+  cursor: pointer;
 }
 
+.log-show-button .material-icons {
+  font-size: 1.64rem;
+  transition: 0.64s all;
+}
 
-.log-show-button {
+.log-show-button .material-icons.rotated {
+  transform: rotate(180deg);
+}
+
+.log-show-button span {
   text-decoration: underline;
-  margin-bottom: 16px;
 }
 
 .log-container {
   margin-bottom: 16px;
+  max-height: 10000px;
 }
 
 .log-line {
@@ -256,5 +282,19 @@ input {
 
 .over-threshold {
   background-color: rgb(255, 158, 158);
+}
+
+/* Transitions */
+.grow-enter-active, .grow-leave-active {
+  transition: all 0.48s ease-in-out;
+}
+
+.grow-enter, .grow-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.grow-enter-to, .grow-leave {
+  max-height: calc(100vh - 400px);
 }
 </style>

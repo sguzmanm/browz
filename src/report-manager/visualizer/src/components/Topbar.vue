@@ -8,9 +8,9 @@
           :key="level"
           class="breadcrumb-item"
         >
-          <div class="breadcrumb-text">
+          <a @click="handleBreadcrumbItemClick(index)" class="breadcrumb-text">
             {{ level }}
-          </div>
+          </a>
           <div class="breadcrumb-separator" v-if="index != breadcrumbLevels.length - 1"> > </div>
         </div>
       </div>
@@ -23,6 +23,7 @@ export default {
   data() {
     return {
       breadcrumbLevels: [],
+      currentRun: '',
     };
   },
   methods: {
@@ -35,16 +36,39 @@ export default {
       }
 
       if (name === 'Run') {
-        this.breadcrumbLevels = ['Run history', this.$route.params.run];
+        this.currentRun = this.$route.params.run;
+        this.breadcrumbLevels = ['Run history', this.currentRun];
         return;
       }
 
       if (name === 'Event') {
+        this.currentRun = this.$route.params.run;
+        this.currentEvent = this.$route.params.eventID;
         this.breadcrumbLevels = [
           'Run history',
           this.$route.params.run,
           `Event #${this.$route.params.eventID}`,
         ];
+      }
+    },
+    handleBreadcrumbItemClick(index) {
+      if (index + 1 === this.breadcrumbLevels.length) {
+        return;
+      }
+
+      switch (index) {
+        case 0:
+          this.$router.push({ name: 'History' });
+          break;
+        case 1:
+          this.$router.push({ name: 'Run', params: { run: this.currentRun } });
+          break;
+        case 2:
+          this.$router.push({ name: 'Event', params: { run: this.currentRun, eventID: this.currentEvent } });
+          break;
+        default:
+          console.error('Unexpected breadcrumb state');
+          break;
       }
     },
   },
