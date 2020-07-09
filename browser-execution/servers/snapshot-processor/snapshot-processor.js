@@ -55,6 +55,8 @@ module.exports.start = (dateString) => {
 };
 
 const getEventWithClosestTimestamp = (log, events) => {
+  console.log('LOG', log, events.length);
+
   const timestamp = parseInt(log.timestamp, 10);
   const browserName = log.browser;
 
@@ -66,9 +68,9 @@ const getEventWithClosestTimestamp = (log, events) => {
   for (const event of events) {
     const browserData = event.browsers.find((browser) => browser.name === browserName);
     // eslint-disable-next-line no-continue
-    if (!browserData || !browserData.timestamp) { continue; }
+    if (!browserData || !browserData.sentSnapshotTimestamp) { continue; }
 
-    browserTimestamp = browserData.timestamp;
+    browserTimestamp = browserData.sentSnapshotTimestamp;
     if (Math.abs(timestamp - browserTimestamp) < closestTimestampDifference) {
       closestTimestampDifference = browserTimestamp;
       chosenEvent = event;
