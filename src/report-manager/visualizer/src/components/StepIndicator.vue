@@ -2,7 +2,7 @@
   <div class="step-indicator-container">
     <div class="triangle-border"/>
     <transition name="slide">
-      <div v-if="visible" :class="['moving-indicator', { visible }]" />
+      <div v-if="shouldContinue" :class="['moving-indicator', { shouldContinue }]" />
     </transition>
   </div>
 </template>
@@ -10,7 +10,7 @@
 <script>
 export default {
   props: {
-    visible: {
+    shouldContinue: {
       type: Boolean,
       required: true,
     },
@@ -23,6 +23,7 @@ export default {
   position: relative;
   --indicator-size: 32px;
   overflow: hidden;
+  margin: 4px 16px;
 }
 
 .triangle-border {
@@ -47,7 +48,7 @@ export default {
   border-radius: 0 calc(var(--indicator-size)/2) calc(var(--indicator-size)/2) 0;
 }
 
-.visible {
+.shouldContinue {
   left: 0;
 }
 

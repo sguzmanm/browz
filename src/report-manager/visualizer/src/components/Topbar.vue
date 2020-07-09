@@ -78,6 +78,7 @@ export default {
   watch: {
     $route() {
       this.updateBreadcrumb();
+      document.querySelector('.topbar-container').scrollIntoView();
     },
   },
 };
