@@ -1,16 +1,17 @@
 <template>
   <div class="event-container">
       <h2>Logs</h2>
-      <span>Logs associated to event {{eventID}}</span>
-      <div v-for="browser in browsers" :key="browser">
+      <span>Logs associated to event #{{eventID}}</span>
+      <div v-for="browser in browsers" :key="browser.name">
         <div class="logs-header">
           <img :src="browser.image" :alt="`Image for ${browser.name}`">
           <p>{{browser.name}}</p>
         </div>
         <div class="logs-container" v-if="browser.log && browser.log.messages && browser.log.messages.length>0">
           <div class="log-line"
-            v-for="(message, index) in browser.log.messages" :key="index">
-            <p>{{ index +1 }}. [{{ browser.log.type }}]: {{ message }}</p>
+            v-for="(message, index) in browser.log.messages" :key="`LOG_${browser.name}-${index}`">
+            <p>{{ index +1 }}. {{calculateDateString(new Date(browser.log.timestamp))}}
+              [{{ browser.log.type?browser.log.type:"unknown" }}]: {{ message }}</p>
           </div>
         </div>
         <div class="log-line" v-else>
@@ -21,10 +22,21 @@
 </template>
 
 <script>
-
 const browserLogos = {
   firefox: 'images/firefox.png',
   chrome: 'images/chrome.png',
+};
+
+const calculateDateString = (date) => {
+  const dateOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  };
+
+  return date.toLocaleDateString('default', dateOptions);
 };
 
 export default {
@@ -39,6 +51,19 @@ export default {
       ...browser,
       image: browserLogos[browser.name],
     }));
+  },
+  methods: {
+    calculateDateString(date) {
+      const dateOptions = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      };
+
+      return date.toLocaleDateString('es-CO', dateOptions);
+    },
   },
 };
 </script>
