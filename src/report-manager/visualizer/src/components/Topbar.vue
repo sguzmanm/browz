@@ -50,6 +50,17 @@ export default {
           `Event #${this.$route.params.eventID}`,
         ];
       }
+
+      if (name === 'Logs') {
+        this.currentEvent = this.$route.params.eventID;
+        this.currentBrowsers = this.$route.params.browsers;
+        this.breadcrumbLevels = [
+          'Run history',
+          this.$route.params.run,
+          `Event #${this.$route.params.eventID}`,
+          'Logs',
+        ];
+      }
     },
     handleBreadcrumbItemClick(index) {
       if (index + 1 === this.breadcrumbLevels.length) {
@@ -65,6 +76,9 @@ export default {
           break;
         case 2:
           this.$router.push({ name: 'Event', params: { run: this.currentRun, eventID: this.currentEvent } });
+          break;
+        case 3:
+          this.$router.push({ name: 'Logs', params: { eventID: this.currentEvent, browsers: this.currentBrowsers } });
           break;
         default:
           console.error('Unexpected breadcrumb state');

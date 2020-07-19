@@ -12,7 +12,10 @@
     <template v-else>
       <h2>Event #{{ eventID }}</h2>
       <span>Random click @ {{ eventTimeOffset }}s after starting the run</span>
-      <a class="logs-link">View logs related to this event</a>
+
+      <a class="logs-link"  @click="$router.push({ name: 'Logs', params: { eventID, browsers:event.browsers }})">
+        View logs related to this event
+      </a>
 
       <div class="funnel-container">
         <div class="funnel-step-container">

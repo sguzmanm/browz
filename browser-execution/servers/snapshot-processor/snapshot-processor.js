@@ -55,8 +55,6 @@ module.exports.start = (dateString) => {
 };
 
 const getEventWithClosestTimestamp = (log, events) => {
-  console.log('LOG', log, events.length);
-
   const timestamp = parseInt(log.timestamp, 10);
   const browserName = log.browser;
 

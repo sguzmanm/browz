@@ -3,6 +3,7 @@ import VueRouter, { RouteConfig } from 'vue-router';
 import History from '../views/History.vue';
 import Run from '../views/Run.vue';
 import Event from '../views/Event.vue';
+import Logs from '../views/Logs.vue';
 
 Vue.use(VueRouter);
 
@@ -21,6 +22,11 @@ const routes: Array<RouteConfig> = [
     path: '/run/:run/event/:eventID',
     name: 'Event',
     component: Event,
+  },
+  {
+    path: '/run/:run/event/:eventID/logs',
+    name: 'Logs',
+    component: Logs,
   },
   {
     path: '/about',
