@@ -51,7 +51,7 @@ export default {
         runs.forEach(async (run) => {
           const runResponse = await fetch(`runs/${run}/run.json`);
           this.runs.push(await runResponse.json());
-          this.$forceUpdate();
+          this.runs.sort((a, b) => b.startTimestamp - a.startTimestamp);
         });
       } catch (error) {
         console.error(error);

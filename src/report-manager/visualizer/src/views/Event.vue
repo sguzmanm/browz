@@ -13,6 +13,7 @@
       <h2>Event #{{ eventID }}</h2>
       <span>Random click @ {{ eventTimeOffset }}s after starting the run</span>
       <a class="logs-link">View logs related to this event</a>
+
       <div class="funnel-container">
         <div class="funnel-step-container">
           <multiselect
@@ -68,7 +69,56 @@
           </div>
         </transition>
 
-        <step-indicator :should-continue="!!visualizationTarget && !!moment" />
+        <step-indicator :should-continue="shouldRenderSecondIndicator" />
+
+        <transition name="fade">
+          <div class="funnel-step-container" v-if="shouldRenderSecondIndicator">
+          <multiselect
+            class="multiselect-container"
+            v-model="visualizationMode"
+            :options="visualizationModeOptions"
+            :searchable="false"
+            :show-labels="false"
+            placeholder="Select an option"
+          >
+            <template slot="singleLabel" slot-scope="props">
+              <div class="multiselect-option-container">
+                <i class="material-icons">{{props.option.icon}}</i>
+                <span class="multiselect-selected-label">
+                  {{ props.option.title }}
+                </span>
+              </div>
+            </template>
+            <template slot="option" slot-scope="props">
+              <div class="multiselect-option-container">
+                <i class="material-icons">{{props.option.icon}}</i>
+                <div class="multiselect-option-text-container">
+                  <span class="multiselect-option-title">{{ props.option.title }}</span>
+                  <div class="multiselect-option-desc">{{ props.option.desc }}</div>
+                </div>
+              </div>
+            </template>
+          </multiselect>
+          <transition name="fade">
+            <span v-if="!visualizationMode" class="funnel-step-tooltip">
+              Choose how to visualize the comparison
+            </span>
+          </transition>
+        </div>
+        </transition>
+      </div>
+
+      <div class="image-container" v-if="shouldRenderImage">
+        <img :src="imageSrc" alt="browser screenshot">
+      </div>
+
+      <div class="image-container" v-if="shouldRenderSideBySide">
+        <vue-compare-image
+          :leftImage="chromeAndFirefoxImages[0]"
+          leftLabel="Chrome"
+          :rightImage="chromeAndFirefoxImages[1]"
+          rightLabel="Firefox"
+        />
       </div>
     </template>
   </div>
@@ -76,6 +126,7 @@
 
 <script>
 import Multiselect from 'vue-multiselect';
+import VueCompareImage from 'vue-compare-image';
 import StepIndicator from '@/components/StepIndicator.vue';
 
 const visualizationTargetOptions = [
@@ -105,10 +156,12 @@ const visualizationModeOptions = [
   {
     title: 'Side by Side',
     desc: 'Use a slider to switch between the firefox or chrome version',
+    icon: 'compare',
   },
   {
     title: 'Visual diff',
     desc: 'Color the areas where the two images differ',
+    icon: 'filter_b_and_w',
   },
 ];
 
@@ -116,6 +169,7 @@ export default {
   components: {
     Multiselect,
     StepIndicator,
+    VueCompareImage,
   },
   data() {
     return {
@@ -141,10 +195,53 @@ export default {
   },
   computed: {
     eventTimeOffset() {
-      console.log(this.event.timestamp, this.run.startTimestamp, this.run.events);
-
       const offset = (this.event.comparisonTimestamp - this.run.startTimestamp) / 1000;
       return offset.toFixed(2);
+    },
+    shouldRenderSecondIndicator() {
+      return !!this.visualizationTarget && !!this.moment
+        && this.visualizationTarget && this.visualizationTarget.title === 'Chrome vs Firefox';
+    },
+    shouldRenderDiffImage() {
+      return this.visualizationTarget
+        && this.visualizationTarget.title === 'Chrome vs Firefox'
+        && this.moment !== null
+        && this.visualizationMode
+        && this.visualizationMode.title === 'Visual diff';
+    },
+    shouldRenderBrowserImage() {
+      return this.visualizationTarget
+        && this.visualizationTarget.title !== 'Chrome vs Firefox'
+        && this.moment !== null;
+    },
+    shouldRenderImage() {
+      return this.shouldRenderDiffImage || this.shouldRenderBrowserImage;
+    },
+    shouldRenderSideBySide() {
+      return this.visualizationTarget
+        && this.visualizationTarget.title === 'Chrome vs Firefox'
+        && this.moment !== null
+        && this.visualizationMode
+        && this.visualizationMode.title === 'Side by Side';
+    },
+    imageSrc() {
+      const moment = this.moment.split(' ')[0].toLowerCase();
+
+      let browser = this.visualizationTarget.title.toLowerCase();
+      if (browser === 'chrome vs firefox') {
+        browser = browser.replaceAll(' ', '_');
+        return `runs/${this.$route.params.run}/snapshots/${this.eventID}/comparison_${browser}_${moment}.png`;
+      }
+
+      return `runs/${this.$route.params.run}/snapshots/${this.eventID}/${browser}_${moment}.png`;
+    },
+    chromeAndFirefoxImages() {
+      const moment = this.moment.split(' ')[0].toLowerCase();
+
+      return [
+        `runs/${this.$route.params.run}/snapshots/${this.eventID}/chrome_${moment}.png`,
+        `runs/${this.$route.params.run}/snapshots/${this.eventID}/firefox_${moment}.png`,
+      ];
     },
   },
   methods: {
@@ -193,6 +290,11 @@ export default {
 .multiselect__option--highlight {
   background: linear-gradient(20deg, #2B32B2, #1488CC);
 }
+
+.left-label, .right-label {
+  background: linear-gradient(20deg, rgba(43, 50, 178, 0.4), rgba(20, 136, 204, 0.4));
+  color: whitesmoke;
+}
 </style>
 
 <style scoped>
@@ -223,6 +325,8 @@ h2 {
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
+  margin-top: 16px;
+  margin-bottom: 32px;
 }
 
 .funnel-step-container {
@@ -234,6 +338,8 @@ h2 {
   width: 25vw;
   min-width: 280px;
   max-width: 360px;
+
+  user-select: none;
 }
 
 .funnel-step-tooltip {
@@ -262,6 +368,10 @@ h2 {
   width: calc(25vw - 2*12px);
   min-width: calc(280px - 2*12px - 12px);
   max-width: calc(360px - 2*12px - 12px);
+}
+
+.multiselect-option-container .material-icons {
+  margin-right: 12px;
 }
 
 .multiselect-option-image {
