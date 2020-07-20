@@ -12,12 +12,12 @@
   "contributors": ["Julián Manrique <ja.manrique0111@gmail.com> (https://sxubas.github.io/)"],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sguzmanm/thesis.git"
+    "url": "git+https://github.com/sguzmanm/browz.git"
   },
   "bugs": {
-    "url": "https://github.com/sguzmanm/thesis/issues"
+    "url": "https://github.com/sguzmanm/browz/issues"
   },
-  "homepage": "https://github.com/sguzmanm/thesis#readme",
+  "homepage": "https://github.com/sguzmanm/browz#readme",
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",

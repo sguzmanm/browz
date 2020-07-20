@@ -30,14 +30,14 @@ If you have any trouble installing docker you can always turn to virtualization 
 All you need to do is go to the project and install the dependencies using npm
 
 ```
-cd thesis
+cd browz
 npm install
 ```
 
 After that, just run
 
 ```
-npm run thesis -- <Path to web app project> <Destination of screenshots of browsers> 
+npm run browz -- <Path to web app project> <Destination of screenshots of browsers> 
 ```
 
 - The first param you specify is the path where your web app project is. This projects can only be composed of HTML, JS and CSS files with graphic assets (videos, images, etc). We are not supporting applications that are processed by the server (SSR).
@@ -91,7 +91,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/sguzmanm/thesis/blob/master/LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/sguzmanm/browz/blob/master/LICENSE.md) file for details
 
 ## Acknowledgments
 

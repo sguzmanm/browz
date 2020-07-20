@@ -16,7 +16,7 @@ const hostConfigDir = path.join(__dirname, '../../config');
 const UNIT_MB = 'Mi';
 const ENV_PARAM = '--env';
 const LEVEL_ENV_VAR = 'LEVEL';
-const CONTAINER_NAME = 'thesis';
+const CONTAINER_NAME = 'browz';
 
 const MAX_MEMORY_GB = 2;
 const ESTIMATED_IMAGE_SIZE_MB = 1.99 * 10 ** 3; // 1.99 GB
@@ -87,7 +87,7 @@ module.exports.setupDocker = async () => {
 
 /*
  * Command example: docker run --shm-size=512 -v /httpDir:/tmp/app /imageDir:/tmp/screenshots
- * --env-file="../.env" sguzmanm/linux_cypress_tests:lite sh -c cd /tmp/thesis && git reset
+ * --env-file="../.env" sguzmanm/linux_cypress_tests:lite sh -c cd /tmp/browz && git reset
  * --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js
  */
 module.exports.runDocker = (httpSource, imageDestination, level) => {
@@ -110,7 +110,7 @@ module.exports.runDocker = (httpSource, imageDestination, level) => {
     linuxContainer,
     'sh',
     '-c',
-    `cd /tmp/thesis && git reset --hard HEAD ${branchCommand} && git pull origin ${branch} && cd browser-execution && npm install && node index.js`,
+    `cd /tmp/browz && git reset --hard HEAD ${branchCommand} && git pull origin ${branch} && cd browser-execution && npm install && node index.js`,
   ];
 
 

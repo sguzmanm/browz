@@ -1,6 +1,6 @@
 <template>
   <div class="topbar-container">
-    <h1>Thesis</h1>
+    <h1>Browz</h1>
     <transition name="grow">
       <div class="breadcrumb-container" v-if="breadcrumbLevels.length > 0">
         <div

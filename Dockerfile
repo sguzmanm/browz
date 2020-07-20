@@ -38,10 +38,10 @@ RUN groupadd -r pwuser && useradd -r -g pwuser -G audio,video pwuser \
 # Run everything after as non-privileged user.
 USER pwuser
 WORKDIR /tmp
-ARG MAIN_DIR="thesis/browser-execution"
+ARG MAIN_DIR="browz/browser-execution"
 
 
 # Copy exec dirs
-RUN git clone https://github.com/sguzmanm/thesis.git
+RUN git clone https://github.com/sguzmanm/browz.git
 RUN cd ${MAIN_DIR} && npm install
-CMD ["sh","-c","cd /tmp/thesis && git pull origin master && cd browser-execution && nodejs index.js"]
+CMD ["sh","-c","cd /tmp/browz && git pull origin master && cd browser-execution && nodejs index.js"]
