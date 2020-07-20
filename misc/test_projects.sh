@@ -13,7 +13,7 @@ do
   project=`basename $folder`
   echo -e "Running: $project"
 
-  npm run thesis -- "./$folder/dist/" --skip-report --verbose > "./misc/test-runs/$dateFolder/$project.log"
+  npm run browz -- "./$folder/dist/" --skip-report --verbose > "./misc/test-runs/$dateFolder/$project.log"
 done
 
 echo "Finished testing :)"

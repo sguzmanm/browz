@@ -1,21 +1,19 @@
 {
-  "name": "thesis",
+  "name": "browz",
   "version": "1.0.0",
-  "description": "Official repo to store everything related to thesis\r OverLeaf Preview: https://www.overleaf.com/read/kxycvzwrmyvw",
-  "main": "bin/index.js",
-  "bin": {
-    "thesis": "index.js"
-  },
+  "license": "MIT",
+  "description": "Browz is a tool to perform automatic cross-browser tests of web apps",
+  "main": "./src/browz.js",
+  "bin": "./bin/index.js",
   "scripts": {
-    "thesis": "node bin/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "browz": "node bin/index.js"
   },
+  "author": "Sergio Guzmán <s.guzmanm98@gmail.com> (https://i-am-sergio-guzman.herokuapp.com/)",
+  "contributors": ["Julián Manrique <ja.manrique0111@gmail.com> (https://sxubas.github.io/)"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sguzmanm/thesis.git"
   },
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/sguzmanm/thesis/issues"
   },
