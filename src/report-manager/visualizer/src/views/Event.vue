@@ -232,7 +232,8 @@ export default {
 
       let browser = this.visualizationTarget.title.toLowerCase();
       if (browser === 'chrome vs firefox') {
-        browser = browser.replaceAll(' ', '_');
+        browser = browser.replace(/ /g, '_');
+        console.log(browser);
         return `runs/${this.$route.params.run}/snapshots/${this.eventID}/comparison_${browser}_${moment}.png`;
       }
 
