@@ -1,11 +1,11 @@
 {
-  "name": "demo",
+  "name": "browz-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
+  "description": "Javascript project that handles headless browser instancing and comparison between different browsers executions.",
+  "main": "index.js",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "cypress": "^4.2.0",
+    "cypress": "4.2.0",
     "cypress-log-to-output": "^1.0.8",
     "cypress-plugin-tab": "^1.0.5",
     "dotenv": "^8.2.0",
@@ -26,6 +26,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Sergio Guzmán <s.guzmanm98@gmail.com> (https://i-am-sergio-guzman.herokuapp.com/)",
+  "contributors": ["Julián Manrique <ja.manrique0111@gmail.com> (https://sxubas.github.io/)"],
+  "license": "MIT"
 }

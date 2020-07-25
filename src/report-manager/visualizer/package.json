@@ -1,7 +1,8 @@
 {
-  "name": "visualizer",
-  "version": "0.1.0",
-  "private": true,
+  "name": "browz-visualizer",
+  "version": "1.0.0",
+  "author": "Julián Manrique <ja.manrique0111@gmail.com> (https://sxubas.github.io/)",
+  "contributors": ["Sergio Guzmán <s.guzmanm98@gmail.com> (https://i-am-sergio-guzman.herokuapp.com/)"],
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
