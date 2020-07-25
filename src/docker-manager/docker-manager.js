@@ -5,7 +5,7 @@ const logger = require('../../shared/logger').newInstance('Docker Manager');
 const { container, repository } = require('../../shared/config.js').getHostConfig();
 const { getDockerErrorCodeMessage, getWrongOutputMessage } = require('./error-outputs');
 
-const linuxContainer = container && container.name ? container.name : 'sguzmanm/linux_cypress_tests:lite';
+const linuxContainer = container && container.name ? container.name : 'sguzmanm/linux_cypress_tests:browz';
 const httpAppDir = container && container.httpAppDir ? container.httpAppDir : '/tmp/app';
 const snapshotDir = container && container.snapshotDestinationDir ? container.snapshotDestinationDir : '/tmp/runs';
 const containerConfigDir = container && container.configDir ? container.configDir : '/tmp/config';
@@ -87,7 +87,7 @@ module.exports.setupDocker = async () => {
 
 /*
  * Command example: docker run --shm-size=512 -v /httpDir:/tmp/app /imageDir:/tmp/screenshots
- * --env-file="../.env" sguzmanm/linux_cypress_tests:lite sh -c cd /tmp/browz && git reset
+ * --env-file="../.env" sguzmanm/linux_cypress_tests:browz sh -c cd /tmp/browz && git reset
  * --hard HEAD && git pull origin master && cd browser-execution && npm install && node index.js
  */
 module.exports.runDocker = (httpSource, imageDestination, level) => {

@@ -1,7 +1,7 @@
 {
   "baseUrl": "http://localhost:8080/",
   "container": {
-    "name": "sguzmanm/linux_cypress_tests:lite",
+    "name": "sguzmanm/linux_cypress_tests:browz",
     "httpAppDir": "/tmp/app",
     "snapshotDestinationDir": "/tmp/runs",
     "configDir": "/tmp/config"
