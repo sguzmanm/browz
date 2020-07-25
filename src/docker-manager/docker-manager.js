@@ -13,7 +13,7 @@ const branch = repository && repository.branch ? repository.branch : 'master';
 
 const hostConfigDir = path.join(__dirname, '../../config');
 
-const UNIT_MB = 'Mi';
+const UNIT_GB = 'Gi';
 const ENV_PARAM = '--env';
 const LEVEL_ENV_VAR = 'LEVEL';
 const CONTAINER_NAME = 'browz';
@@ -32,7 +32,7 @@ const checkImageMemory = () => {
   return new Promise((resolve, reject) => {
     let dataLine = '';
     spawnElement.stdout.on('data', (data) => {
-      dataLine = data.toString().split(UNIT_MB);
+      dataLine = data.toString().split(UNIT_GB);
       if (dataLine.length > 1) {
         resolve(dataLine[0]);
       }
@@ -67,9 +67,9 @@ const pullImage = async () => {
 
 module.exports.setupDocker = async () => {
   let dockerImageSize = await checkImageMemory();
-  dockerImageSize = parseInt(dockerImageSize.split(UNIT_MB)[0], 10);
+  dockerImageSize = parseInt(dockerImageSize.split(UNIT_GB)[0], 10);
 
-  const fraction = dockerImageSize / ESTIMATED_IMAGE_SIZE_MB;
+  const fraction = dockerImageSize * 10 ** 3 / ESTIMATED_IMAGE_SIZE_MB;
   // Use an estimate since we do not have access to the uncompressed image size
   let approximateImageMem = dockerImageSize
     * (1 + fraction + (fraction > 0.5 ? 0 : 0.5));
