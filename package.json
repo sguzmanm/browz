@@ -1,6 +1,6 @@
 {
   "name": "browz",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "description": "Browz is a tool to perform automatic cross-browser tests of web apps",
   "main": "./src/browz.js",

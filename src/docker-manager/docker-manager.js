@@ -67,9 +67,9 @@ const pullImage = async () => {
 
 module.exports.setupDocker = async () => {
   let dockerImageSize = await checkImageMemory();
-  dockerImageSize = parseInt(dockerImageSize.split(UNIT_GB)[0], 10);
+  dockerImageSize = parseInt(dockerImageSize.split(UNIT_GB)[0], 10) * 10 ** 3;
 
-  const fraction = dockerImageSize * 10 ** 3 / ESTIMATED_IMAGE_SIZE_MB;
+  const fraction = dockerImageSize / ESTIMATED_IMAGE_SIZE_MB;
   // Use an estimate since we do not have access to the uncompressed image size
   let approximateImageMem = dockerImageSize
     * (1 + fraction + (fraction > 0.5 ? 0 : 0.5));
