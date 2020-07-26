@@ -1,4 +1,5 @@
 node_modules/
-runs/
+runs
+
 # Ignoring due to dev team working in windows and linux
 package-lock.json
